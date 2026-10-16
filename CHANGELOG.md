@@ -5,6 +5,12 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **the first new module type works.** `tools/patch_rom.py type119-mixinv` registers a
+  type 119 (the Mixer (3) with input 1 inverted) with a hand-assembled routine hooked to the end of
+  the registration list; `tools/make_modules_xml.py` writes a `modules.xml` with it for NME and the
+  test bench. Checked in G1-Emu: the OS registers it (RAM dump), the battery measures it at
+  −61.8 dBFS against −52.3 for the Mixer (3) (−9.54 dB predicted), and the original ROM refuses
+  the same patch. `NOTES.md`, "The first new type: 119".
 - Claude: `NOTES.md`, "The registration list": the boot routine that empties the 128 entries,
   the list of 110 `jsr` at `$10DC90` (ROM `$1A490`) with the type each one registers, what
   `$10DC42` does, and the ~15 KB the OS leaves untouched at the end of its RAM image

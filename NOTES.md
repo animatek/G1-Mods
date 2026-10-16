@@ -51,16 +51,32 @@ Read from a RAM dump after boot (`G1_RAMDUMP=file g1boot ROM 60`, in `../G1-Emu`
   untouched**; still to check after patch loads and editing. The `$FF` runs in between (8 KB,
   19 KB) look like buffers.
 
-## Plan for the first new type
+## The first new type: 119 (2026-10-16)
 
-1. A registration routine of ours, in the untouched end, for a free type (119): `$10DC42(119)`,
-   then the Mixer (3)'s entry copied with `+$24`/`+$28` pointing to a descriptor and DSP code of
-   our own (same size and I/O as the Mixer (3) at first, e.g. one with a fixed +6 dB).
-2. Hooked in by replacing the list's last `jsr $143350` with a `jsr` to a stub that calls
-   `$143350` and then ours, so nothing in the list moves.
-3. NME: a type 119 in `modules.xml` (a branch), the Mixer (3)'s connectors and parameters.
-4. Upload a patch with it to G1-Emu and measure with the battery. If the OS refuses it, the
-   refusal shows who checks `$1A7BC0`.
+**It works.** `tools/patch_rom.py type119-mixinv` makes a ROM where type 119 is the Mixer (3)
+with input 1 inverted (`mpy -x1,x0,a` instead of `mpy x1,x0,a`), and
+`tools/make_modules_xml.py` a `modules.xml` with a "Mixer Inv" of type 119 for NME and the test
+bench (`G1_MODULES_XML`, in G1-Emu's `g1patchtest` and battery).
+
+- **How:** the Mixer (3)'s data block (`$14937E`, `$88` bytes: `+$2C`, descriptor, X/Y data,
+  code, `+$24` table) is copied to `$16FB80`, with the three pointers of `+$24` that point inside
+  it moved along. A hand-assembled routine right after it (`$16FC08`, 70 bytes) makes the list's
+  last call (type 17), registers 119 with `$10DC42`, copies the Mixer (3)'s entry and points
+  `+$24`, `+$28` and `+$2C` to the copy. The list's last `jsr` (`$10DF1E`) now calls it.
+- **Checked:** after boot `$1A7BC0[119] = 1`, 111 types registered, no duplicate, the entry is
+  the Mixer (3)'s with the three new pointers, and the code in RAM has the inverted multiply.
+  In the battery (one oscillator into all three inputs, levels at 127) the Mixer (3) gives
+  −52.3 dBFS and the new type **−61.8 dBFS**: one third, −9.54 dB, exactly what the inverted
+  input predicts.
+- **The OS refuses an unregistered type:** the same patch on the original ROM fails to upload
+  ("the OS did not take the patch"). So registering is what makes a type valid.
+- **Shared with the Mixer (3)** for now: its five routines, parameter names and the three RAM
+  variables in `+$24` (`$1A5B68`…). A patch with both may clash through those variables; not
+  tried.
+
+Next: a module that is not a copy (own I/O and parameters: a FlipFlop), which means writing its
+own `+$24`/`+$28` data and checking what the five routines and `+$20` need; a patch with the
+Mixer (3) and the new type together; and the real editor's view (NME in a branch).
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.
