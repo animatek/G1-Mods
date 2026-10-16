@@ -19,6 +19,8 @@ and some cables changed, played for 6 s in G1-Emu's g1patchtest and checked on t
   on output 2. The Constant stays constant and NotQ stays Q's opposite: each output of the
   FlipFlop has a word of its own (the descriptor says two outputs; with one, NotQ wrote into the
   next module's output).
+- the same patch, Q's LED: the OS's Lights messages (NMInfo $39) on the PC Port carry LED 0
+  (the FlipFlop's, the only module with a light) both on and off.
 Exit code 0 when all hold.
 """
 import bisect
@@ -39,8 +41,8 @@ LFO_TO_RST = "0 6 2 0 3 1 1 \n"
 def record(rom, xml, patch, tmp, name):
     pch, wav = os.path.join(tmp, name + ".pch"), os.path.join(tmp, name + ".wav")
     open(pch, "w").write(patch)
-    subprocess.run([BIN, rom, pch, "--seconds", "6", "--wav", wav], check=True,
-                   capture_output=True, env=dict(os.environ, G1_MODULES_XML=xml))
+    subprocess.run([BIN, rom, pch, "--seconds", "6", "--wav", wav], check=True, capture_output=True,
+                   env=dict(os.environ, G1_MODULES_XML=xml, G1_PCPORT_LOG=os.path.join(tmp, name + ".pc")))
     w = wave.open(wav)
     n, ch = w.getnframes(), w.getnchannels()
     raw = w.readframes(n)
@@ -119,6 +121,13 @@ def main():
         report("outputs of their own (a Constant after it)", not kch and abs(len(ch) - len(e)) <= 1
                and not_inverse(q, nq) == 0,
                f"Constant changes {len(kch)}, Q changes {len(ch)} for {len(e)} edges, NotQ wrong {not_inverse(q, nq)}")
+
+        pc = open(os.path.join(tmp, "n.pc"), "rb").read()
+        led0, at = set(), 0
+        while (at := pc.find(bytes.fromhex("f03350060139"), at)) >= 0:
+            led0.add(pc[at + 7] & 3)        # startIndex at +6, then l2 l1 l0 in 2 bits each
+            at += 1
+        report("Q's LED", led0 == {0, 1}, f"LED 0 seen as {sorted(led0)} in the Lights messages")
 
     print("OK" if ok else "FAILED")
     sys.exit(0 if ok else 1)

@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **the FlipFlop lights Q's LED**: a value routine reading Q through the DSP's host port,
+  registered with `$116832` (the OS keeps one LED per module). `tests/check_flipflop.py` gains a
+  sixth case (LED 0 on and off in the Lights messages, logged with G1-Emu's new
+  `G1_PCPORT_LOG`); all pass. `make_nme_data.py`: the FlipFlop's panel laid out like the G2's, with
+  the LED. `NOTES.md`: plain LEDs.
 - Claude: **fixed the FlipFlop's NotQ sharing a word with the next module's output** (Javier: on
   the G2 demo the two outputs alternate; here one gave fast triggers unrelated to the clock). The
   descriptor's output count (`+$08`) was ClkDiv's 1; now 2. `tests/check_flipflop.py` has a fifth

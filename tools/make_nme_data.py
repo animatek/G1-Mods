@@ -53,6 +53,7 @@ FULL_ENTRIES = {
     <connector component-id="c3" index="2" name="rst" type="input" signal="logic" />
     <connector component-id="c4" index="0" name="Q" type="output" signal="logic" />
     <connector component-id="c5" index="1" name="NotQ" type="output" signal="logic" />
+    <light component-id="ledQ" name="LED Q" index="0" type="led" />
     <!-- parameter(s) -->
     <parameter component-id="p1" index="0" name="type" class="parameter" maxValue="1" extension="m1" />
     <parameter component-id="m1" index="0" name="morph:type" class="morph" role="morph"  minValue="-1" maxValue="1" />
@@ -68,30 +69,31 @@ FULL_ENTRIES = {
   </module>""", """
 \t<module component-id="m120" width="255" height="30">
 \t\t<name>FlipFlop</name>
-\t\t<button x="62" y="7" width="26" height="16" cyclic="true" landscape="false">
+\t\t<label x="96" y="17">Rst</label>
+\t\t<connector x="114" y="16" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c3" alt="rst" />
+\t\t</connector>
+\t\t<label x="132" y="17">Clk</label>
+\t\t<connector x="152" y="16" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c1" alt="clk" />
+\t\t</connector>
+\t\t<label x="164" y="2">In</label>
+\t\t<connector x="170" y="1" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c2" alt="in" />
+\t\t</connector>
+\t\t<button x="186" y="7" width="26" height="16" cyclic="true" landscape="false">
 \t\t\t<parameter component-id="p1" alt="type" />
 \t\t\t<btn index="0">D</btn>
 \t\t\t<btn index="1">RS</btn>
 \t\t</button>
-\t\t<label x="96" y="9">Clk</label>
-\t\t<connector x="114" y="8" size="13" class="cLOGIC">
-\t\t\t<connector component-id="c1" alt="clk" />
-\t\t</connector>
-\t\t<label x="132" y="9">In</label>
-\t\t<connector x="146" y="8" size="13" class="cLOGIC">
-\t\t\t<connector component-id="c2" alt="in" />
-\t\t</connector>
-\t\t<label x="164" y="9">Rst</label>
-\t\t<connector x="182" y="8" size="13" class="cLOGIC">
-\t\t\t<connector component-id="c3" alt="rst" />
-\t\t</connector>
-\t\t<label x="200" y="9">nQ</label>
-\t\t<connector x="216" y="8" size="13" class="cLOGIC">
-\t\t\t<connector component-id="c5" alt="NotQ" />
-\t\t</connector>
-\t\t<label x="231" y="1">Q</label>
-\t\t<connector x="236" y="8" size="13" class="cLOGIC">
+\t\t<light component-id="ledQ" type="led" x="226" y="4" width="7" height="7" />
+\t\t<label x="218" y="2">Q</label>
+\t\t<connector x="236" y="1" size="13" class="cLOGIC">
 \t\t\t<connector component-id="c4" alt="Q" />
+\t\t</connector>
+\t\t<label x="216" y="17">nQ</label>
+\t\t<connector x="236" y="16" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c5" alt="NotQ" />
 \t\t</connector>
 \t</module>"""),
 }

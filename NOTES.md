@@ -246,6 +246,22 @@ opcodes disassembled by G1-Emu's `dspdis` (built once into `out/`).
   toggle case, NotQ had a stray value for 2 samples 4 ms in, while the patch was being set up,
   not explained.
 
+## Plain LEDs, and the FlipFlop's (2026-10-16)
+
+- **A plain LED is registered with `$116832(slot, section, module, value routine)`** (the
+  RndPulsGen's), on the slot's LED list (`+$5636`), in the outputs case of `+$0C`. The value
+  routine returns 1 (lit) or 0; it reads the module's data through the host port, X with
+  `$10C32E` (host command `$BB`) or Y with `$10C2F6` (`$BC`), at the record's base (word at +8 for
+  X, +10 for Y, of both records) plus the word.
+- **One LED per module**: the list's add routine (`$1168FC`) returns at once when the module is
+  already in it, so a second call for the same module adds nothing. The FlipFlop lights Q (the
+  G2's NotQ LED is its opposite anyway).
+- The editor gets them in `Lights` (NMInfo `$39`): a start index, then 2 bits per LED. G1-Emu's
+  `g1patchtest` logs the PC Port with `G1_PCPORT_LOG`; `tests/check_flipflop.py` checks that LED 0
+  goes on and off with the FlipFlop toggling.
+- NME: `<light ... type="led">` in `modules.xml` and in the theme. The FlipFlop's panel is now
+  laid out like the G2's.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash

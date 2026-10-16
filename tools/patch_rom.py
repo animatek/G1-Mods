@@ -191,7 +191,29 @@ def m68k(*parts):
     return bytes.fromhex("".join(parts).replace(" ", ""))
 
 
-def connection_routine(inputs, outputs, part=1):
+def led_routine(x_word, on_when_set=True):
+    """A plain LED's value routine, for $116832: reads the module's X word through the DSP's host
+    port ($10C32E, address = the X bases of its two records, word at +8 of each, + x_word) and
+    returns 1 when it is not 0 (or when it is 0). Its frame is the CtrlSeq's step routine's."""
+    return m68k("48e7 2030",          # movem.l d2/a2-a3,-(sp)
+                "246f 0010",          # movea.l (16,sp),a2
+                "266f 0014",          # movea.l (20,sp),a3
+                "7000 302a 0008",     # moveq #0,d0 / move.w (8,a2),d0
+                "7200 322b 0008",     # moveq #0,d1 / move.w (8,a3),d1
+                "d081",               # add.l d1,d0
+                "0680", f"{x_word:08x}",  # addi.l #x_word,d0
+                "2f00",               # move.l d0,-(sp)       the address
+                "1012 3f00",          # move.b (a2),d0 / move.w d0,-(sp)   the DSP
+                "4eb9 0010c32e",      # jsr $10C32E           read X
+                "5c8f",               # addq.l #6,sp
+                "4a80",               # tst.l d0
+                "56c0" if on_when_set else "57c0",   # sne d0 / seq d0
+                "0280 00000001",      # andi.l #1,d0
+                "4cdf 0c04",          # movem.l (sp)+,d2/a2-a3
+                "4e75")               # rts
+
+
+def connection_routine(inputs, outputs, part=1, led=None):
     """A type's +$0C: patches each input's address into its code words ({input: [words]}) with
     $124202, and every output's ([(output, word)]) with $1243DA, like Clavia's (CompareAB's,
     ClkDivFix's). part: 0 audio, 1 control. Branches are word-sized, resolved here."""
@@ -207,9 +229,19 @@ def connection_routine(inputs, outputs, part=1):
                                "4eb9 00124202",          # jsr $124202
                                "4fef 000c") for w in ws))  # lea (12,sp),sp
              for i, ws in sorted(inputs.items())]
-    cases.append((0xFF, b"".join(m68k("3f3c", f"{w:04x}", "3f3c", f"{o:04x}",  # word, output
-                                      "2f0a", "3f3c", f"{part:04x}",           # a2, part
-                                      "4eb9 001243da", "4fef 000a") for o, w in outputs)))
+    outs = b"".join(m68k("3f3c", f"{w:04x}", "3f3c", f"{o:04x}",  # word, output
+                         "2f0a", "3f3c", f"{part:04x}",           # a2, part
+                         "4eb9 001243da", "4fef 000a") for o, w in outputs)
+    if led:
+        # the module's LED, on the slot's LED list, as the RndPulsGen does: the OS keeps one
+        # entry per module (a second call for the same module adds nothing)
+        outs += m68k("4879", f"{led:08x}",          # pea value routine
+                     "102a 0003 3f00",              # move.b (3,a2),d0 / move.w d0,-(sp)   module
+                     "102a 0001 3f00",              # move.b (1,a2),d0 / move.w d0,-(sp)   section
+                     "1012 3f00",                   # move.b (a2),d0 / move.w d0,-(sp)     slot
+                     "4eb9 00116832",               # jsr $116832
+                     "4fef 000a")                   # lea (10,sp),sp
+    cases.append((0xFF, outs))
     tests_len = 8 * len(cases)                      # cmpi.b #n,d0 (4) + beq.w (4) each
     body_at = len(head) + tests_len + len(end)
     tests, bodies, at = b"", b"", body_at
@@ -248,9 +280,10 @@ def flipflop(b, new_type=120):
     assert at > 0 and param[-2:] == bytes.fromhex("4e75")
     param[at + 2:at + 6] = write_type.to_bytes(4, "big")
     param_at = b.put(param)
+    led_at = b.put(led_routine(4))                # Q's LED (X[4]); one LED per module on a G1
     conn_at = b.put(connection_routine(
         {0: marks["in0"], 1: marks["in1"], 2: marks["in2"]},
-        [(0, marks["out0"][0]), (1, marks["out1"][0])]))
+        [(0, marks["out0"][0]), (1, marks["out1"][0])], led=led_at))
     names_at = b.put(param_table([("Type", 1)]))
     x_at = b.put(words(*x_init))
     p_at = b.put(words(*code))
