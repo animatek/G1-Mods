@@ -5,6 +5,12 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: `patch_rom.py` writes the ROM under a temporary name and renames it, so an emulator
+  starting while a test rebuilds it never reads half a ROM; `dspasm.py` keeps each source's
+  assembled words in `out/` (keyed by its text), so a build without code changes does not load
+  the index. Checked: the same ROM with and without the cache. Done while chasing a G1-Emu window
+  that showed a blank display with the G1-Mods ROM (that ROM boots in `g1boot` and `g1patchtest`;
+  the window's flash, `out/flash-all.bin`, was set aside to try a fresh one).
 - Claude: **the FlipFlop is complete** (the G2's: D/RS Type, Clk, In, Rst, Q, NotQ), with DSP code
   written in assembly (`dsp/flipflop.asm`) and a small assembler (`tools/dspasm.py`) that finds
   encodings in an index of G1-Emu's disassembler. ClkDiv is the donor; the Type is written to X by

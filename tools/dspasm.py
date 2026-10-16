@@ -67,7 +67,27 @@ def load():
 
 
 def assemble(path):
-    """Returns (words, marks {name: [word indexes]}, source lines per word)."""
+    """Returns (words, marks {name: [word indexes]}, source lines per word). The result is kept
+    in out/ next to the index, keyed by the source's text, so a build that changes no code does
+    not load the index (which takes half a minute)."""
+    import hashlib
+    import json
+    source = open(path, "rb").read()
+    cache = os.path.join(os.path.dirname(INDEX), "dspasm-" + os.path.basename(path) + ".json")
+    key = hashlib.sha256(source).hexdigest()
+    try:
+        c = json.load(open(cache))
+        if c["key"] == key:
+            return c["words"], c["marks"], c["src"]
+    except (OSError, ValueError, KeyError):
+        pass
+    words, where, src = _assemble(path)
+    os.makedirs(os.path.dirname(cache), exist_ok=True)
+    json.dump({"key": key, "words": words, "marks": where, "src": src}, open(cache, "w"))
+    return words, where, src
+
+
+def _assemble(path):
     load()
     lines = []
     labels = {}

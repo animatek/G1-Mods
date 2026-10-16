@@ -296,7 +296,8 @@ def main():
         rom[o:o + 4] = new
         print(f"new types {b.types}, {b.at - FREE} bytes at ${FREE:06X}, registered by ${int.from_bytes(new, 'big'):06X}")
     os.makedirs(os.path.dirname(os.path.abspath(dst)), exist_ok=True)
-    open(dst, "wb").write(rom)
+    open(dst + ".tmp", "wb").write(rom)
+    os.replace(dst + ".tmp", dst)   # never a half-written ROM for an emulator starting meanwhile
     print(f"{name}: written {dst}")
 
 
