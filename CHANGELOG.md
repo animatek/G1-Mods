@@ -5,6 +5,10 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: `PORTING.md`, the porting checklist: every G2-only module and the G2 versions that do
+  more than the G1's, with their DSP size in the demo, whether a real G1 can run them (the limit:
+  each DSP has 4K program and 2K+2K data words, no external RAM, so long delays and the reverb
+  are emulator-only) and their status; and the order proposed.
 - Claude: `make_nme_data.py` puts each new type in "<donor's family> (mods)" ("Mixer (mods)",
   "Logic (mods)"), which NME's `g1-mods` branch lists right after the family in the module bar,
   the browser and the right-click Add Module menu (NME `8d72735`).

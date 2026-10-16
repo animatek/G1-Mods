@@ -1,0 +1,177 @@
+# Porting the G2's modules to the G1
+
+The checklist: every module the G2 has and the G1 does not, plus the G2 versions of modules the
+G1 already has when they do more. Updated as modules get ported. How a module is built:
+`NOTES.md`; the G1↔G2 equivalences: `../G2-Emu/MODULOS.md`.
+
+**Status:** ✅ done and checked in G1-Emu · 🟡 partly done · ⬜ to do · ✖ not doing.
+
+**Feasible?** What a real G1 allows, which is the limit that matters:
+
+- **Easy**: small code, control rate or a few audio words, no memory beyond a few X words.
+- **Medium**: more code (50–150 DSP words), several parameters or lights, or a short buffer.
+- **Hard**: needs 68k work beyond a registration (MIDI in or out, voice handling), or no
+  reference to study (the demo leaves it out).
+- **Emulator only**: needs memory a real G1 does not have. Each G1 DSP is a 56303 with
+  **4K words of program and 2K+2K of data, all internal, no external RAM**: at 96 kHz 2K words
+  are about 21 ms of audio, shared by every module of the voice. The G2's delays (up to 2.7 s)
+  and its reverb do not fit; in G1-Emu the DSPs could be given more memory, but a patch with
+  them would never run on hardware.
+- **No**: the G1 lacks the hardware (four audio inputs) or it is not a module.
+
+**DSP words** is the size of the module's code in the G2 demo (its parts added, approximate):
+a guide to the effort, not code to copy. Our code is written new.
+
+## Already on the G1-Mods OS
+
+| Module | G1-Mods type | Status | What is missing |
+| --- | --- | --- | --- |
+| Mixer 1-1 A (Mix1-1A) | 121 | 🟡 | Level, Ch 1 button and chain work (checked). Missing: the Lin / dB / Exp curves (needs a 68k routine of our own; see `NOTES.md`). |
+| FlipFlop | 120 | 🟡 | D-type with Clk and D works (checked). Missing: Rst input, NotQ output, the RS-type mode (Set on In, a clock toggles). |
+| Mixer Inv (test only) | 119 | ✅ | Not a G2 module: the first test, the Mixer (3) with input 1 inverted. |
+
+## Modules only the G2 has
+
+### Logic
+
+| Module | DSP words | Feasible | Status | Notes |
+| --- | --- | --- | --- | --- |
+| FlipFlop | 9 + latch 17–18 | Easy | 🟡 | See above. |
+| 8Counter | 34 | Easy | ⬜ | Eight outputs, one high per clock; reset. The one most asked for. |
+| BinCounter | 36 | Easy | ⬜ | Binary counter, several outputs. |
+| ADConv | 31 | Easy | ⬜ | Level to 8 logic bits. |
+| DAConv | 29 | Easy | ⬜ | 8 logic bits to a level. |
+
+### Switches and selectors
+
+| Module | DSP words | Feasible | Status | Notes |
+| --- | --- | --- | --- | --- |
+| Sw1-2, Sw2-1 | 6–7 | Easy | ⬜ | |
+| Sw1-2M, Sw2-1M | 6–7 | Easy | ⬜ | Momentary versions. |
+| Sw1-8, Sw8-1 | 15–16 | Easy | ⬜ | The G1 has 1-4 and 4-1 only. |
+| SwOnOffM | 5 | Easy | ⬜ | Momentary on/off. |
+| ValSw1-2, ValSw2-1 | 9–12 | Easy | ⬜ | Switched by a control value. |
+| Mux1-8, Mux8-1, Mux8-1X | 14–57 | Easy | ⬜ | Selected by a control input; the X one crossfades. |
+| WindSw | 11 | Easy | ⬜ | Window switch. |
+| T&H | 7 | Easy | ⬜ | Track and hold. |
+
+### Level
+
+| Module | DSP words | Feasible | Status | Notes |
+| --- | --- | --- | --- | --- |
+| MinMax | 7 | Easy | ⬜ | |
+| ModAmt | 9 | Easy | ⬜ | The G2's most used modulation helper. |
+| ConstSwT, ConstSwM | ~5 | Easy | ⬜ | Constant with a toggle / momentary switch. |
+| Red2Blue, Blue2Red | 2–9 | Easy | ⬜ | Audio-rate ↔ control-rate converters. |
+
+### Mixers
+
+| Module | DSP words | Feasible | Status | Notes |
+| --- | --- | --- | --- | --- |
+| Mixer 1-1 A | 5–8 | Easy | 🟡 | Type 121, see above. |
+| Mixer 1-1 S | ~8 | Easy | ⬜ | Stereo chain mixer: the Mix1-1A in stereo. |
+| Mixer 2-1 B, 4-1 C, 4-1 S | 5–11 | Easy | ⬜ | With Lin/dB/Exp and channel buttons; same work as the curves of Mix1-1A. |
+| MixStereo | 43 | Easy | ⬜ | Six inputs with pan. |
+| MixFader | ~15 | Easy | ⬜ | Eight inputs, fader style. |
+
+### Envelopes
+
+| Module | DSP words | Feasible | Status | Notes |
+| --- | --- | --- | --- | --- |
+| Envelope H | 14 | Medium | ⬜ | Hold only. |
+| Envelope D | 15 | Medium | ⬜ | Decay only. |
+| Envelope ADDSR | ~86 | Medium | ⬜ | |
+| Envelope Mod AHD | 61 | Medium | ⬜ | AHD with modulation inputs. |
+
+### Oscillators
+
+| Module | DSP words | Feasible | Status | Notes |
+| --- | --- | --- | --- | --- |
+| Osc Shape A, Osc Shape B | 60–150 | Medium | ⬜ | Waveshaped oscillators. |
+| Osc D | ~60 | Medium | ⬜ | |
+| Osc Dual | ~120 | Medium | ⬜ | Two oscillators in one. |
+| Osc Phase Mod | ~60 | Medium | ⬜ | |
+| Noise Osc | ~60 | Medium | ⬜ | Tuned noise. |
+| Metallic Noise | 60 | Medium | ⬜ | |
+| Driver, Resonator | ~60 | Medium | ⬜ | Physical-model parts. |
+| Osc String | 221 + delay | Hard | ⬜ | Karplus-Strong: the string is a delay line; 2K words reach down to ~47 Hz, so it fits, but it is the biggest code here. |
+| FM Operator, DX Router | 50–130 | Hard | ⬜ | The demo blocks and leaves them out: no reference until the G2 firmware is read. |
+
+### Filters and EQ
+
+| Module | DSP words | Feasible | Status | Notes |
+| --- | --- | --- | --- | --- |
+| Eq 3-band | ~50 | Medium | ⬜ | |
+| WahWah | 34 | Medium | ⬜ | |
+| Phase Filter | ~135 | Medium | ⬜ | |
+| Comb Filter | 121 + buffer | Medium | ⬜ | Needs a short delay: fits down to ~47 Hz. |
+
+### Effects
+
+| Module | DSP words | Feasible | Status | Notes |
+| --- | --- | --- | --- | --- |
+| Flanger | ~57 | Medium | ⬜ | A few ms of delay: fits. |
+| FreqShift | ~126 | Medium | ⬜ | Bode shifter, no long memory. |
+| PShift | ~150 + buffer | Hard | ⬜ | Needs tens of ms; at the limit of 2K words. |
+| Scratch | ~80 + buffer | Hard | ⬜ | |
+| Reverb | 387 + long buffers | Emulator only | ⬜ | Needs far more memory than a G1 DSP has. |
+
+### Delays
+
+| Module | DSP words | Feasible | Status | Notes |
+| --- | --- | --- | --- | --- |
+| DlyShiftReg | 40 | Easy | ⬜ | Eight clocked steps: memory of 8 words. |
+| Delay Clock | 47 | Medium | ⬜ | Clocked delay. |
+| Delay Single A/B, Dual, Quad, Eight, Stereo, Delay A/B | 25–82 | Emulator only (long) · Medium (short) | ⬜ | On a G1, up to ~20 ms shared by the voice: chorus/comb lengths, not echoes. Full length only in G1-Emu with more memory. |
+
+### Sequencers, notes, random, LFO
+
+| Module | DSP words | Feasible | Status | Notes |
+| --- | --- | --- | --- | --- |
+| Sequencer Values | ~72 | Medium | ⬜ | Many parameters and lights. |
+| Sequencer Controlled | ~72 | Medium | ⬜ | |
+| Zero Crossing Counter | ~23 | Medium | ⬜ | |
+| Pitch Tracker | ~25 | Medium | ⬜ | |
+| Rnd Clock B | ~100 | Medium | ⬜ | Random clock with "character". |
+| LFO Shp A | 200 | Medium | ⬜ | LFO with shape modulation. |
+| Saturate | 43 | Easy | ⬜ | |
+
+### MIDI
+
+| Module | DSP words | Feasible | Status | Notes |
+| --- | --- | --- | --- | --- |
+| CtrlSend, PCSend, NoteSend | 20–26 | Hard | ⬜ | The DSP part is small; the 68k must read it and send MIDI. Also needs the MIDI OUT path that G1-Emu does not have yet. |
+| CtrlRcv, NoteRcv | 4–5 | Hard | ⬜ | The 68k must route incoming MIDI into the module. |
+| Automate | 1 | Hard | ⬜ | |
+
+### Not doing
+
+| Module | Why |
+| --- | --- |
+| 4 Inputs | The G1 has two audio inputs (its AudioIn is the G2's 2 Inputs). |
+| Sampler | Not Clavia's: G2-Edit's own module. |
+| Device, Name Bar, Status | Not sound modules. |
+
+## G2 versions of modules the G1 has, that do more
+
+| G2 module | G1 module | What the G2's adds | Feasible | Status |
+| --- | --- | --- | --- | --- |
+| Random A | RndStepGen | Mono/Poly, rate range, Step and Edge amounts | Medium | ⬜ |
+| Random B | RandomGen | Poly, rate range, KBT, Step, Edge | Medium | ⬜ |
+| Rnd Clock A | ClkRndGen | Seed (repeatable sequences), Poly, Step, reset | Medium | ⬜ |
+| Rnd Trig | RndPulsGen | Clocked, Seed, probability | Medium | ⬜ |
+| Rnd Pattern | PatternGen | Pattern A/B, Step/Prob, loop length | Medium | ⬜ |
+| Mixers (all) | Mixer (3), Mixer (8) | Lin / dB / Exp curves, channel buttons, chain | Easy once the curves are done | 🟡 (Mix1-1A) |
+| FlipFlop | — | (see above) | Easy | 🟡 |
+| Envelopes | ADSR, AHD… | Shapes per segment, more modulation | Medium | ⬜ |
+
+## Order proposed
+
+1. **Finish what is half done:** FlipFlop (Rst, NotQ, RS-type) and the Lin/dB/Exp curves
+   (with a 68k assembler, `vasm`): that unlocks every G2 mixer.
+2. **The easy batch:** 8Counter, switches and muxes, MinMax, ModAmt, T&H, Saturate,
+   DlyShiftReg. Mostly logic and control rate.
+3. **The randoms**, G2 versions (Seed, Poly, Edge): new modules beside the G1's.
+4. **Medium audio:** Flanger, Comb Filter, WahWah, Eq 3-band, the new oscillators.
+5. Later, if ever: MIDI modules (68k work), PShift and Scratch, and the long delays and the
+   reverb as G1-Emu-only.
