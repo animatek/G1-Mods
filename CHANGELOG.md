@@ -5,6 +5,9 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: with a fresh flash the G1-Emu window boots the G1-Mods ROM (checked by Javier), so the
+  blank display came from the old `out/flash-all.bin` (kept aside). Noted in `NOTES.md` as an open
+  problem to solve before a real G1.
 - Claude: `patch_rom.py` writes the ROM under a temporary name and renames it, so an emulator
   starting while a test rebuilds it never reads half a ROM; `dspasm.py` keeps each source's
   assembled words in `out/` (keyed by its text), so a build without code changes does not load

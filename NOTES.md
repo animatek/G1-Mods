@@ -188,7 +188,16 @@ Risks: whether an OS update keeps the patch banks is not known (back them all up
 patch with new types stored in a bank may trip Clavia's OS later (while testing, upload such
 patches to a slot, never store them); and the real hardware against the emulator.
 
+**An open problem (2026-10-16):** G1-Emu's window showed a blank display (the OS hung before
+it wrote the LCD) with the ROM of every new type and the flash it had been using since the first
+experiment that morning (`out/flash-all.bin`, kept as `out/flash-all-apartada-2026-10-16.bin`),
+while the same ROM booted in `g1boot` and `g1patchtest`, and in the window with a fresh flash.
+The emulator replaces the flash's OS with the ROM's, so what hangs it is the rest of the flash:
+the patch storage or the settings written under earlier versions of the new types. **Not
+explained yet, and it has to be before a real G1**, whose flash is full of banks.
+
 Before a real G1:
+0. Find out why that flash hangs the modified OS at boot (above).
 1. **Port the experiments to the 3.03b update's OS**, which is what a real G1 runs: the same
    code linked with other addresses (G1-Emu's notes: mostly `$20` higher), so every address in
    `tools/patch_rom.py` needs its update counterpart, and the untouched RAM must be checked again.
