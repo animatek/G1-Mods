@@ -5,6 +5,8 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: the Noise S&H's panel in NME gets a knob for Range next to its display (Javier: the
+  display alone could not be changed). NME `g1-mods`.
 - Claude: **Noise S&H gets Range (1–5 octaves) and Uni/Bi**, with parameter routines of our own
   (`param_routines`, `write_x_routine`); a semitone measured as one control unit at a pitch input.
   `tests/check_noise_sh.py` checks 1 and 5 octaves Bi and 3 Uni (spans, mirror, edges) and passes;

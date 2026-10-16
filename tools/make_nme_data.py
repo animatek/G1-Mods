@@ -122,20 +122,22 @@ FULL_ENTRIES = {
   </module>""", """
 \t<module component-id="m122" width="255" height="30">
 \t\t<name>Noise S&amp;H</name>
-\t\t<label x="62" y="1">Range</label>
-\t\t<textDisplay x="62" y="12" width="36" height="16">
+\t\t<textDisplay x="50" y="8" width="34" height="16">
 \t\t\t<parameter component-id="p1" alt="range" />
 \t\t</textDisplay>
-\t\t<button x="102" y="12" width="24" height="16" cyclic="true" landscape="false">
+\t\t<knob x="87" y="4" size="21">
+\t\t\t<parameter component-id="p1" alt="range" />
+\t\t</knob>
+\t\t<button x="112" y="8" width="24" height="16" cyclic="true" landscape="false">
 \t\t\t<parameter component-id="p2" alt="unipolar" />
 \t\t\t<btn index="0">Bi</btn>
 \t\t\t<btn index="1">Uni</btn>
 \t\t</button>
-\t\t<label x="128" y="9">Trig</label>
-\t\t<connector x="152" y="8" size="13" class="cLOGIC">
+\t\t<label x="140" y="9">Trig</label>
+\t\t<connector x="160" y="8" size="13" class="cLOGIC">
 \t\t\t<connector component-id="c1" alt="trig" />
 \t\t</connector>
-\t\t<label x="176" y="9">Inv</label>
+\t\t<label x="178" y="9">Inv</label>
 \t\t<connector x="196" y="8" size="13" class="cCONTROL">
 \t\t\t<connector component-id="c3" alt="inv" />
 \t\t</connector>
