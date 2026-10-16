@@ -262,6 +262,22 @@ opcodes disassembled by G1-Emu's `dspdis` (built once into `out/`).
 - NME: `<light ... type="led">` in `modules.xml` and in the theme. The FlipFlop's panel is now
   laid out like the G2's.
 
+## Type 122: Noise S&H (2026-10-16)
+
+Our own module (Javier's idea): on Trig's rising edge it holds a noise value on Out, and the same
+negated on Inv. `dsp/noise_sh.asm`, 24 words, control rate: a 24-bit Galois shift register
+(taps `$E10000`, x^24+x^23+x^22+x^17+1) steps once per sample (`lsr a` and `eor x0,a ifcs`), and
+on the edge its word becomes a signed level scaled to a quarter of full scale (the same peak as
+an LFO's). Built on CompareAB, with one input and the descriptor saying two outputs.
+
+- **Checked** (`tests/check_noise_sh.py`): 288 clock edges, 288 changes of Out and none off an
+  edge, 285 different values, 138 positive and 150 negative, Inv the negation of Out.
+- **Out + Inv is not 0 in a recording**: −63 or −126, one or two LSB after the recording's +36 dB.
+  The output chain truncates (the master volume's multiply), so x and −x come out unequal by a
+  bit. It is the G1's, not the module's.
+- Every voice starts from the same seed, so the voices of a poly patch draw the same sequence;
+  a seed per voice is still to do.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash

@@ -28,6 +28,7 @@ a guide to the effort, not code to copy. Our code is written new.
 | --- | --- | --- | --- |
 | Mixer 1-1 A (Mix1-1A) | 121 | 🟡 | Level, Ch 1 button and chain work (checked). Missing: the Lin / dB / Exp curves (needs a 68k routine of our own; see `NOTES.md`). |
 | FlipFlop | 120 | ✅ | D-type and RS-type, Clk, In, Rst, Q and NotQ (`dsp/flipflop.asm`; `tests/check_flipflop.py`). |
+| Noise S&H (our own) | 122 | ✅ | `dsp/noise_sh.asm`, `tests/check_noise_sh.py`. Every voice starts from the same seed, so in a poly patch they draw the same sequence. |
 | Mixer Inv (test only) | 119 | ✅ | Not a G2 module: the first test, the Mixer (3) with input 1 inverted. |
 
 ## Modules only the G2 has
@@ -174,7 +175,7 @@ Ideas built from what is known now. Same scale of feasibility.
 
 | Module | What it does | Feasible | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Noise S&H | Sample and hold with its own noise: on Trig's rising edge it holds a random value; outputs **Out** and **Inv** (the same value negated, for mirrored melodies). | Easy | ⬜ | A shift-register noise in a few DSP words, its state per voice in X, so each voice of a poly patch draws its own. One logic input, two outputs. |
+| Noise S&H | Sample and hold with its own noise: on Trig's rising edge it holds a random value; outputs **Out** and **Inv** (the same value negated, for mirrored melodies). | Easy | ✅ (type 122) | A shift-register noise in a few DSP words, its state per voice in X, so each voice of a poly patch draws its own. One logic input, two outputs. |
 | 5-step sequencer | Clk, Rst, one control output and **five bipolar knobs** (−64…+63), after Buchla's 5-stage sequencers (with knobs instead of sliders). | Easy–Medium | ⬜ | Five parameters written to X by the type's own `+$04` (the same routine as the FlipFlop's Type, per parameter). Step LEDs: understood now, from the CtrlSeq (`NOTES.md`, "How a module's lights reach the editor"): a value routine registered with `$1169BA` that reads the step from X. Worth checking which extras Buchla's had (a pulse out per step, an input that picks the step), cheap to add. |
 | Turing Machine | After Music Thing Modular's: a looping shift register whose bits may flip at random. Clk (and Rst); outputs **CV** (the low 8 bits as a level) and **Gate** (bit 0); a **probability** knob (locked at one end, random in the middle, locked and inverted, twice as long, at the other), a **Lock** button as a shortcut, and a **length** (2–16 steps); **8 LEDs**, one per bit. | Easy–Medium | ⬜ | Cheap for the DSP: the register fits in one word (24 bits) and a clock costs ~20 instructions; the coin toss reuses the Noise S&H's noise. Its 8 LEDs are the hard part: the G1's OS keeps **one plain LED per module** (`NOTES.md`, "Plain LEDs"). Options: the meter list (a `led-array` 0–255 showing the register, drawn by NME as 8 LEDs), which also gives the FlipFlop a NotQ LED. Idea from Javier, 2026-10-16. |
 | Small reverb | A short room or plate: a few combs and allpasses, run at a lower rate (24 kHz) to stretch the memory. | Hard | ⬜ | At 24 kHz the 4K data words of one DSP make ~170 ms of delay line, enough for a small Schroeder-type reverb, but it takes nearly all of that DSP's memory, so a patch with it gets fewer voices. Not the G2's long hall. The G1 patches that already make a reverb from many short Delays prove short networks work. |

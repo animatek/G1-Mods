@@ -17,6 +17,7 @@ import sys
 NEW_TYPES = {
     119: (19, "Mixer Inv", "3 Inputs Mixer, input 1 inverted (G1-Mods test)", [], []),
     120: (89, None, None, None, None),   # written whole: FULL_ENTRIES below
+    122: (53, None, None, None, None),   # written whole: FULL_ENTRIES below
     121: (19, "Mix1-1A", "1 Input Chain Mixer (G1-Mods)",
           [('name="in1"', 'name="in"'), ('name="in2"', 'name="chain"'),
            ('\n    <connector component-id="c3" index="2" name="in3" type="input" signal="audio" />', ''),
@@ -94,6 +95,39 @@ FULL_ENTRIES = {
 \t\t<label x="216" y="17">nQ</label>
 \t\t<connector x="236" y="16" size="13" class="cLOGIC">
 \t\t\t<connector component-id="c5" alt="NotQ" />
+\t\t</connector>
+\t</module>"""),
+    122: ("""
+  <module component-id="m122" index="122" name="NoiseS&amp;H" fullname="Noise Sample and Hold, with an inverted out (G1-Mods)" category="Audio (mods)">
+    <image type="screenshot" src="img/modules/module-53.png" width="256" height="30" />
+    <image type="icon16x16" src="img/icons/16x16/module-id-53.png" width="16" height="16" />
+    <image type="icon32x32" src="img/icons/32x32/module-id-53.png" width="32" height="32" />
+    <connector component-id="c1" index="0" name="trig" type="input" signal="logic" />
+    <connector component-id="c2" index="0" name="out" type="output" signal="control" />
+    <connector component-id="c3" index="1" name="inv" type="output" signal="control" />
+    <!-- custom attributes -->
+    <attribute name="cycles" type="double" value="0.35" />
+    <attribute name="x-mem" type="double" value="0.2" />
+    <attribute name="y-mem" type="double" value="0.0" />
+    <attribute name="prog-mem" type="double" value="0.75" />
+    <attribute name="dyn-mem" type="double" value="0.25" />
+    <attribute name="zero-page" type="double" value="0.875" />
+    <attribute name="height" type="integer" value="2" />
+    <attribute name="background" value="#eda0a4" />
+  </module>""", """
+\t<module component-id="m122" width="255" height="30">
+\t\t<name>Noise S&amp;H</name>
+\t\t<label x="128" y="9">Trig</label>
+\t\t<connector x="152" y="8" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c1" alt="trig" />
+\t\t</connector>
+\t\t<label x="176" y="9">Inv</label>
+\t\t<connector x="196" y="8" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c3" alt="inv" />
+\t\t</connector>
+\t\t<label x="214" y="9">Out</label>
+\t\t<connector x="236" y="8" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c2" alt="out" />
 \t\t</connector>
 \t</module>"""),
 }

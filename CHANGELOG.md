@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **type 122, Noise S&H** (our own: a sample and hold with its own noise, Out and Inv),
+  `dsp/noise_sh.asm` on CompareAB. `tests/check_noise_sh.py` passes (Out changes on every edge and
+  only there, 285 values of both signs in 288 edges, Inv its negation); the FlipFlop's and the
+  Mix1-1A's tests still pass. NME's `g1-mods` branch has it, and now the Patch Mutator too
+  (`mutator-g2` merged in, NME `b24fe26`).
 - Claude: **the FlipFlop lights Q's LED**: a value routine reading Q through the DSP's host port,
   registered with `$116832` (the OS keeps one LED per module). `tests/check_flipflop.py` gains a
   sixth case (LED 0 on and off in the Lights messages, logged with G1-Emu's new

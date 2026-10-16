@@ -300,6 +300,30 @@ def flipflop(b, new_type=120):
                               0x24: data_at, 0x28: desc_at})
 
 
+def noise_sh(b, new_type=122):
+    """Noise S&H (dsp/noise_sh.asm): Trig in; Out and Inv out; no parameters. Built on CompareAB
+    (type 89), control rate with no parameters."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import dspasm
+    code, marks, _ = dspasm.assemble(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                  "..", "dsp", "noise_sh.asm"))
+    x_init = (0xE10000, 0x5A3C96, 0, 0)        # taps (x^24+x^23+x^22+x^17+1), seed, Trig's last, held
+    conn_at = b.put(connection_routine({0: marks["in0"]},
+                                       [(0, marks["out0"][0]), (1, marks["out1"][0])]))
+    x_at = b.put(words(*x_init))
+    p_at = b.put(words(*code))
+    desc = bytearray(b.rom_bytes(0x14A4EE, 0x30))   # CompareAB's descriptor: control part only
+    assert desc[0x22:0x24] == (6).to_bytes(2, "big")
+    desc[0x06:0x08] = (len(code) + 8).to_bytes(2, "big")     # control cycles, branches included
+    desc[0x08:0x0A] = (2).to_bytes(2, "big")                 # two outputs, a word each
+    desc[0x1A:0x1C] = len(x_init).to_bytes(2, "big")         # control X words
+    desc[0x1E:0x20] = (0).to_bytes(2, "big")                 # control Y words
+    desc[0x20:0x24] = len(code).to_bytes(4, "big")           # control P words
+    desc_at = b.put(desc)
+    data_at = b.put(words(x_at, x_at, p_at, x_at, x_at, p_at) + bytes.fromhex("fffe"))
+    b.add_type(new_type, 89, {0x0C: conn_at, 0x18: 0x00010200, 0x24: data_at, 0x28: desc_at})
+
+
 # name: (what it shows, the new types, or the DSP words to change in place)
 EXPERIMENTS = {
     "mixer3-silent": (
@@ -311,8 +335,8 @@ EXPERIMENTS = {
         [mixer_inv], [],
     ),
     "all": (
-        "every new type: 119 (Mixer Inv), 120 (FlipFlop), 121 (Mix1-1A)",
-        [mixer_inv, flipflop, mix1_1a], [],
+        "every new type: 119 (Mixer Inv), 120 (FlipFlop), 121 (Mix1-1A), 122 (Noise S&H)",
+        [mixer_inv, flipflop, mix1_1a, noise_sh], [],
     ),
 }
 
