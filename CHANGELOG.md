@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **type 124, Turing Machine** (`dsp/turing.asm`), after Music Thing Modular's: Clk in,
+  CV (the register's low byte as a level) and Gate (bit 0 while Clk is high) out, Prob, Length
+  1–16 and Lock. Built with `control_type`; NME data in "Sequencer (mods)" (NME `g1-mods`
+  `7f91264`). New `tests/check_turing.py` (repeats every Length with Prob 0 or Lock, inverted at
+  the top, drifting at 64, the Gate) passes, and every other test; `check_insert.py` plays it
+  too. Without its 8 LEDs yet.
+
 - Claude: **the 5-Step Seq's Rst works as the G1's sequencers'** (Javier: the sequencers would
   not sync). Measured against a CtrlSeq on the same clock and reset: Clavia's Rst arms the
   sequencer and the next clock goes to the first step, and it starts on the last step; ours

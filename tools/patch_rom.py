@@ -433,6 +433,21 @@ def seq5(b, new_type=123):
                  steps=(0, 4))
 
 
+def turing(b, new_type=124):
+    """Turing Machine: Clk in; CV and Gate out; Prob, Length (1-16) and Lock."""
+    control_type(b, new_type, "turing.asm",
+                 # the noise's taps and seed (as the Noise S&H's), Clk's last, the register, the
+                 # mask (Length 16), the threshold, Lock, $FFFF, $FF, high
+                 (0xE10000, 0x5A3C96, 0, 0x9D2B, 0x8000, 0, 0, 0xFFFF, 0xFF, 0x200000),
+                 # Prob: value v = 0..127, the threshold v << 16 (a chance of v/128)
+                 #   move.l d2,d0 / swap d0 / clr.w d0
+                 [Param("Prob", 127, 5, "2002 4840 4240"),
+                  # Length: value v = 0..15 for 1..16, the mask 1 << v
+                  #   moveq #1,d0 / move.l d2,d1 / asl.l d1,d0
+                  Param("Length", 15, 4, "7001 2202 e3a0"),
+                  Param("Lock", 1, 6)])
+
+
 # name: (what it shows, the new types, or the DSP words to change in place)
 EXPERIMENTS = {
     "mixer3-silent": (
@@ -445,8 +460,8 @@ EXPERIMENTS = {
     ),
     "all": (
         "every new type: 119 (Mixer Inv), 120 (FlipFlop), 121 (Mix1-1A), 122 (Noise S&H), "
-        "123 (5-Step Seq)",
-        [mixer_inv, flipflop, mix1_1a, noise_sh, seq5], [],
+        "123 (5-Step Seq), 124 (Turing Machine)",
+        [mixer_inv, flipflop, mix1_1a, noise_sh, seq5, turing], [],
     ),
 }
 

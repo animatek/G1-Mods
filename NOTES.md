@@ -357,6 +357,28 @@ runs every test.
   Meters messages, and **in step with a CtrlSeq** (`tests/seq5-ctrlseq.pch`, Rst from an LFO, its
   edges between clocks); `check_insert.py` plays it too.
 
+## Type 124: Turing Machine (2026-10-16)
+
+- **A 16-bit register in one X word**, an integer in a1/b1: on a Clk edge `asl b` moves it up,
+  the leaving bit (the register `and` a mask, `1 << (Length-1)`, which the Length routine writes)
+  comes back with `or #<$1,b`, and `eor #<$1,b` flips it; `and` with $FFFF keeps 16 bits. The
+  logic immediates (`or`, `eor`, `and #<$1`) work on b1, as `add #<$1` did in the 5-Step Seq.
+- **The coin toss**: the Noise S&H's Galois register, stepped every sample, shifted once more so
+  the draw is 0..$7FFFFF, against Prob << 16; Prob 0 never flips, 127 flips 127 times in 128.
+  Lock is its own X word, tested on the edge (a second parameter on the same word is not
+  possible: each routine writes a whole word).
+- **CV** is the low byte `asl #$d,a,a`: 0..$1FE000, 0 to +64 units, as a G1 logic high. **Gate**
+  is bit 0 while Clk is high, so ones in a row give separate gates.
+- r3 stays on the register after the Clk test and the rest is read at offsets
+  (`x:(r3+$n)`, one word each), `lua (r3+$7),r3` at the end: no pointer walking to keep equal
+  on both paths.
+- Length is 1–16 (`value+1`, a formatter NME has) rather than the 2–16 planned: no NME change.
+- `tests/check_turing.py`: Prob 0 repeats every Length clocks (8 and 16), the top comes back
+  inverted after Length, Lock holds it, 64 drifts, CV changes only on clock edges, Gate is bit 0
+  and Clk. `check_insert.py` plays it too.
+- **Not yet**: the 8 LEDs (the meter list's value is drawn by NME as one lit step; a byte would
+  need a new kind of led-array there), and a Rst.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash
@@ -374,7 +396,8 @@ It also shows **the two mixers working in one patch** despite the RAM variables 
 
 ## Next
 
-- An 8Counter (eight outputs, a led-array of 8), then the switches and muxes.
+- The Turing Machine's 8 LEDs (a led-array NME draws as a byte), then an 8Counter (eight
+  outputs, a led-array of 8), the switches and muxes, and the G2's randoms (a seed per voice).
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.
