@@ -5,6 +5,16 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **type 120, a D flip-flop, works** (`NOTES.md`, "Type 120"): own DSP code and X data,
+  CompareAB's entry with our descriptor and its connection routine patching the output at word
+  17. `tests/check_flipflop.py` checks it in G1-Emu: Q changes 8 times for 8 crossings of D, each
+  on a clock edge, and equals D at all 283 edges checked. `tools/patch_rom.py` rewritten: types
+  are laid out from `$16FB80` and registered by one routine; experiment `all` (119 and 120).
+  **Fixed** in type 119: the two nop-offset bytes after `+$24` were not copied (the next module
+  of audio would have been placed 78 words away). `tools/make_nme_data.py` (replaces
+  `make_modules_xml.py`) adds the types to NME's `modules.xml` and classic theme. `run-g1emu.sh`
+  and `run-nme.sh` to try them by hand. `NOTES.md`, "How a module's data is loaded", from the
+  loader.
 - Claude: **the first new module type works.** `tools/patch_rom.py type119-mixinv` registers a
   type 119 (the Mixer (3) with input 1 inverted) with a hand-assembled routine hooked to the end of
   the registration list; `tools/make_modules_xml.py` writes a `modules.xml` with it for NME and the

@@ -74,9 +74,61 @@ bench (`G1_MODULES_XML`, in G1-Emu's `g1patchtest` and battery).
   variables in `+$24` (`$1A5B68`…). A patch with both may clash through those variables; not
   tried.
 
-Next: a module that is not a copy (own I/O and parameters: a FlipFlop), which means writing its
-own `+$24`/`+$28` data and checking what the five routines and `+$20` need; a patch with the
-Mixer (3) and the new type together; and the real editor's view (NME in a branch).
+**A bug in the first version, fixed:** the copy stopped at `$88` and left out the two bytes after
+`+$24`'s pointers, which are the nop offsets (see below); the next byte, from the registration
+routine, said +78. A second audio module after a Mixer Inv would have had its first word written
+78 words away. The battery did not show it because the module under test goes last.
+
+## How a module's data is loaded (2026-10-16)
+
+From the module loader (`$122F72`):
+
+- **`+$24` is two sets of X data, Y data and code**: `[0..2]` the audio part, `[3..5]` the
+  control part, then two bytes: the offset of the nop slot of each part (`$FE` = 2 words before
+  the end). **`+$28`, the descriptor**, gives the counts (in words, at byte offsets): audio
+  cycles `+$02`, X `+$0E`, Y `+$12`, code `+$14` (long, 0 = no audio part) and `+$16` (count);
+  control cycles `+$06`, X `+$1A`, Y `+$1E`, code `+$20`/`+$22`. The Mixer (3) has only an audio
+  part; the logic modules only a control part.
+- **A module's first code word goes into the previous module's nop slot**, the rest from the
+  base on. So the first word runs before the previous module's last instruction (its output
+  store): it must not touch `a` or `b`. Clavia's first words only load `x0`/`y0`/`x1`.
+- **`r3` and `r4` walk through all the modules' X and Y data**: each module must advance them
+  by exactly its own X and Y counts.
+- **Inputs and outputs are code words the type's routines patch** (`x:$0` operands). For
+  CompareAB the routine at `+$0C` (`$134FBA`) patches input 0 into word 0, input 1 into word 1
+  and the output into word 5, by calling `$124202` and `$1243DA` with the part (1 = control) and
+  the word index. Most of its other routines are the generic ones.
+
+## Type 120: a D flip-flop (2026-10-16)
+
+**It works.** Q takes D on the clock's rising edge. Donor: CompareAB (type 89: two inputs, one
+output, no parameters, control rate). Its entry is copied with three fields replaced:
+
+- `+$0C`: a copy of CompareAB's connection routine with the output word changed from 5 to 17.
+- `+$28`: CompareAB's descriptor with our counts (control: 17 cycles, 3 X words, 18 code words).
+- `+$24`: our X data `[high = $200000, last clock, Q]` and our code, written new (18 words, in
+  `tools/patch_rom.py`): word 0 loads the clock into `y0` (safe in the nop slot), word 1 loads D,
+  then `b = D > 0 ? high : 0`, kept as the old Q unless the clock is high now and was not before;
+  Q is stored, then the nop slot and the output store.
+
+`tests/check_flipflop.py` plays `tests/flipflop-lfo.pch` (ClkGen 48 Hz into clk, an LFO at
+~0.7 Hz into D; Q, D and the clock on outputs 1–3) for 6 s in `g1patchtest` and checks the
+recording: **D crosses zero 8 times, Q changes 8 times, every change on a clock edge, and Q
+equals D at all 283 edges checked.** Q's levels are 0 and the same high as the clock's.
+
+## Trying it by hand
+
+`./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash
+(`out/flash-all.bin`) and with `G1_OS=` so the settings' `os =` does not replace the modified
+OS; close the usual G1-Emu first (same MIDI ports). `./run-nme.sh` starts NME from its `g1-mods`
+branch, whose palette has Mixer Inv and FlipFlop. A stock G1 (or G1-Emu with Clavia's OS)
+refuses a patch with them.
+
+## Next
+
+- A patch with the Mixer (3) and the Mixer Inv together (they share three RAM variables).
+- Modules with parameters: what the routines at `+$00`–`+$10` and `+$20` do with them.
+- Q and not-Q (two outputs) and a reset input for the FlipFlop; then an 8Counter.
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.
