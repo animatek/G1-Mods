@@ -80,32 +80,59 @@ class Build:
         return self.blocks, hook
 
 
-def mixer3_variant(b, new_type, code=None, code_patch=None, x_words=None, y_words=None, io=None):
+def param_table(params):
+    """The OS's parameter table of a type (+$1C): 12 bytes per parameter, 11 of name and the
+    maximum value. The OS reads the maximum to know each parameter's width in a patch, so it must
+    match the editor's (NME takes the width from modules.xml's maxValue)."""
+    out = b""
+    for name, maximum in params:
+        assert len(name) <= 11
+        out += name.encode("ascii").ljust(11, b"\0") + bytes([maximum])
+    return out
+
+
+def mixer3_variant(b, new_type, code=None, code_patch=None, x_words=None, y_words=None, io=None,
+                   params=None):
     """A type built on the Mixer (3) (type 19): its routines (level curve, parameters written to
     X[0], Y[0], X[1], inputs patched at words 1, 3, 4 and the output at word 7) with code of our
-    own (8 words) or the Mixer's with some words changed, and maybe other X/Y counts or other
-    numbers of parameters, inputs and outputs (io)."""
+    own or the Mixer's with some words changed, and maybe other X/Y counts, other numbers of
+    parameters, inputs and outputs (io) and a parameter table of its own. Code longer than 8 words goes on its own, with a copy of
+    the connection routine that patches the output at its last word."""
     src = 0x14937E   # its data: +$2C, descriptor (+$28), X/Y data, code, +$24 and its two offset bytes
+    fields = {}
+    code_at = None
+    if params:
+        fields[0x1C] = b.put(param_table(params))
+    if code and len(code) != 8:
+        conn = bytearray(b.rom_bytes(0x131B94, 0x8E))   # the Mixer (3)'s +$0C
+        at = conn.find(bytes.fromhex("3f3c0007"))      # move.w #7,-(sp): the output's word
+        assert at > 0 and conn[-2:] == bytes.fromhex("4e75")
+        conn[at + 2:at + 4] = (len(code) - 1).to_bytes(2, "big")
+        fields[0x0C] = b.put(conn)
+        code_at = b.put(words(*code))
     block = bytearray(b.rom_bytes(src, 0x8A))
     new = b.at
     for i, off in enumerate((0x44, 0x4C, 0x50)):       # +$24's pointers into the block
         at = 0x70 + 4 * i
         assert int.from_bytes(block[at:at + 4], "big") == src + off
         block[at:at + 4] = (new + off).to_bytes(4, "big")
-    if code:
-        assert len(code) == 8
+    desc = 4
+    if code_at:
+        block[0x78:0x7C] = code_at.to_bytes(4, "big")                      # audio code pointer
+        block[desc + 0x02:desc + 0x04] = (len(code) - 1).to_bytes(2, "big")  # audio cycles
+        block[desc + 0x16:desc + 0x18] = len(code).to_bytes(2, "big")        # audio P words
+    elif code:
         block[0x50:0x70] = words(*code)
     for index, (old, val) in (code_patch or {}).items():
         at = 0x50 + 4 * index
         assert block[at:at + 4] == words(old), f"code word {index}"
         block[at:at + 4] = words(val)
-    desc = 4
     for off, count in ((0x0E, x_words), (0x12, y_words)):   # audio X and Y counts
         if count is not None:
             block[desc + off:desc + off + 2] = count.to_bytes(2, "big")
     assert block[0x88:0x8A] == bytes.fromhex("feff")   # audio part's nop 2 from the end
     assert b.put(block) == new
-    fields = {0x24: new + 0x70, 0x28: new + 0x04, 0x2C: new + 0x00}
+    fields.update({0x24: new + 0x70, 0x28: new + 0x04, 0x2C: new + 0x00})
     if io:
         fields[0x18] = (io[0] << 24) | (io[1] << 16) | (io[2] << 8)   # parameters, inputs, outputs
     b.add_type(new_type, 19, fields)
@@ -116,23 +143,27 @@ def mixer_inv(b, new_type=119):
     mixer3_variant(b, new_type, code_patch={2: (0x44DBA0, 0x44DBA4)})
 
 
-# Mix1-1A, after the G2's Mixer 1-1 A: out = chain + in × level. Level in X[0] (the Mixer (3)'s
-# level 1, with its curve), in at word 1, chain at word 3 (the Mixer's inputs 1 and 2).
+# Mix1-1A, after the G2's Mixer 1-1 A: out = chain + (on ? in × level : 0). Parameter 0, the
+# level, goes to X[0] through the Mixer (3)'s level curve; parameter 1, the channel's on button,
+# to Y[0] through the same table (0 -> 0, 1 -> not 0). In at word 1, chain at word 3 (the Mixer's
+# inputs 1 and 2), the output at word 8.
 MIX1_1A_CODE = (
-    0x44DB00,  # move x:(r3)+,x0    level; word 0 lands in the previous module's nop slot
+    0xF09B00,  # move x:(r3)+,x0 y:(r4)+,y0   level, on; word 0 lands in the previous module's nop slot
     0x458000,  # move x:$0,x1       in (input 0)
     0x2000A0,  # mpy x1,x0,a
-    0x458000,  # move x:$0,x1       chain (input 1)
+    0x458059,  # tfr y0,b x:$0,x1   chain (input 1)
+    0x20000B,  # tst b
+    0x202A13,  # clr a ifeq         channel off: drop in
     0x200060,  # add x1,a
-    0x200011,  # rnd a
     0x000000,  # nop                where the next module's word 0 goes
     0x560000,  # move a,x:$0        out
 )
 
 
 def mix1_1a(b, new_type=121):
-    """Mix1-1A: one input with its level, plus a chain input added as it comes."""
-    mixer3_variant(b, new_type, code=MIX1_1A_CODE, x_words=1, y_words=0, io=(1, 2, 1))
+    """Mix1-1A: one input with its level and an on button, plus a chain input added as it comes."""
+    mixer3_variant(b, new_type, code=MIX1_1A_CODE, x_words=1, y_words=1, io=(2, 2, 1),
+                   params=[("Level", 127), ("Ch 1", 1)])
 
 
 # The D flip-flop's control-rate code (see NOTES.md, "Type 120: a D flip-flop").

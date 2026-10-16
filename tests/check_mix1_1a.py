@@ -7,6 +7,8 @@ tests/mix1-1a-chain.pch: one OscA into a Mixer (3) with only input 1 (output 1, 
 into a Mix1-1A A (output 2) and into a Mix1-1A B whose chain input takes A's output (output 3),
 all at the same level. Played at levels 100, 64 and 0: output 2 must equal output 1 (same level
 curve as the Mixer (3)) and output 3 be 6 dB over it (the chain adds A to B); at 0, silence.
+Then the channels' on buttons: B off leaves output 3 with A alone (equal to output 1), and A off
+silences output 2 and leaves output 3 with B alone.
 """
 import os
 import re
@@ -37,20 +39,33 @@ def main():
     patch = open(os.path.join(HERE, "mix1-1a-chain.pch")).read()
     ok = True
     with tempfile.TemporaryDirectory() as tmp:
-        for level in (100, 64, 0):
-            p = os.path.join(tmp, f"{level}.pch")
+        def run(level, a_on, b_on):
+            p = os.path.join(tmp, f"{level}-{a_on}{b_on}.pch")
             open(p, "w").write(patch.replace("4 19 3 100 0 0 ", f"4 19 3 {level} 0 0 ")
-                               .replace("5 121 1 100 ", f"5 121 1 {level} ")
-                               .replace("6 121 1 100 ", f"6 121 1 {level} "))
-            o = play(rom, xml, p)
+                               .replace("5 121 2 100 1 ", f"5 121 2 {level} {a_on} ")
+                               .replace("6 121 2 100 1 ", f"6 121 2 {level} {b_on} "))
+            return play(rom, xml, p)
+
+        def near(a, b, db=0.0, tol=0.3):
+            return None not in (a, b) and abs(a - b - db) < tol
+
+        for level in (100, 64, 0):
+            o = run(level, 1, 1)
             if level == 0:
                 good = o.get(1) is None and o.get(2) is None and o.get(3) is None
             else:
-                good = (None not in (o.get(1), o.get(2), o.get(3)) and abs(o[2] - o[1]) < 0.2
-                        and abs(o[3] - o[1] - 6.02) < 0.3)
+                good = near(o.get(2), o.get(1)) and near(o.get(3), o.get(1), 6.02)
             print(f"level {level}: Mixer (3) {o.get(1)}, Mix1-1A {o.get(2)}, chained {o.get(3)} dBFS"
                   f" -> {'ok' if good else 'WRONG'}")
             ok &= good
+        o = run(100, 1, 0)
+        good = near(o.get(2), o.get(1)) and near(o.get(3), o.get(1))
+        print(f"B off: {o.get(1)}, {o.get(2)}, {o.get(3)} dBFS -> {'ok' if good else 'WRONG'}")
+        ok &= good
+        o = run(100, 0, 1)
+        good = o.get(2) is None and near(o.get(3), o.get(1))
+        print(f"A off: {o.get(1)}, {o.get(2)}, {o.get(3)} dBFS -> {'ok' if good else 'WRONG'}")
+        ok &= good
     print("OK" if ok else "FAILED")
     sys.exit(0 if ok else 1)
 

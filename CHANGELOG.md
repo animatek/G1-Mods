@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **Mix1-1A gets its Ch 1 button** (mutes the channel, not the chain): parameter 1 to Y[0],
+  9-word code with its own connection routine, and a parameter table of its own (`Level` 127,
+  `Ch 1` 1). Found why a first try hung the OS: a parameter's width comes from its maximum (NME's
+  `modules.xml`, the OS's `+$1C` table) and the two disagreed. `tests/check_mix1_1a.py` now checks
+  both buttons too; all pass, and so does the FlipFlop's. `make_nme_data.py` replaces a type it
+  made before instead of skipping it. `NOTES.md`: the button, the widths, and what the Lin/dB/Exp
+  curves need.
 - Claude: **type 121, Mix1-1A** (the G2's Mixer 1-1 A: one input with its level plus a chain
   input), on the Mixer (3)'s routines with code of our own and 1 parameter, 2 inputs, 1 output.
   `tests/check_mix1_1a.py`: same level as the Mixer (3) at 100, 64 and 0, +6.0 dB chained.

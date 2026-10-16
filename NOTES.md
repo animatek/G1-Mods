@@ -129,11 +129,28 @@ the entry's counts set to 1 parameter, 2 inputs, 1 output:
 - The connection routine puts input 0 at word 1, input 1 at word 3, input 2 at word 4 and the
   output at word 7: our code reads in at word 1 and chain at word 3 and never has a third input.
   X has 1 word (the level), Y none.
+- **The Ch 1 button** (the G2's channel on/off): parameter 1, written by the Mixer (3)'s
+  routine to Y[0] through the same level table, where 0 gives 0 and 1 gives `$4C5`. The code (9
+  words now, so its own copy of the connection routine with the output at word 8) clears the
+  channel when Y[0] is 0, before adding the chain.
+- **A parameter's width in a patch comes from its maximum, on both sides.** NME takes it from
+  `maxValue` in `modules.xml` (`PatchSerializer`, `pdlBitWidth`) and the OS from the type's
+  parameter table (`+$1C`: 12 bytes per parameter, 11 of name and the maximum). With the
+  Mixer (3)'s table the OS read the button as a 7-bit "Level 2" while NME sent 1 bit: the patch
+  went out of step and the OS stopped answering (no reply to the first packet). 1 and 3
+  parameters worked, 2 did not; a table of its own (`Level` 127, `Ch 1` 1) fixed it, and the
+  G1's display now has the right names. NME's `ParameterEncoder` (used when a module is added
+  live) has to say the same: `{7, 1}`.
 - **Checked** (`tests/check_mix1_1a.py`, patch `tests/mix1-1a-chain.pch`): at levels 100, 64
-  and 0 it gives exactly the Mixer (3)'s level (−69.5, −85.1 dBFS, silence), and a Mix1-1A
-  chained into another gives +6.0 dB. Not checked yet: turning the knob live from the editor.
-- Not done: the G2 module's Exp button (a second curve). It needs a parameter whose routine
-  picks the curve, or a second table.
+  and 0 it gives exactly the Mixer (3)'s level (−69.5, −85.1 dBFS, silence), a Mix1-1A chained
+  into another gives +6.0 dB, B's button off leaves A alone on B's output, and A's off silences A
+  and leaves B alone. Not checked yet: turning the knob or the button live from the editor.
+- **Not done: the G2's Lin / dB / Exp curves.** The level reaches the DSP already through the
+  G1's table (a dB-like curve: 100 → −69.5, 64 → −85.1 dBFS here), so the DSP cannot rebuild
+  another curve from it. It needs a `+$00` routine of our own that hands the DSP the raw value
+  (or picks one of three tables) and a third parameter, the mode, whose change rewrites the
+  level. That is 68k code of some size: time for an assembler (`vasm`) instead of hand
+  assembly.
 
 ## Trying it by hand
 

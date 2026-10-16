@@ -36,8 +36,8 @@ Version=Nord Modular patch 3.0
 2 7 10 64 64 64 64 0 0 0 0 0 0 
 3 3 1 100 
 4 19 3 100 0 0 
-5 121 1 100 
-6 121 1 100 
+5 121 2 100 1 
+6 121 2 100 1 
 [/ParameterDump]
 [ParameterDump]
 0 
