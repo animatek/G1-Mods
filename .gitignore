@@ -1,0 +1,8 @@
+# Clavia's ROMs and OS images, original or modified: never in Git
+*.bin
+*.BIN
+*.zip
+*.hqx
+*.exe
+/Roms/
+/out/
