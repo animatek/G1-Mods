@@ -24,6 +24,23 @@ NEW_TYPES = {
            ('alt="A"', 'alt="clk"'), ('alt="B"', 'alt="D"'), ('alt="A&gt;=B"', 'alt="Q"'),
            (">A</label>", ">Clk</label>"), (">B</label>", ">D</label>"),
            (">A&gt;=B</label>", ">Q</label>")]),
+    121: (19, "Mix1-1A", "1 Input Chain Mixer (G1-Mods)",
+          [('name="in1"', 'name="in"'), ('name="in2"', 'name="chain"'),
+           ('\n    <connector component-id="c3" index="2" name="in3" type="input" signal="audio" />', ''),
+           ('\n    <parameter component-id="p2" index="1" name="in level 2" class="parameter" defaultValue="127" extension="m2" role="audio,in,level" />', ''),
+           ('\n    <parameter component-id="p3" index="2" name="in level 3" class="parameter" defaultValue="127" extension="m3" role="audio,in,level" />', ''),
+           ('\n    <parameter component-id="m2" index="1" name="morph:in level 2" class="morph" role="morph"  minValue="-127" maxValue="127" />', ''),
+           ('\n    <parameter component-id="m3" index="2" name="morph:in level 3" class="morph" role="morph"  minValue="-127" maxValue="127" />', ''),
+           ('name="in level 1"', 'name="level"'), ('name="morph:in level 1"', 'name="morph:level"')],
+          [("<name>Mixer</name>", "<name>Mix1-1A</name>"),
+           ('alt="in1"', 'alt="in"'),
+           ('<connector x="103" y="8" size="13" class="cAUDIO">\n\t\t\t<connector component-id="c2" alt="in2" />',
+            '<connector x="154" y="8" size="13" class="cAUDIO">\n\t\t\t<connector component-id="c2" alt="chain" />'),
+           ('\n\t\t<connector x="154" y="8" size="13" class="cAUDIO">\n\t\t\t<connector component-id="c3" alt="in3" />\n\t\t</connector>', ''),
+           ('alt="in level 1"', 'alt="level"'),
+           ('\n\t\t<knob x="120" y="4" size="21">\n\t\t\t<parameter component-id="p2" alt="in level 2" />\n\t\t</knob>', ''),
+           ('\n\t\t<knob x="171" y="4" size="21">\n\t\t\t<parameter component-id="p3" alt="in level 3" />\n\t\t</knob>', ''),
+           ('\n\t</module>', '\n\t\t<label x="128" y="9">Chain</label>\n\t</module>')]),
 }
 
 

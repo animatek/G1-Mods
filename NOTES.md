@@ -116,6 +116,25 @@ output, no parameters, control rate). Its entry is copied with three fields repl
 recording: **D crosses zero 8 times, Q changes 8 times, every change on a clock edge, and Q
 equals D at all 283 edges checked.** Q's levels are 0 and the same high as the clock's.
 
+## Type 121: Mix1-1A, a chain mixer (2026-10-16)
+
+After the G2's Mixer 1-1 A: `out = chain + in × level`, so one-channel mixers chain into a mixer
+of any size. Built on the Mixer (3) with code of our own (8 words, in `tools/patch_rom.py`) and
+the entry's counts set to 1 parameter, 2 inputs, 1 output:
+
+- **How a parameter reaches the DSP** (the Mixer (3)'s routines): `+$00` turns the 0–127 value
+  into the DSP value through a table at `$156A3C` (the level curve); `+$04` writes parameter 0 to
+  X[0], 1 to Y[0], 2 to X[1] (through `$10C4B0`); `+$10` formats it for the display. The new
+  type keeps them all, so its level is the Mixer (3)'s level 1, curve included.
+- The connection routine puts input 0 at word 1, input 1 at word 3, input 2 at word 4 and the
+  output at word 7: our code reads in at word 1 and chain at word 3 and never has a third input.
+  X has 1 word (the level), Y none.
+- **Checked** (`tests/check_mix1_1a.py`, patch `tests/mix1-1a-chain.pch`): at levels 100, 64
+  and 0 it gives exactly the Mixer (3)'s level (−69.5, −85.1 dBFS, silence), and a Mix1-1A
+  chained into another gives +6.0 dB. Not checked yet: turning the knob live from the editor.
+- Not done: the G2 module's Exp button (a second curve). It needs a parameter whose routine
+  picks the curve, or a second table.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash

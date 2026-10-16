@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **type 121, Mix1-1A** (the G2's Mixer 1-1 A: one input with its level plus a chain
+  input), on the Mixer (3)'s routines with code of our own and 1 parameter, 2 inputs, 1 output.
+  `tests/check_mix1_1a.py`: same level as the Mixer (3) at 100, 64 and 0, +6.0 dB chained.
+  `NOTES.md`: how a parameter reaches the DSP. `patch_rom.py` builds Mixer (3) variants with
+  one function (`mixer3_variant`); `make_nme_data.py` can drop connectors and knobs.
 - Claude: `tests/mixer-demo.pch`, the Mixer (3) and the Mixer Inv side by side on one oscillator:
   output 1 at −63.5 dBFS, output 2 silent (cancelled); with one input on the Mixer Inv it gives
   −69.5 dBFS, 6 dB under the sum. The two mixers work in one patch. Launchers for both apps in

@@ -80,8 +80,11 @@ class Build:
         return self.blocks, hook
 
 
-def mixer_inv(b, new_type=119):
-    """The Mixer (3) (type 19) with input 1 inverted: mpy -x1,x0,a instead of mpy x1,x0,a."""
+def mixer3_variant(b, new_type, code=None, code_patch=None, x_words=None, y_words=None, io=None):
+    """A type built on the Mixer (3) (type 19): its routines (level curve, parameters written to
+    X[0], Y[0], X[1], inputs patched at words 1, 3, 4 and the output at word 7) with code of our
+    own (8 words) or the Mixer's with some words changed, and maybe other X/Y counts or other
+    numbers of parameters, inputs and outputs (io)."""
     src = 0x14937E   # its data: +$2C, descriptor (+$28), X/Y data, code, +$24 and its two offset bytes
     block = bytearray(b.rom_bytes(src, 0x8A))
     new = b.at
@@ -89,12 +92,47 @@ def mixer_inv(b, new_type=119):
         at = 0x70 + 4 * i
         assert int.from_bytes(block[at:at + 4], "big") == src + off
         block[at:at + 4] = (new + off).to_bytes(4, "big")
-    code = 0x50 + 2 * 4
-    assert block[code:code + 4] == words(0x44DBA0)
-    block[code:code + 4] = words(0x44DBA4)
+    if code:
+        assert len(code) == 8
+        block[0x50:0x70] = words(*code)
+    for index, (old, val) in (code_patch or {}).items():
+        at = 0x50 + 4 * index
+        assert block[at:at + 4] == words(old), f"code word {index}"
+        block[at:at + 4] = words(val)
+    desc = 4
+    for off, count in ((0x0E, x_words), (0x12, y_words)):   # audio X and Y counts
+        if count is not None:
+            block[desc + off:desc + off + 2] = count.to_bytes(2, "big")
     assert block[0x88:0x8A] == bytes.fromhex("feff")   # audio part's nop 2 from the end
     assert b.put(block) == new
-    b.add_type(new_type, 19, {0x24: new + 0x70, 0x28: new + 0x04, 0x2C: new + 0x00})
+    fields = {0x24: new + 0x70, 0x28: new + 0x04, 0x2C: new + 0x00}
+    if io:
+        fields[0x18] = (io[0] << 24) | (io[1] << 16) | (io[2] << 8)   # parameters, inputs, outputs
+    b.add_type(new_type, 19, fields)
+
+
+def mixer_inv(b, new_type=119):
+    """The Mixer (3) with input 1 inverted: mpy -x1,x0,a instead of mpy x1,x0,a."""
+    mixer3_variant(b, new_type, code_patch={2: (0x44DBA0, 0x44DBA4)})
+
+
+# Mix1-1A, after the G2's Mixer 1-1 A: out = chain + in × level. Level in X[0] (the Mixer (3)'s
+# level 1, with its curve), in at word 1, chain at word 3 (the Mixer's inputs 1 and 2).
+MIX1_1A_CODE = (
+    0x44DB00,  # move x:(r3)+,x0    level; word 0 lands in the previous module's nop slot
+    0x458000,  # move x:$0,x1       in (input 0)
+    0x2000A0,  # mpy x1,x0,a
+    0x458000,  # move x:$0,x1       chain (input 1)
+    0x200060,  # add x1,a
+    0x200011,  # rnd a
+    0x000000,  # nop                where the next module's word 0 goes
+    0x560000,  # move a,x:$0        out
+)
+
+
+def mix1_1a(b, new_type=121):
+    """Mix1-1A: one input with its level, plus a chain input added as it comes."""
+    mixer3_variant(b, new_type, code=MIX1_1A_CODE, x_words=1, y_words=0, io=(1, 2, 1))
 
 
 # The D flip-flop's control-rate code (see NOTES.md, "Type 120: a D flip-flop").
@@ -159,8 +197,8 @@ EXPERIMENTS = {
         [mixer_inv], [],
     ),
     "all": (
-        "every new type: 119 (Mixer Inv) and 120 (FlipFlop, a D flip-flop)",
-        [mixer_inv, flipflop], [],
+        "every new type: 119 (Mixer Inv), 120 (FlipFlop, a D flip-flop), 121 (Mix1-1A)",
+        [mixer_inv, flipflop, mix1_1a], [],
     ),
 }
 
