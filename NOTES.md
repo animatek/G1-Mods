@@ -226,6 +226,12 @@ opcodes disassembled by G1-Emu's `dspdis` (built once into `out/`).
   value over unchanged, and a copy of its `+$04` calls a routine of ours that writes the Type to
   X[1] with **`$10D142(module, value, X word)`** (what ClkDiv uses for its own words). LogicProc's
   shows the other way: **`$10D046(module, instruction, code word)`** rewrites an instruction.
+- **The descriptor says how many outputs the module has** (word at `+$08`: 1, 2, 4… across
+  Clavia's types), and the OS gives each output a word of its own from it. Copied from ClkDiv it
+  said 1, so NotQ wrote into the next module's output: with Javier's patch (Q and NotQ into two
+  envelopes' triggers, like on the G2 demo) one output alternated and the other gave fast triggers
+  unrelated to the clock, and in a test a Constant placed after the FlipFlop changed with NotQ.
+  Fixed (2); `tests/flipflop-neighbour.pch` keeps watch.
 - **The connection routine is generated** (`connection_routine` in `patch_rom.py`) from the
   assembler's marks: an input may be patched into several words (In is read at three places) with
   `$124202(part, connection, record, word)`; the outputs, all in the −1 case, with

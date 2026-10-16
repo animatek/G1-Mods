@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **fixed the FlipFlop's NotQ sharing a word with the next module's output** (Javier: on
+  the G2 demo the two outputs alternate; here one gave fast triggers unrelated to the clock). The
+  descriptor's output count (`+$08`) was ClkDiv's 1; now 2. `tests/check_flipflop.py` has a fifth
+  case, a Constant right after the FlipFlop, which stays constant now and changed with NotQ before.
+  All cases pass, and the Mix1-1A's test too.
 - Claude: **fixed the modified OS hanging on its second boot.** The package crossed `$70000` in
   the flash, where the patch banks start and which the OS formats on its first boot, erasing the
   registration routine. Now it is stored at `$166574`, inside the OS's sectors, and a bootstrap

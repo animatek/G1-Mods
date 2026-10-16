@@ -256,6 +256,7 @@ def flipflop(b, new_type=120):
     p_at = b.put(words(*code))
     desc = bytearray(b.rom_bytes(0x14ADBC, 0x30))   # ClkDiv's descriptor: control part only
     assert desc[0x1A:0x1C] == (7).to_bytes(2, "big") and desc[0x22:0x24] == (20).to_bytes(2, "big")
+    desc[0x08:0x0A] = (2).to_bytes(2, "big")                 # outputs: the OS gives each its own word
     desc[0x06:0x08] = (len(code) + 16).to_bytes(2, "big")    # control cycles, branches included
     desc[0x1A:0x1C] = len(x_init).to_bytes(2, "big")         # control X words
     desc[0x1E:0x20] = (0).to_bytes(2, "big")                 # control Y words

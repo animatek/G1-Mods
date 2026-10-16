@@ -15,6 +15,10 @@ and some cables changed, played for 6 s in G1-Emu's g1patchtest and checked on t
 - RS-type, In unplugged, Rst from the LFO: Q is 0 while the LFO is high, and toggles otherwise.
 - RS-type, Clk unplugged: Q goes high on In's first rising edge (the first sample if In starts
   high) and stays there.
+- tests/flipflop-neighbour.pch: RS toggling with a Constant right after the FlipFlop, its output
+  on output 2. The Constant stays constant and NotQ stays Q's opposite: each output of the
+  FlipFlop has a word of its own (the descriptor says two outputs; with one, NotQ wrote into the
+  next module's output).
 Exit code 0 when all hold.
 """
 import bisect
@@ -109,6 +113,12 @@ def main():
         late = sum(1 for i in range(first_high + 2, len(q)) if q[i] <= 0)
         report("RS, Clk unplugged (set)", early == 0 and late == 0,
                f"In first high at sample {first_high}; Q high before it {early}, Q low after it {late}")
+
+        q, k, c, nq = record(rom, xml, open(os.path.join(HERE, "flipflop-neighbour.pch")).read(), tmp, "n")
+        kch, ch, e = changes(k), changes(q), edges(c)
+        report("outputs of their own (a Constant after it)", not kch and abs(len(ch) - len(e)) <= 1
+               and not_inverse(q, nq) == 0,
+               f"Constant changes {len(kch)}, Q changes {len(ch)} for {len(e)} edges, NotQ wrong {not_inverse(q, nq)}")
 
     print("OK" if ok else "FAILED")
     sys.exit(0 if ok else 1)
