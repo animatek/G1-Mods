@@ -55,7 +55,7 @@ Read from a RAM dump after boot (`G1_RAMDUMP=file g1boot ROM 60`, in `../G1-Emu`
 
 **It works.** `tools/patch_rom.py type119-mixinv` makes a ROM where type 119 is the Mixer (3)
 with input 1 inverted (`mpy -x1,x0,a` instead of `mpy x1,x0,a`), and
-`tools/make_modules_xml.py` a `modules.xml` with a "Mixer Inv" of type 119 for NME and the test
+`tools/make_nme_data.py` (then `make_modules_xml.py`) a `modules.xml` with a "Mixer Inv" of type 119 for NME and the test
 bench (`G1_MODULES_XML`, in G1-Emu's `g1patchtest` and battery).
 
 - **How:** the Mixer (3)'s data block (`$14937E`, `$88` bytes: `+$2C`, descriptor, X/Y data,
