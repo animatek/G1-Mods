@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **Noise S&H gets Range (1–5 octaves) and Uni/Bi**, with parameter routines of our own
+  (`param_routines`, `write_x_routine`); a semitone measured as one control unit at a pitch input.
+  `tests/check_noise_sh.py` checks 1 and 5 octaves Bi and 3 Uni (spans, mirror, edges) and passes;
+  so do the FlipFlop's and the Mix1-1A's. NME `g1-mods`: a display for Range and a button for
+  Bi/Uni.
 - Claude: **type 122, Noise S&H** (our own: a sample and hold with its own noise, Out and Inv),
   `dsp/noise_sh.asm` on CompareAB. `tests/check_noise_sh.py` passes (Out changes on every edge and
   only there, 285 values of both signs in 288 edges, Inv its negation); the FlipFlop's and the

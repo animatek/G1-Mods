@@ -105,6 +105,11 @@ FULL_ENTRIES = {
     <connector component-id="c1" index="0" name="trig" type="input" signal="logic" />
     <connector component-id="c2" index="0" name="out" type="output" signal="control" />
     <connector component-id="c3" index="1" name="inv" type="output" signal="control" />
+    <!-- parameter(s) -->
+    <parameter component-id="p1" index="0" name="range" class="parameter" maxValue="4" formatter="fmtOctaves1to5" extension="m1" />
+    <parameter component-id="p2" index="1" name="unipolar" class="parameter" maxValue="1" formatter="fmtOffOn" extension="m2" />
+    <parameter component-id="m1" index="0" name="morph:range" class="morph" role="morph"  minValue="-4" maxValue="4" />
+    <parameter component-id="m2" index="1" name="morph:unipolar" class="morph" role="morph"  minValue="-1" maxValue="1" />
     <!-- custom attributes -->
     <attribute name="cycles" type="double" value="0.35" />
     <attribute name="x-mem" type="double" value="0.2" />
@@ -117,6 +122,15 @@ FULL_ENTRIES = {
   </module>""", """
 \t<module component-id="m122" width="255" height="30">
 \t\t<name>Noise S&amp;H</name>
+\t\t<label x="62" y="1">Range</label>
+\t\t<textDisplay x="62" y="12" width="36" height="16">
+\t\t\t<parameter component-id="p1" alt="range" />
+\t\t</textDisplay>
+\t\t<button x="102" y="12" width="24" height="16" cyclic="true" landscape="false">
+\t\t\t<parameter component-id="p2" alt="unipolar" />
+\t\t\t<btn index="0">Bi</btn>
+\t\t\t<btn index="1">Uni</btn>
+\t\t</button>
 \t\t<label x="128" y="9">Trig</label>
 \t\t<connector x="152" y="8" size="13" class="cLOGIC">
 \t\t\t<connector component-id="c1" alt="trig" />

@@ -28,7 +28,7 @@ a guide to the effort, not code to copy. Our code is written new.
 | --- | --- | --- | --- |
 | Mixer 1-1 A (Mix1-1A) | 121 | 🟡 | Level, Ch 1 button and chain work (checked). Missing: the Lin / dB / Exp curves (needs a 68k routine of our own; see `NOTES.md`). |
 | FlipFlop | 120 | ✅ | D-type and RS-type, Clk, In, Rst, Q and NotQ (`dsp/flipflop.asm`; `tests/check_flipflop.py`). |
-| Noise S&H (our own) | 122 | ✅ | `dsp/noise_sh.asm`, `tests/check_noise_sh.py`. Every voice starts from the same seed, so in a poly patch they draw the same sequence. |
+| Noise S&H (our own) | 122 | ✅ | Range 1–5 octaves, Bi/Uni, Out and Inv (`dsp/noise_sh.asm`, `tests/check_noise_sh.py`). Every voice starts from the same seed, so in a poly patch they draw the same sequence. |
 | Mixer Inv (test only) | 119 | ✅ | Not a G2 module: the first test, the Mixer (3) with input 1 inverted. |
 
 ## Modules only the G2 has

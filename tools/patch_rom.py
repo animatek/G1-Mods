@@ -300,6 +300,43 @@ def flipflop(b, new_type=120):
                               0x24: data_at, 0x28: desc_at})
 
 
+def write_x_routine(x_word, transform=""):
+    """A parameter's value routine for $10C49E: d2 = the value (as +$00 handed it over), the
+    68k in `transform` turns it into d0, written to the module's X word with $10D142(module,
+    value, X word), as ClkDiv's own routines do. Without a transform, d0 = the value."""
+    return m68k("48e7 2030",          # movem.l d2/a2-a3,-(sp)
+                "242f 0014",          # move.l (20,sp),d2     the value
+                "246f 0010",          # movea.l (16,sp),a2    the module
+                transform or "2002",  # ... d0 (move.l d2,d0)
+                "3f3c", f"{x_word:04x}",  # move.w #x_word,-(sp)
+                "2f00 2f0a",          # move.l d0,-(sp) / move.l a2,-(sp)
+                "4eb9 0010d142",      # jsr $10D142
+                "4fef 000a",          # lea (10,sp),sp
+                "4cdf 0c04",          # movem.l (sp)+,d2/a2-a3
+                "4e75")               # rts
+
+
+def param_routines(b, callbacks):
+    """A type's +$00 and +$04 for parameters handled by routines of ours: +$00 hands every
+    parameter's value over unchanged; +$04 calls $10C49E with the routine of that parameter
+    (callbacks[i], placed with b.put) and, for any other, answers $10C49C as ClkDiv's does."""
+    p00 = b.put(m68k("7000 102f 0009 4e75"))   # moveq #0,d0 / move.b (9,sp),d0 / rts
+    head = m68k("226f 0004 206f 0008",          # movea.l (4,sp),a1 / movea.l (8,sp),a0
+                "7000 1029 0004")               # moveq #0,d0 / move.b (4,a1),d0: which parameter
+    default = m68k("203c 0010c49c 4e75")         # move.l #$10C49C,d0 / rts
+    tests_len = 8 * len(callbacks)
+    body_at = len(head) + tests_len + len(default)
+    tests, bodies = b"", b""
+    for i, cb in enumerate(callbacks):
+        here = len(head) + 8 * i + 4
+        tests += m68k("0c00", f"{i:04x}", "6700", f"{(body_at + len(bodies) - (here + 2)) & 0xFFFF:04x}")
+        bodies += m68k("4879", f"{cb:08x}",      # pea routine
+                       "2f08 2f09",              # move.l a0,-(sp) / move.l a1,-(sp)
+                       "4eb9 0010c49e",          # jsr $10C49E
+                       "4fef 000c 4e75")         # lea (12,sp),sp / rts
+    return p00, b.put(head + tests + default + bodies)
+
+
 def noise_sh(b, new_type=122):
     """Noise S&H (dsp/noise_sh.asm): Trig in; Out and Inv out; no parameters. Built on CompareAB
     (type 89), control rate with no parameters."""
@@ -307,7 +344,17 @@ def noise_sh(b, new_type=122):
     import dspasm
     code, marks, _ = dspasm.assemble(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                   "..", "dsp", "noise_sh.asm"))
-    x_init = (0xE10000, 0x5A3C96, 0, 0)        # taps (x^24+x^23+x^22+x^17+1), seed, Trig's last, held
+    # taps (x^24+x^23+x^22+x^17+1), seed, Trig's last, held noise, scale A (1 octave), Uni
+    x_init = (0xE10000, 0x5A3C96, 0, 0, 0x30000, 0)
+    # Range, value v = 0..4 for 1..5 octaves: A = 6(v+1) semitones = (v+1)*3 << 16 (a semitone is
+    # $8000: 12 control units an octave, 64 units the full $200000)
+    range_cb = b.put(write_x_routine(4, "2002 5280 2200 d080 d081 4840 4240"))
+    #   move.l d2,d0 / addq.l #1,d0 / move.l d0,d1 / add.l d0,d0 / add.l d1,d0 / swap d0 / clr.w d0
+    # Uni/Bi, value 1 = Uni: U = 1.0, else 0
+    uni_cb = b.put(write_x_routine(5, "7000 4a82 6706 203c 007fffff"))
+    #   moveq #0,d0 / tst.l d2 / beq.s +6 / move.l #$7FFFFF,d0
+    p00, p04 = param_routines(b, [range_cb, uni_cb])
+    names_at = b.put(param_table([("Range", 4), ("Uni", 1)]))
     conn_at = b.put(connection_routine({0: marks["in0"]},
                                        [(0, marks["out0"][0]), (1, marks["out1"][0])]))
     x_at = b.put(words(*x_init))
@@ -321,7 +368,8 @@ def noise_sh(b, new_type=122):
     desc[0x20:0x24] = len(code).to_bytes(4, "big")           # control P words
     desc_at = b.put(desc)
     data_at = b.put(words(x_at, x_at, p_at, x_at, x_at, p_at) + bytes.fromhex("fffe"))
-    b.add_type(new_type, 89, {0x0C: conn_at, 0x18: 0x00010200, 0x24: data_at, 0x28: desc_at})
+    b.add_type(new_type, 89, {0x00: p00, 0x04: p04, 0x0C: conn_at, 0x18: 0x02010200,
+                              0x1C: names_at, 0x24: data_at, 0x28: desc_at})
 
 
 # name: (what it shows, the new types, or the DSP words to change in place)

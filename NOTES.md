@@ -264,19 +264,29 @@ opcodes disassembled by G1-Emu's `dspdis` (built once into `out/`).
 
 ## Type 122: Noise S&H (2026-10-16)
 
-Our own module (Javier's idea): on Trig's rising edge it holds a noise value on Out, and the same
-negated on Inv. `dsp/noise_sh.asm`, 24 words, control rate: a 24-bit Galois shift register
-(taps `$E10000`, x^24+x^23+x^22+x^17+1) steps once per sample (`lsr a` and `eor x0,a ifcs`), and
-on the edge its word becomes a signed level scaled to a quarter of full scale (the same peak as
-an LFO's). Built on CompareAB, with one input and the descriptor saying two outputs.
+Our own module (Javier's idea): on Trig's rising edge it holds a noise value; Out gives it and
+Inv its mirror. Parameters: **Range** (1–5 octaves) and **Uni/Bi**. `dsp/noise_sh.asm`, 26 words,
+control rate: a 24-bit Galois shift register (taps `$E10000`, x^24+x^23+x^22+x^17+1) steps once a
+sample (`lsr a` and `eor x0,a ifcs`); the edge holds its word; every sample the held noise is
+scaled: Out = N·A + U·A, Inv = U·A − N·A, with A = 6 semitones per octave of range and U = 1.0 (Uni)
+or 0 (Bi). Built on CompareAB with one input, two outputs (in the descriptor) and two parameters.
 
-- **Checked** (`tests/check_noise_sh.py`): 288 clock edges, 288 changes of Out and none off an
-  edge, 285 different values, 138 positive and 150 negative, Inv the negation of Out.
-- **Out + Inv is not 0 in a recording**: −63 or −126, one or two LSB after the recording's +36 dB.
-  The output chain truncates (the master volume's multiply), so x and −x come out unequal by a
-  bit. It is the G1's, not the module's.
+- **A semitone is 1 control unit** at a pitch input with its amount at 127: measured with a
+  Constant into an OscA (+12 units: 262 → 524 Hz, +24: 1047 Hz). The logic high, `$200000`, is 64
+  units, so a unit is `$8000` in the DSP.
+- **Parameters of our own** (`param_routines`, `write_x_routine` in `patch_rom.py`, reusable): a
+  `+$00` that hands every value over unchanged, a `+$04` that sends each parameter to its routine
+  through `$10C49E`, and per parameter a routine that writes an X word with `$10D142`: Range
+  writes A = (v+1)·3 << 16, Uni/Bi writes 1.0 or 0. Their own table (`Range` max 4, `Uni` max 1),
+  so NME's widths (3 and 1 bits) match.
+- **Checked** (`tests/check_noise_sh.py`, three cases): every Trig edge changes Out and nothing
+  else does; 1 octave Bi spans −6.0..+6.0 semitones, 5 octaves Bi −29.9..+29.9, 3 octaves Uni
+  0..35.9; Out + Inv is 0 (Bi) or 36.00 (Uni) within a hundredth of a semitone (the output chain
+  truncates by a bit: x and −x come out one or two LSB apart).
 - Every voice starts from the same seed, so the voices of a poly patch draw the same sequence;
   a seed per voice is still to do.
+- NME shows Range in a display ("1 Oct"… "5 Oct", formatter `fmtOctaves1to5` in the `g1-mods`
+  branch) and Uni/Bi as a button.
 
 ## Trying it by hand
 
