@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **fixed the Noise S&H's knobs doing nothing when turned** (Javier): before a live change
+  the OS asks the type's `+$08`, and CompareAB's left `d0` as it was; now ClkDiv's (`clr.b d0`).
+  Both tests gain a live case with G1-Emu's new `--param-at` (Range 1 → 5 octaves, Bi → Uni;
+  FlipFlop D → RS) and pass. `NOTES.md`: how a parameter reaches the DSP live. `PORTING.md`: a
+  Scope, as an idea.
 - Claude: the Noise S&H's panel in NME gets a knob for Range next to its display (Javier: the
   display alone could not be changed). NME `g1-mods`.
 - Claude: **Noise S&H gets Range (1–5 octaves) and Uni/Bi**, with parameter routines of our own

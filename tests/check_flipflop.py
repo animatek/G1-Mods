@@ -19,6 +19,8 @@ and some cables changed, played for 6 s in G1-Emu's g1patchtest and checked on t
   on output 2. The Constant stays constant and NotQ stays Q's opposite: each output of the
   FlipFlop has a word of its own (the descriptor says two outputs; with one, NotQ wrote into the
   next module's output).
+- live: D-type with In unplugged (Q still), the Type switched to RS at 3 s as NME does when the
+  button is pressed (G1-Emu's --param-at): Q starts toggling.
 - the same patch, Q's LED: the OS's Lights messages (NMInfo $39) on the PC Port carry LED 0
   (the FlipFlop's, the only module with a light) both on and off.
 Exit code 0 when all hold.
@@ -121,6 +123,18 @@ def main():
         report("outputs of their own (a Constant after it)", not kch and abs(len(ch) - len(e)) <= 1
                and not_inverse(q, nq) == 0,
                f"Constant changes {len(kch)}, Q changes {len(ch)} for {len(e)} edges, NotQ wrong {not_inverse(q, nq)}")
+
+        pch, wav = os.path.join(tmp, "live.pch"), os.path.join(tmp, "live.wav")
+        open(pch, "w").write(base.replace(LFO_TO_IN, ""))
+        subprocess.run([BIN, rom, pch, "--seconds", "6", "--param-at", "3:1:6:0:1", "--wav", wav],
+                       check=True, capture_output=True, env=dict(os.environ, G1_MODULES_XML=xml))
+        w = wave.open(wav)
+        raw = w.readframes(w.getnframes())
+        q = [int.from_bytes(raw[i:i + 3], "little", signed=True) for i in range(0, len(raw), 3)][0::w.getnchannels()]
+        half = len(q) // 2
+        before, after = len(changes(q[:half])), len(changes(q[half:]))
+        report("live Type change (D to RS)", before == 0 and after > 100,
+               f"Q changes {before} in D, {after} after switching to RS")
 
         pc = open(os.path.join(tmp, "n.pc"), "rb").read()
         led0, at = set(), 0

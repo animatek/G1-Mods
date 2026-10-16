@@ -279,6 +279,14 @@ or 0 (Bi). Built on CompareAB with one input, two outputs (in the descriptor) an
   through `$10C49E`, and per parameter a routine that writes an X word with `$10D142`: Range
   writes A = (v+1)·3 << 16, Uni/Bi writes 1.0 or 0. Their own table (`Range` max 4, `Uni` max 1),
   so NME's widths (3 and 1 bits) match.
+- **How a parameter reaches the DSP, live** (found because Range did nothing when turned):
+  `+$04` does not write anything itself. With `$10C49E` it copies the parameter's record and
+  **returns the routine** that will write the value, which the OS calls later, at patch load and
+  on every change. Before a live change the OS asks **`+$08`**: 0 means "this routine", while the
+  Mixer's answers 1 after `$113834` (the morph and smoothing path, it seems). CompareAB's `+$08`
+  is a bare `rts` that leaves `d0` as it was, so the Noise S&H's changes never reached its
+  routine; it uses ClkDiv's now (`clr.b d0`). **Every type with parameters of ours needs a `+$08`
+  that answers 0.**
 - **Checked** (`tests/check_noise_sh.py`, three cases): every Trig edge changes Out and nothing
   else does; 1 octave Bi spans −6.0..+6.0 semitones, 5 octaves Bi −29.9..+29.9, 3 octaves Uni
   0..35.9; Out + Inv is 0 (Bi) or 36.00 (Uni) within a hundredth of a semitone (the output chain

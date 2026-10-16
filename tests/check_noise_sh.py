@@ -7,6 +7,8 @@ tests/noise-sh.pch: ClkGen (48 Hz) into Trig; Out on output 1, Inv on output 2, 
 output 3. Played for 6 s at 1 octave Bi, 5 octaves Bi and 3 octaves Uni: Out only changes on a
 rising clock edge and takes many different values; Bi spans about ±6 semitones an octave of range
 and Inv is -Out; Uni spans 0..12 semitones an octave and Out + Inv is the whole range (the mirror).
+Then live: the patch at 1 octave Bi, Range turned to 5 octaves at 2 s and Uni at 4 s, as NME does
+when a knob is turned (G1-Emu's --param-at): each third of the recording spans what it should.
 Exit code 0 when it holds.
 """
 import os
@@ -73,6 +75,21 @@ def main():
                   f"{len(off_edge)} off an edge, {len(set(held))} distinct, Out from {lo:+.1f} to {hi:+.1f} semitones, "
                   f"Out + Inv within {min(sums):+.2f}..{max(sums):+.2f} -> {'ok' if good else 'WRONG'}")
             ok &= good
+        pch, wav = os.path.join(tmp, "live.pch"), os.path.join(tmp, "live.wav")
+        open(pch, "w").write(open(os.path.join(HERE, "noise-sh.pch")).read())
+        subprocess.run([BIN, rom, pch, "--seconds", "6", "--param-at", "2:1:6:0:4", "--param-at", "4:1:6:1:1",
+                        "--wav", wav], check=True, capture_output=True, env=dict(os.environ, G1_MODULES_XML=xml))
+        w = wave.open(wav)
+        n, ch = w.getnframes(), w.getnchannels()
+        raw = w.readframes(n)
+        out = [int.from_bytes(raw[i:i + 3], "little", signed=True) for i in range(0, len(raw), 3)][0::ch]
+        t = n // 3
+        spans = [(min(seg) / UNIT, max(seg) / UNIT) for seg in (out[SETTLE:t], out[t + SETTLE:2 * t], out[2 * t + SETTLE:])]
+        good = (abs(spans[0][1] - 6) < 1 and abs(spans[1][1] - 30) < 4.5 and spans[1][0] < -25
+                and spans[2][0] > -0.5 and abs(spans[2][1] - 60) < 9)
+        print("live: " + ", ".join(f"{lo:+.1f}..{hi:+.1f}" for lo, hi in spans)
+              + f" semitones (1 oct Bi, 5 oct Bi, 5 oct Uni) -> {'ok' if good else 'WRONG'}")
+        ok &= good
     print("OK" if ok else "FAILED")
     sys.exit(0 if ok else 1)
 

@@ -368,7 +368,9 @@ def noise_sh(b, new_type=122):
     desc[0x20:0x24] = len(code).to_bytes(4, "big")           # control P words
     desc_at = b.put(desc)
     data_at = b.put(words(x_at, x_at, p_at, x_at, x_at, p_at) + bytes.fromhex("fffe"))
-    b.add_type(new_type, 89, {0x00: p00, 0x04: p04, 0x0C: conn_at, 0x18: 0x02010200,
+    # +$08 must answer 0 for a parameter written by our routine: CompareAB's is a bare rts that
+    # leaves d0 as it was, and a live change then never reached the routine. ClkDiv's: clr.b d0.
+    b.add_type(new_type, 89, {0x00: p00, 0x04: p04, 0x08: 0x136EFE, 0x0C: conn_at, 0x18: 0x02010200,
                               0x1C: names_at, 0x24: data_at, 0x28: desc_at})
 
 
