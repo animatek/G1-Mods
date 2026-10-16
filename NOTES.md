@@ -316,6 +316,24 @@ clicks (Javier). In G1-Emu, with `g1patchtest --add-module-at`, `G1_WATCH_PC` an
 - `tests/check_insert.py` adds a FilterE live to each test patch and checks the outputs go on as
   before; it passes, and the other tests too.
 
+## A control type, described once (2026-10-16)
+
+The three bugs of the day (NotQ sharing a word, the knobs dead live, the record overwritten) all
+came from fields copied from a donor and fixed by hand. `control_type` in `patch_rom.py` now
+builds a control-rate type from its DSP file, its X words' initial values, its parameters
+(`Param`: name, maximum, the X word it goes to, a 68k transform) and maybe one LED, and derives
+the rest: the counts at `+$18` (inputs and outputs from the `@inN`/`@outN` marks), the parameter
+table and routines, ClkDiv's `+$08`, the connection routine, and the descriptor (outputs,
+cycles, X and P words, the record's size). The descriptor starts from ClkDiv's, whose other
+fields are checked to be zero. The cycles are the code's words plus 4 a branch (worst case;
+the FlipFlop said 16 more, now 36). The FlipFlop and the Noise S&H are built with it; every test
+passes as before.
+
+`tests/check_nme_data.py` compares, for every new type, what the OS was built with against NME's
+data: each parameter's maximum and the inputs and outputs in `modules.xml`, and the bit widths
+in `ParameterEncoder.cpp` (its `g1-mods` branch, read with `git show`). `tests/run_all.py`
+runs every test.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash
@@ -333,8 +351,7 @@ It also shows **the two mixers working in one patch** despite the RAM variables 
 
 ## Next
 
-- Modules with parameters: what the routines at `+$00`–`+$10` and `+$20` do with them.
-- Q and not-Q (two outputs) and a reset input for the FlipFlop; then an 8Counter.
+- A step sequencer (5 steps with LEDs) and an 8Counter, built with `control_type`.
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.

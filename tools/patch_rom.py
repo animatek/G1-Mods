@@ -12,6 +12,7 @@ the result. How it all works: NOTES.md.
 """
 import hashlib
 import os
+import re
 import sys
 
 ROM_SHA256 = "d9b199f2"  # start of the rack OS 3.03's sha256 (G1-Emu/NOTES.md, "The ROM")
@@ -50,6 +51,7 @@ class Build:
         self.blocks = []        # (RAM address, bytes)
         self.register = []      # 68k code run at boot, after the list
         self.types = []
+        self.specs = {}         # type: (parameter maximums, inputs, outputs), what NME must say
 
     def rom_bytes(self, addr, n):
         return self.rom[ram_to_rom(addr):ram_to_rom(addr) + n]
@@ -157,6 +159,8 @@ def mixer3_variant(b, new_type, code=None, code_patch=None, x_words=None, y_word
     fields.update({0x24: new + 0x70, 0x28: new + 0x04, 0x2C: new + 0x00})
     if io:
         fields[0x18] = (io[0] << 24) | (io[1] << 16) | (io[2] << 8)   # parameters, inputs, outputs
+    io = io or (3, 3, 1)
+    b.specs[new_type] = ([m for _, m in params] if params else [127] * io[0], io[1], io[2])
     b.add_type(new_type, 19, fields)
 
 
@@ -256,53 +260,6 @@ def connection_routine(inputs, outputs, part=1, led=None):
     return head + tests + end + bodies
 
 
-def flipflop(b, new_type=120):
-    """The G2's FlipFlop: D-type or RS-type, with Rst, Q and NotQ (dsp/flipflop.asm). Built on
-    ClkDiv (type 69), a control-rate type with one parameter, whose +$00 hands the parameter's
-    value over unchanged; its +$04 is copied to call our own routine, which writes the Type into
-    X[1]."""
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    import dspasm
-    code, marks, _ = dspasm.assemble(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                                  "..", "dsp", "flipflop.asm"))
-    x_init = (0x200000, 0, 0, 0, 0)            # high, Type, Clk's last, In's last, Q
-    # the parameter: ClkDiv's +$04 ($136E86) calls $10C49E with a routine for the value; ours
-    # writes it to X[1] with $10D142(module, value, X word), as ClkDiv's does for its words
-    write_type = b.put(m68k("48e7 2030",        # movem.l d2/a2-a3,-(sp)
-                            "242f 0014",        # move.l (20,sp),d2     the value
-                            "246f 0010",        # movea.l (16,sp),a2    the module
-                            "3f3c 0001",        # move.w #1,-(sp)       X[1]
-                            "2f02 2f0a",        # move.l d2,-(sp) / move.l a2,-(sp)
-                            "4eb9 0010d142",    # jsr $10D142
-                            "4fef 000a",        # lea (10,sp),sp
-                            "4cdf 0c04",        # movem.l (sp)+,d2/a2-a3
-                            "4e75"))            # rts
-    param = bytearray(b.rom_bytes(0x136E86, 0x2E))
-    at = param.find(bytes.fromhex("487900136eb4"))   # pea $136EB4: ClkDiv's own routine
-    assert at > 0 and param[-2:] == bytes.fromhex("4e75")
-    param[at + 2:at + 6] = write_type.to_bytes(4, "big")
-    param_at = b.put(param)
-    led_at = b.put(led_routine(4))                # Q's LED (X[4]); one LED per module on a G1
-    conn_at = b.put(connection_routine(
-        {0: marks["in0"], 1: marks["in1"], 2: marks["in2"]},
-        [(0, marks["out0"][0]), (1, marks["out1"][0])], led=led_at))
-    names_at = b.put(param_table([("Type", 1)]))
-    x_at = b.put(words(*x_init))
-    p_at = b.put(words(*code))
-    desc = bytearray(b.rom_bytes(0x14ADBC, 0x30))   # ClkDiv's descriptor: control part only
-    assert desc[0x1A:0x1C] == (7).to_bytes(2, "big") and desc[0x22:0x24] == (20).to_bytes(2, "big")
-    desc[0x08:0x0A] = (2).to_bytes(2, "big")                 # outputs: the OS gives each its own word
-    desc[0x06:0x08] = (len(code) + 16).to_bytes(2, "big")    # control cycles, branches included
-    desc[0x1A:0x1C] = len(x_init).to_bytes(2, "big")         # control X words
-    desc[0x1E:0x20] = (0).to_bytes(2, "big")                 # control Y words
-    desc[0x20:0x24] = len(code).to_bytes(4, "big")           # control P words
-    desc[0x24:0x26] = record_words(1).to_bytes(2, "big")     # its record: one parameter
-    desc_at = b.put(desc)
-    data_at = b.put(words(x_at, x_at, p_at, x_at, x_at, p_at) + bytes.fromhex("fffe"))
-    b.add_type(new_type, 69, {0x04: param_at, 0x0C: conn_at, 0x18: 0x01030200, 0x1C: names_at,
-                              0x24: data_at, 0x28: desc_at})
-
-
 def record_words(params):
     """The descriptor's word at +$24: the size, in words, of the module's record in the OS's RAM
     ($24 bytes and 8 a parameter). The OS places the next module's record after it: a size too
@@ -347,42 +304,86 @@ def param_routines(b, callbacks):
     return p00, b.put(head + tests + default + bodies)
 
 
-def noise_sh(b, new_type=122):
-    """Noise S&H (dsp/noise_sh.asm): Trig in; Out and Inv out; no parameters. Built on CompareAB
-    (type 89), control rate with no parameters."""
+class Param:
+    """A parameter of a control type: its name and maximum (param_table), and the X word its
+    value is written to, through a 68k transform (write_x_routine; none: the value as it is)."""
+
+    def __init__(self, name, maximum, x_word, transform=""):
+        self.name, self.maximum, self.x_word, self.transform = name, maximum, x_word, transform
+
+
+BRANCH = re.compile(r"^\s+(b|j)(cc|cs|ec|eq|es|ge|gt|lc|le|ls|lt|mi|ne|nn|nr|pl|ra|sr)\b", re.M)
+
+
+def control_type(b, new_type, asm, x_init, params=(), led=None):
+    """A control-rate type, described once: its DSP code (dsp/<asm>, its inputs and outputs from
+    the @inN/@outN marks), the initial values of its X words, its parameters and maybe one LED
+    (the X word it shows). Everything the OS reads about the type is derived from that: the counts
+    at +$18, the parameter table, the parameter routines (+$00, +$04, and ClkDiv's +$08, which
+    answers 0: the value goes through our routine), the connection routine, and the descriptor
+    (outputs, cycles, X and P words, the record's size). Each of those, copied by hand from a
+    donor, has broken once (NOTES.md)."""
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import dspasm
-    code, marks, _ = dspasm.assemble(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                                  "..", "dsp", "noise_sh.asm"))
-    # taps (x^24+x^23+x^22+x^17+1), seed, Trig's last, held noise, scale A (1 octave), Uni
-    x_init = (0xE10000, 0x5A3C96, 0, 0, 0x30000, 0)
-    # Range, value v = 0..4 for 1..5 octaves: A = 6(v+1) semitones = (v+1)*3 << 16 (a semitone is
-    # $8000: 12 control units an octave, 64 units the full $200000)
-    range_cb = b.put(write_x_routine(4, "2002 5280 2200 d080 d081 4840 4240"))
-    #   move.l d2,d0 / addq.l #1,d0 / move.l d0,d1 / add.l d0,d0 / add.l d1,d0 / swap d0 / clr.w d0
-    # Uni/Bi, value 1 = Uni: U = 1.0, else 0
-    uni_cb = b.put(write_x_routine(5, "7000 4a82 6706 203c 007fffff"))
-    #   moveq #0,d0 / tst.l d2 / beq.s +6 / move.l #$7FFFFF,d0
-    p00, p04 = param_routines(b, [range_cb, uni_cb])
-    names_at = b.put(param_table([("Range", 4), ("Uni", 1)]))
-    conn_at = b.put(connection_routine({0: marks["in0"]},
-                                       [(0, marks["out0"][0]), (1, marks["out1"][0])]))
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "dsp", asm)
+    code, marks, _ = dspasm.assemble(path)
+    inputs = {int(k[2:]): v for k, v in marks.items() if re.fullmatch(r"in\d+", k)}
+    outputs = {int(k[3:]): v for k, v in marks.items() if re.fullmatch(r"out\d+", k)}
+    assert sorted(inputs) == list(range(len(inputs))) and sorted(outputs) == list(range(len(outputs)))
+    assert all(len(v) == 1 for v in outputs.values()), "an output is written at one word"
+    for p in params:
+        assert p.x_word < len(x_init)
+    fields = {}
+    if params:
+        fields[0x00], fields[0x04] = param_routines(
+            b, [b.put(write_x_routine(p.x_word, p.transform)) for p in params])
+        fields[0x1C] = b.put(param_table([(p.name, p.maximum) for p in params]))
+    led_at = b.put(led_routine(led)) if led is not None else None
+    fields[0x0C] = b.put(connection_routine(inputs, [(o, w[0]) for o, w in sorted(outputs.items())],
+                                            led=led_at))
     x_at = b.put(words(*x_init))
     p_at = b.put(words(*code))
-    desc = bytearray(b.rom_bytes(0x14A4EE, 0x30))   # CompareAB's descriptor: control part only
-    assert desc[0x22:0x24] == (6).to_bytes(2, "big")
-    desc[0x06:0x08] = (len(code) + 8).to_bytes(2, "big")     # control cycles, branches included
-    desc[0x08:0x0A] = (2).to_bytes(2, "big")                 # two outputs, a word each
+    # the descriptor: ClkDiv's (control part only), with every field we know of set here, and
+    # the ones we do not know zero in it, as checked
+    desc = bytearray(b.rom_bytes(0x14ADBC, 0x30))
+    known = {0x06, 0x08, 0x1A, 0x1E, 0x20, 0x22, 0x24}
+    assert all(desc[o:o + 2] == b"\0\0" for o in range(0, 0x30, 2) if o not in known)
+    branches = len(BRANCH.findall(open(path).read()))
+    desc[0x06:0x08] = (len(code) + 4 * branches).to_bytes(2, "big")  # control cycles, worst case
+    desc[0x08:0x0A] = len(outputs).to_bytes(2, "big")        # outputs: the OS gives each its own word
     desc[0x1A:0x1C] = len(x_init).to_bytes(2, "big")         # control X words
     desc[0x1E:0x20] = (0).to_bytes(2, "big")                 # control Y words
     desc[0x20:0x24] = len(code).to_bytes(4, "big")           # control P words
-    desc[0x24:0x26] = record_words(2).to_bytes(2, "big")     # its record: two parameters
-    desc_at = b.put(desc)
-    data_at = b.put(words(x_at, x_at, p_at, x_at, x_at, p_at) + bytes.fromhex("fffe"))
-    # +$08 must answer 0 for a parameter written by our routine: CompareAB's is a bare rts that
-    # leaves d0 as it was, and a live change then never reached the routine. ClkDiv's: clr.b d0.
-    b.add_type(new_type, 89, {0x00: p00, 0x04: p04, 0x08: 0x136EFE, 0x0C: conn_at, 0x18: 0x02010200,
-                              0x1C: names_at, 0x24: data_at, 0x28: desc_at})
+    desc[0x24:0x26] = record_words(len(params)).to_bytes(2, "big")   # its record
+    fields[0x28] = b.put(desc)
+    fields[0x24] = b.put(words(x_at, x_at, p_at, x_at, x_at, p_at) + bytes.fromhex("fffe"))
+    fields[0x08] = 0x136EFE
+    fields[0x18] = (len(params) << 24) | (len(inputs) << 16) | (len(outputs) << 8)
+    b.specs[new_type] = ([p.maximum for p in params], len(inputs), len(outputs))
+    b.add_type(new_type, 69, fields)
+
+
+def flipflop(b, new_type=120):
+    """The G2's FlipFlop: D-type or RS-type, with Rst, Q and NotQ, and an LED on Q (one LED a
+    module on a G1)."""
+    control_type(b, new_type, "flipflop.asm",
+                 (0x200000, 0, 0, 0, 0),             # high, Type, Clk's last, In's last, Q
+                 [Param("Type", 1, 1)], led=4)
+
+
+def noise_sh(b, new_type=122):
+    """Noise S&H: Trig in; Out and Inv out; Range (1-5 octaves) and Uni/Bi."""
+    control_type(b, new_type, "noise_sh.asm",
+                 # taps (x^24+x^23+x^22+x^17+1), seed, Trig's last, held noise, scale A, Uni
+                 (0xE10000, 0x5A3C96, 0, 0, 0x30000, 0),
+                 [# value v = 0..4 for 1..5 octaves: A = 6(v+1) semitones = (v+1)*3 << 16 (a
+                  # semitone is $8000: 12 control units an octave, 64 units the full $200000)
+                  #   move.l d2,d0 / addq.l #1,d0 / move.l d0,d1 / add.l d0,d0 / add.l d1,d0 /
+                  #   swap d0 / clr.w d0
+                  Param("Range", 4, 4, "2002 5280 2200 d080 d081 4840 4240"),
+                  # value 1 = Uni: U = 1.0, else 0
+                  #   moveq #0,d0 / tst.l d2 / beq.s +6 / move.l #$7FFFFF,d0
+                  Param("Uni", 1, 5, "7000 4a82 6706 203c 007fffff")])
 
 
 # name: (what it shows, the new types, or the DSP words to change in place)

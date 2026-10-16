@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **a control type is described once** (`control_type` and `Param` in `patch_rom.py`):
+  DSP file, X words, parameters and LED, and the counts, parameter table and routines, `+$08`,
+  connection routine and descriptor derived from them, instead of fields copied from a donor and
+  fixed by hand (where the day's three bugs came from). The FlipFlop and the Noise S&H use it.
+  New `tests/check_nme_data.py` (the OS and NME agree on each type's parameters, widths, inputs
+  and outputs; it catches a changed maximum) and `tests/run_all.py`. All tests pass.
+
 - Claude: **fixed patches breaking when a module was added live** next to a Noise S&H (Javier: the
   oscillators stopped, only clicks). The descriptor's word at `+$24` is the size of the module's
   record in the OS's RAM; the Noise S&H had CompareAB's (no parameters) with two, so the next
