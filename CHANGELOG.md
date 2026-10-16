@@ -5,6 +5,10 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: `tests/mixer-demo.pch`, the Mixer (3) and the Mixer Inv side by side on one oscillator:
+  output 1 at −63.5 dBFS, output 2 silent (cancelled); with one input on the Mixer Inv it gives
+  −69.5 dBFS, 6 dB under the sum. The two mixers work in one patch. Launchers for both apps in
+  the maintainer's desktop (outside the repo), noted in `NOTES.md`.
 - Claude: **type 120, a D flip-flop, works** (`NOTES.md`, "Type 120"): own DSP code and X data,
   CompareAB's entry with our descriptor and its connection routine patching the output at word
   17. `tests/check_flipflop.py` checks it in G1-Emu: Q changes 8 times for 8 crossings of D, each

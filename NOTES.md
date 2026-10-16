@@ -122,11 +122,17 @@ equals D at all 283 edges checked.** Q's levels are 0 and the same high as the c
 (`out/flash-all.bin`) and with `G1_OS=` so the settings' `os =` does not replace the modified
 OS; close the usual G1-Emu first (same MIDI ports). `./run-nme.sh` starts NME from its `g1-mods`
 branch, whose palette has Mixer Inv and FlipFlop. A stock G1 (or G1-Emu with Clavia's OS)
-refuses a patch with them.
+refuses a patch with them. In the maintainer's desktop both have launchers ("G1-Emu (G1-Mods)",
+"Animatek NME (G1-Mods)", in `~/.local/share/applications`, outside the repo).
+
+`tests/mixer-demo.pch` is the one to hear: one OscA into inputs 1 and 2 of a Mixer (3) (output 1)
+and of a Mixer Inv (output 2), levels 100. **The Mixer (3) doubles it and the Mixer Inv cancels
+it**: measured −63.5 dBFS on output 1 and silence on output 2; with the Mixer Inv's input 1
+unplugged, output 2 gives −69.5 dBFS, 6 dB under the sum, so the silence is the cancellation.
+It also shows **the two mixers working in one patch** despite the RAM variables they share.
 
 ## Next
 
-- A patch with the Mixer (3) and the Mixer Inv together (they share three RAM variables).
 - Modules with parameters: what the routines at `+$00`–`+$10` and `+$20` do with them.
 - Q and not-Q (two outputs) and a reset input for the FlipFlop; then an 8Counter.
 
