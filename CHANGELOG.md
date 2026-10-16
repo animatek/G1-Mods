@@ -5,6 +5,9 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: `make_nme_data.py` puts each new type in "<donor's family> (mods)" ("Mixer (mods)",
+  "Logic (mods)"), which NME's `g1-mods` branch lists right after the family in the module bar,
+  the browser and the right-click Add Module menu (NME `8d72735`).
 - Claude: **Mix1-1A gets its Ch 1 button** (mutes the channel, not the chain): parameter 1 to Y[0],
   9-word code with its own connection routine, and a parameter table of its own (`Level` 127,
   `Ch 1` 1). Found why a first try hung the OS: a parameter's width comes from its maximum (NME's

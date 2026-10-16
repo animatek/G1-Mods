@@ -78,8 +78,9 @@ def main():
     theme = open(os.path.join(src, "classic-theme.xml"), encoding="utf-8").read()
     added = []
     for new, (donor, name, fullname, mod_subs, theme_subs) in NEW_TYPES.items():
-        header = (r'index="%d" name="[^"]*" fullname="[^"]*"' % donor,
-                  f'index="{new}" name="{name}" fullname="{fullname}"')
+        # in NME the new types sit in "<donor's family> (mods)", listed right after the family
+        header = (r'index="%d" name="[^"]*" fullname="[^"]*" category="([^"]*)"' % donor,
+                  f'index="{new}" name="{name}" fullname="{fullname}" category="\\1 (mods)"')
         mods, a = clone(mods, MODULES_ENTRY, donor, new, header, mod_subs)
         theme, b = clone(theme, THEME_ENTRY, donor, new, None, theme_subs)
         added.append(new)
