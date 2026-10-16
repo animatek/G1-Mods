@@ -5,6 +5,12 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: `NOTES.md`, "The registration list": the boot routine that empties the 128 entries,
+  the list of 110 `jsr` at `$10DC90` (ROM `$1A490`) with the type each one registers, what
+  `$10DC42` does, and the ~15 KB the OS leaves untouched at the end of its RAM image
+  (`$16FB7F`–`$1737FF`) for code of ours. Types 63, 65 and 77 are registered after all (the
+  earlier note was wrong). Plan for the first new type. Checked by walking the list in the ROM and
+  comparing a RAM dump after boot with the ROM.
 - Claude: repo created, apart from G1-Emu so the emulator stays Clavia's OS untouched
   (`CLAUDE.md`: the rules). `NOTES.md`, "Module types in the OS", moved here from G1-Emu before
   it was pushed: one 48-byte entry per type at `$1C3B00`, filled by a registration routine per
