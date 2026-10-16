@@ -150,6 +150,8 @@ def mixer3_variant(b, new_type, code=None, code_patch=None, x_words=None, y_word
     for off, count in ((0x0E, x_words), (0x12, y_words)):   # audio X and Y counts
         if count is not None:
             block[desc + off:desc + off + 2] = count.to_bytes(2, "big")
+    if io:                                                   # its record, by its parameters
+        block[desc + 0x24:desc + 0x26] = record_words(io[0]).to_bytes(2, "big")
     assert block[0x88:0x8A] == bytes.fromhex("feff")   # audio part's nop 2 from the end
     assert b.put(block) == new
     fields.update({0x24: new + 0x70, 0x28: new + 0x04, 0x2C: new + 0x00})
@@ -294,10 +296,18 @@ def flipflop(b, new_type=120):
     desc[0x1A:0x1C] = len(x_init).to_bytes(2, "big")         # control X words
     desc[0x1E:0x20] = (0).to_bytes(2, "big")                 # control Y words
     desc[0x20:0x24] = len(code).to_bytes(4, "big")           # control P words
+    desc[0x24:0x26] = record_words(1).to_bytes(2, "big")     # its record: one parameter
     desc_at = b.put(desc)
     data_at = b.put(words(x_at, x_at, p_at, x_at, x_at, p_at) + bytes.fromhex("fffe"))
     b.add_type(new_type, 69, {0x04: param_at, 0x0C: conn_at, 0x18: 0x01030200, 0x1C: names_at,
                               0x24: data_at, 0x28: desc_at})
+
+
+def record_words(params):
+    """The descriptor's word at +$24: the size, in words, of the module's record in the OS's RAM
+    ($24 bytes and 8 a parameter). The OS places the next module's record after it: a size too
+    small and a module added later is written over this one's parameters."""
+    return (0x24 + 8 * params) // 2
 
 
 def write_x_routine(x_word, transform=""):
@@ -366,6 +376,7 @@ def noise_sh(b, new_type=122):
     desc[0x1A:0x1C] = len(x_init).to_bytes(2, "big")         # control X words
     desc[0x1E:0x20] = (0).to_bytes(2, "big")                 # control Y words
     desc[0x20:0x24] = len(code).to_bytes(4, "big")           # control P words
+    desc[0x24:0x26] = record_words(2).to_bytes(2, "big")     # its record: two parameters
     desc_at = b.put(desc)
     data_at = b.put(words(x_at, x_at, p_at, x_at, x_at, p_at) + bytes.fromhex("fffe"))
     # +$08 must answer 0 for a parameter written by our routine: CompareAB's is a bare rts that

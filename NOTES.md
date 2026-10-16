@@ -296,6 +296,26 @@ or 0 (Bi). Built on CompareAB with one input, two outputs (in the descriptor) an
 - NME shows Range in a display ("1 Oct"… "5 Oct", formatter `fmtOctaves1to5` in the `g1-mods`
   branch) and Uni/Bi as a button.
 
+## A module's record in the OS's RAM (2026-10-16)
+
+Found because adding any module live to a patch with a Noise S&H stopped the oscillators and left
+clicks (Javier). In G1-Emu, with `g1patchtest --add-module-at`, `G1_WATCH_PC` and `G1_RAMDUMP`:
+
+- **Every module has a record in the slot's RAM**: `$24` bytes of header (the type at `+$0E`, the
+  position at `+$0F`/`+$10`, the name at `+$13`) and 8 bytes a parameter from `+$24` (the value in
+  the fifth). They are laid out one after another by a bump allocator (`$1197BA`): the next one
+  goes at `$18C1CA` + what the slot has used, and the size it adds is **the descriptor's word at
+  `+$24`, in words**: `$12` for CompareAB (no parameter), `$16` for ClkDiv (one), `$1E` for the
+  Mixer (3) (three), `$32` for type 25 (eight).
+- The Noise S&H had CompareAB's `$12` with two parameters: a module added after it got its record
+  written over the Noise S&H's parameters, and the OS, re-sending them to the DSP for every voice
+  (`$10DA00`, with each value through `+$00`), sent 5 and `$8A` instead of the patch's values: a
+  scale five times too big, the oscillators driven off the scale, clicks. A full upload hid it
+  (records laid out fresh, the next one after the last). Now every type's descriptor says
+  `($24 + 8 × parameters) / 2` (`record_words` in `patch_rom.py`).
+- `tests/check_insert.py` adds a FilterE live to each test patch and checks the outputs go on as
+  before; it passes, and the other tests too.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash

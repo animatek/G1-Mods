@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **fixed patches breaking when a module was added live** next to a Noise S&H (Javier: the
+  oscillators stopped, only clicks). The descriptor's word at `+$24` is the size of the module's
+  record in the OS's RAM; the Noise S&H had CompareAB's (no parameters) with two, so the next
+  record was written over its parameters. Now every type's is computed from its parameters.
+  `tests/check_insert.py` (a FilterE added live to each test patch) passes, and so do the others.
+  Found with G1-Emu's new `--add-module-at`, `G1_WATCH_PC` and `G1_RAMDUMP`. `NOTES.md`: a module's
+  record.
 - Claude: **fixed the Noise S&H's knobs doing nothing when turned** (Javier): before a live change
   the OS asks the type's `+$08`, and CompareAB's left `d0` as it was; now ClkDiv's (`clr.b d0`).
   Both tests gain a live case with G1-Emu's new `--param-at` (Range 1 → 5 octaves, Bi → Uni;
