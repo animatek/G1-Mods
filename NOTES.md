@@ -347,8 +347,15 @@ runs every test.
   the CtrlSeq's does. NME draws it from the Meters message (`$3A`, the module's B value); its
   theme's `led-array` takes `steps="5"` now (branch `g1-mods`).
 - The knobs: (v − 64) control units, `(v − 64) << 15` in the parameter's 68k transform.
-- `tests/check_seq5.py`: the steps in order with the clock, Rst to the first, a knob turned live,
-  the step in the Meters messages; `check_insert.py` plays it too.
+- **Rst as the G1's sequencers have it** (measured on the CtrlSeq, same clock and reset): a Rst
+  edge changes nothing at once and arms the sequencer; the next clock, or one in the same sample,
+  goes to the first step. It starts on the last step, so the first clock plays the first. The
+  first version jumped to the first step at the Rst edge, so it ran a step ahead of a CtrlSeq
+  reset with it (Javier: the sequencers would not sync). The CtrlSeq's output changes one control
+  period (4 samples at 96 kHz) after ours at each clock: a fixed latency, not a step.
+- `tests/check_seq5.py`: the steps in order with the clock, a knob turned live, the step in the
+  Meters messages, and **in step with a CtrlSeq** (`tests/seq5-ctrlseq.pch`, Rst from an LFO, its
+  edges between clocks); `check_insert.py` plays it too.
 
 ## Trying it by hand
 

@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **the 5-Step Seq's Rst works as the G1's sequencers'** (Javier: the sequencers would
+  not sync). Measured against a CtrlSeq on the same clock and reset: Clavia's Rst arms the
+  sequencer and the next clock goes to the first step, and it starts on the last step; ours
+  jumped to the first at the Rst edge, a step ahead. Now the same. `tests/check_seq5.py` plays
+  both (`tests/seq5-ctrlseq.pch`, Rst between clocks) and they stay on the same step; all tests
+  pass. `PORTING.md`: G2 patches on a G1, as an idea.
+
 - Claude: **type 123, 5-Step Seq** (`dsp/seq5.asm`): Clk, Rst, Out and five bipolar knobs
   (−64…+63), after Buchla's five-stage sequencers, with a row of five step LEDs (a led-array on
   the OS's meter list, `$1169BA`, as the CtrlSeq's; `value_routine` and `connection_routine`'s

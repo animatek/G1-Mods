@@ -426,8 +426,10 @@ def seq5(b, new_type=123):
     #   move.l d2,d0 / subi.l #64,d0 / moveq #15,d1 / asl.l d1,d0
     bipolar = "2002 0480 00000040 720f e3a0"
     control_type(b, new_type, "seq5.asm",
-                 (0, 0, 0, 0, 0, 0, 0, 0),            # step, Clk's last, Rst's last, the values
-                 [Param(f"Step {i + 1}", 127, 3 + i, bipolar) for i in range(5)],
+                 # the step (the last: the first clock plays the first), Clk's last, Rst's last,
+                 # armed, the values
+                 (4, 0, 0, 0, 0, 0, 0, 0, 0),
+                 [Param(f"Step {i + 1}", 127, 4 + i, bipolar) for i in range(5)],
                  steps=(0, 4))
 
 

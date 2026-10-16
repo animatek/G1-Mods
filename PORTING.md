@@ -205,3 +205,10 @@ Ideas built from what is known now. Same scale of feasibility.
 4. **Medium audio:** Flanger, Comb Filter, WahWah, Eq 3-band, the new oscillators.
 5. Later, if ever: MIDI modules (68k work), PShift and Scratch, and the long delays and the
    reverb as G1-Emu-only.
+
+## Ideas, not started
+
+- **G2 patches on a G1** (Javier, 2026-10-16): not loaded as they are (another file format and
+  171 module types), but converted, in NME, for a patch whose every module has a counterpart on
+  the G1 or in G1-Mods; one with a module never ported, or too big for the G1's DSPs, would not
+  convert. Possible only once most of the G2's modules are here, so after the batches above.

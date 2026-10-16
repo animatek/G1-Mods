@@ -7,8 +7,11 @@ tests/seq5.pch: ClkGen (48 Hz) into Clk; Out on output 1, the clock on output 2.
 32, 64, 96 and 127, so the steps give -64, -32, 0, +32 and +63 control units. Played for 6 s:
 - Out only changes on a rising clock edge, takes the five values and goes through them in order,
   the fifth back to the first.
-- with the clock divided by 8 (a ClkDivFix) into Rst, and on output 3: after each Rst edge Out is
-  the first step's until the next clock, and the second's after it.
+- tests/seq5-ctrlseq.pch: the same clock into Clavia's CtrlSeq (5 steps, the same values), and an
+  LFO into both Rst inputs, so its edges fall between clocks: both on the same step at every
+  sample, bar the CtrlSeq changing 4 samples (a control period) later at each clock. The G1's Rst arms the sequencer and the next clock
+  goes to the first step; a Rst that jumped at once put this one a step ahead (Javier: the
+  sequencers would not sync).
 - live: the third knob turned to 127 at 3 s, as NME does (G1-Emu's --param-at): the third step
   gives +63 after it.
 - the step's LEDs: the OS's Meters messages (NMInfo $3A) on the PC Port carry the module's step,
@@ -28,7 +31,6 @@ BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", 
 SETTLE = 4800       # 50 ms at 96 kHz: the patch being set up
 UNIT = 428167 / 64  # one control unit in the recording (the logic high, 64 units, is 428167)
 STEPS = [-64, -32, 0, 32, 63]
-RST = "0 4 0 0 1 0 1 \n0 3 1 0 4 2 1 \n0 2 2 0 4 2 1 \n"   # clock into the ClkDivFix, its /8 into Rst and output 3
 
 
 def record(rom, xml, patch, tmp, *extra):
@@ -88,19 +90,22 @@ def main():
             at += 1
         report("step LEDs", meters == set(range(5)), f"the module's meter seen as {sorted(meters)}")
 
-        patch = base.replace("[/CableDump]", RST + "[/CableDump]", 1)
-        (out, clk, rst, *_), _ = record(rom, xml, patch, tmp)
-        ce = sorted(edges(clk))
-        re_ = [r for r in edges(rst) if r > SETTLE]
-        bad = 0
-        for r in re_:
-            nxt = [c for c in ce if c > r + 1]
-            if len(nxt) < 2:
-                continue
-            first, second = step_of(out[nxt[0] - 1]), step_of(out[nxt[0] + 1])
-            bad += (first, second) != (0, 1)
-        report("Rst", len(re_) > 20 and bad == 0,
-               f"{len(re_)} Rst edges, {bad} not followed by the first step and then the second")
+        (out, clk, rst, ctl), _ = record(rom, xml, open(os.path.join(HERE, "seq5-ctrlseq.pch")).read(), tmp)
+        ctl_steps = STEPS[:4] + [64]                  # the CtrlSeq's fifth: 127 gives +64
+        cstep = [min(range(5), key=lambda k: abs(c / UNIT - ctl_steps[k])) for c in ctl]
+        mine = [step_of(v) for v in out]
+        runs, last = [], None                          # runs of samples on another step
+        for i in range(SETTLE, len(out)):
+            if mine[i] != cstep[i]:
+                if last is not None and i == last + 1:
+                    runs[-1] += 1
+                else:
+                    runs.append(1)
+                last = i
+        resets = sum(1 for i in range(SETTLE, len(rst)) if rst[i] > 0 >= rst[i - 1])
+        report("in step with a CtrlSeq", resets > 5 and runs and max(runs) <= 4,
+               f"{resets} Rst edges between clocks, {len(runs)} differences, the longest "
+               f"{max(runs) if runs else 0} samples")
 
         (out, clk, *_), _ = record(rom, xml, base, tmp, "--param-at", "3:1:3:2:127")
         half = len(out) // 2
