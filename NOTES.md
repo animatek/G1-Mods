@@ -334,6 +334,22 @@ data: each parameter's maximum and the inputs and outputs in `modules.xml`, and 
 in `ParameterEncoder.cpp` (its `g1-mods` branch, read with `git show`). `tests/run_all.py`
 runs every test.
 
+## Type 123: 5-Step Seq, and a row of step LEDs (2026-10-16)
+
+- **The step's value is read at r3 + the step**: the step is a plain integer in X[0] (`add #<$1`,
+  `cmp #<$5` work on b1), `move r3,a / add b,a / move a1,r2` and `x:(r2)`. r2 is a scratch
+  register between modules: Clavia's CtrlSeq uses it (and r5) the same way, though it keeps the
+  step as an absolute address its 68k routines relocate; a step relative to r3 needs none.
+  `lua (r3+$5),r3` skips the five values.
+- **The step LEDs are a led-array on the meter list**: the outputs case of `+$0C` calls
+  `$1169BA(slot, section, module, value routine, 0)`, the last argument a word (the CtrlSeq
+  clears the word left on the stack), and the value routine returns the step, or 16 for none, as
+  the CtrlSeq's does. NME draws it from the Meters message (`$3A`, the module's B value); its
+  theme's `led-array` takes `steps="5"` now (branch `g1-mods`).
+- The knobs: (v − 64) control units, `(v − 64) << 15` in the parameter's 68k transform.
+- `tests/check_seq5.py`: the steps in order with the clock, Rst to the first, a knob turned live,
+  the step in the Meters messages; `check_insert.py` plays it too.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash
@@ -351,7 +367,7 @@ It also shows **the two mixers working in one patch** despite the RAM variables 
 
 ## Next
 
-- A step sequencer (5 steps with LEDs) and an 8Counter, built with `control_type`.
+- An 8Counter (eight outputs, a led-array of 8), then the switches and muxes.
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.

@@ -19,7 +19,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
-PATCHES = ("mixer-demo.pch", "mix1-1a-chain.pch", "flipflop-lfo.pch", "noise-sh.pch")
+PATCHES = ("mixer-demo.pch", "mix1-1a-chain.pch", "flipflop-lfo.pch", "noise-sh.pch", "seq5.pch")
 RATE = 96000
 
 

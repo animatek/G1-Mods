@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **type 123, 5-Step Seq** (`dsp/seq5.asm`): Clk, Rst, Out and five bipolar knobs
+  (−64…+63), after Buchla's five-stage sequencers, with a row of five step LEDs (a led-array on
+  the OS's meter list, `$1169BA`, as the CtrlSeq's; `value_routine` and `connection_routine`'s
+  `meter`). Built with `control_type`. NME data in "Sequencer (mods)". New `tests/check_seq5.py`
+  (order, Rst, a knob live, the step LEDs) passes, and every other test with it;
+  `check_insert.py` plays it too.
+
 - Claude: **a control type is described once** (`control_type` and `Param` in `patch_rom.py`):
   DSP file, X words, parameters and LED, and the counts, parameter table and routines, `+$08`,
   connection routine and descriptor derived from them, instead of fields copied from a donor and

@@ -18,6 +18,7 @@ NEW_TYPES = {
     119: (19, "Mixer Inv", "3 Inputs Mixer, input 1 inverted (G1-Mods test)", [], []),
     120: (89, None, None, None, None),   # written whole: FULL_ENTRIES below
     122: (53, None, None, None, None),   # written whole: FULL_ENTRIES below
+    123: (91, None, None, None, None),   # written whole: FULL_ENTRIES below
     121: (19, "Mix1-1A", "1 Input Chain Mixer (G1-Mods)",
           [('name="in1"', 'name="in"'), ('name="in2"', 'name="chain"'),
            ('\n    <connector component-id="c3" index="2" name="in3" type="input" signal="audio" />', ''),
@@ -144,6 +145,72 @@ FULL_ENTRIES = {
 \t\t<label x="214" y="9">Out</label>
 \t\t<connector x="236" y="8" size="13" class="cCONTROL">
 \t\t\t<connector component-id="c2" alt="out" />
+\t\t</connector>
+\t</module>"""),
+    123: ("""
+  <module component-id="m123" index="123" name="5-StepSeq" fullname="5-Step Sequencer, one knob a step (G1-Mods)" category="Sequencer (mods)">
+    <image type="screenshot" src="img/modules/module-91.png" width="256" height="105" />
+    <image type="icon16x16" src="img/icons/16x16/module-id-91.png" width="16" height="16" />
+    <image type="icon32x32" src="img/icons/32x32/module-id-91.png" width="32" height="32" />
+    <connector component-id="c1" index="0" name="clock" type="input" signal="logic" />
+    <connector component-id="c2" index="1" name="reset" type="input" signal="logic" />
+    <connector component-id="c3" index="0" name="out" type="output" signal="control" />
+    <!-- parameter(s) -->
+    <parameter component-id="p1" index="0" name="step 1" class="parameter" defaultValue="64" formatter="value-64" extension="m1" />
+    <parameter component-id="p2" index="1" name="step 2" class="parameter" defaultValue="64" formatter="value-64" extension="m2" />
+    <parameter component-id="p3" index="2" name="step 3" class="parameter" defaultValue="64" formatter="value-64" extension="m3" />
+    <parameter component-id="p4" index="3" name="step 4" class="parameter" defaultValue="64" formatter="value-64" extension="m4" />
+    <parameter component-id="p5" index="4" name="step 5" class="parameter" defaultValue="64" formatter="value-64" extension="m5" />
+    <parameter component-id="m1" index="0" name="morph:step 1" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m2" index="1" name="morph:step 2" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m3" index="2" name="morph:step 3" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m4" index="3" name="morph:step 4" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m5" index="4" name="morph:step 5" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <light component-id="ledStep1-5" type="led-array" name="Step 1-5" minValue="0" maxValue="5" />
+    <!-- custom attributes -->
+    <attribute name="cycles" type="double" value="0.6" />
+    <attribute name="x-mem" type="double" value="0.3" />
+    <attribute name="y-mem" type="double" value="0.0" />
+    <attribute name="prog-mem" type="double" value="0.9" />
+    <attribute name="dyn-mem" type="double" value="0.5" />
+    <attribute name="zero-page" type="double" value="0.875" />
+    <attribute name="height" type="integer" value="4" />
+    <attribute name="background" value="#e5babf" />
+  </module>""", """
+\t<module component-id="m123" width="255" height="60">
+\t\t<name>5-Step Seq</name>
+\t\t<label x="5" y="16">Clk</label>
+\t\t<connector x="6" y="28" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c1" alt="clock" />
+\t\t</connector>
+\t\t<label x="27" y="16">Rst</label>
+\t\t<connector x="28" y="28" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c2" alt="reset" />
+\t\t</connector>
+\t\t<light component-id="ledStep1-5" type="led-array" steps="5" x="55" y="18" width="175" height="7" />
+\t\t<label x="55" y="16" width="11" height="10" align="centre">1</label>
+\t\t<label x="90" y="16" width="11" height="10" align="centre">2</label>
+\t\t<label x="125" y="16" width="11" height="10" align="centre">3</label>
+\t\t<label x="160" y="16" width="11" height="10" align="centre">4</label>
+\t\t<label x="195" y="16" width="11" height="10" align="centre">5</label>
+\t\t<knob x="62" y="28" size="21">
+\t\t\t<parameter component-id="p1" alt="step 1" />
+\t\t</knob>
+\t\t<knob x="97" y="28" size="21">
+\t\t\t<parameter component-id="p2" alt="step 2" />
+\t\t</knob>
+\t\t<knob x="132" y="28" size="21">
+\t\t\t<parameter component-id="p3" alt="step 3" />
+\t\t</knob>
+\t\t<knob x="167" y="28" size="21">
+\t\t\t<parameter component-id="p4" alt="step 4" />
+\t\t</knob>
+\t\t<knob x="202" y="28" size="21">
+\t\t\t<parameter component-id="p5" alt="step 5" />
+\t\t</knob>
+\t\t<label x="233" y="16">Out</label>
+\t\t<connector x="236" y="28" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c3" alt="out" />
 \t\t</connector>
 \t</module>"""),
 }

@@ -219,7 +219,29 @@ def led_routine(x_word, on_when_set=True):
                 "4e75")               # rts
 
 
-def connection_routine(inputs, outputs, part=1, led=None):
+def value_routine(x_word, maximum):
+    """A led-array's value routine, for $1169BA: reads the module's X word as led_routine does and
+    returns it as it is (a step, 0..maximum), or 16 (no LED lit) when it is out of range, as
+    the CtrlSeq's does."""
+    return m68k("48e7 2030",          # movem.l d2/a2-a3,-(sp)
+                "246f 0010",          # movea.l (16,sp),a2
+                "266f 0014",          # movea.l (20,sp),a3
+                "7000 302a 0008",     # moveq #0,d0 / move.w (8,a2),d0
+                "7200 322b 0008",     # moveq #0,d1 / move.w (8,a3),d1
+                "d081",               # add.l d1,d0
+                "0680", f"{x_word:08x}",  # addi.l #x_word,d0
+                "2f00",               # move.l d0,-(sp)       the address
+                "1012 3f00",          # move.b (a2),d0 / move.w d0,-(sp)   the DSP
+                "4eb9 0010c32e",      # jsr $10C32E           read X
+                "5c8f",               # addq.l #6,sp
+                "0c80", f"{maximum:08x}",  # cmpi.l #maximum,d0
+                "6302",               # bls.s +2              in range: as it is
+                "7010",               # moveq #16,d0          out of range: none
+                "4cdf 0c04",          # movem.l (sp)+,d2/a2-a3
+                "4e75")               # rts
+
+
+def connection_routine(inputs, outputs, part=1, led=None, meter=None):
     """A type's +$0C: patches each input's address into its code words ({input: [words]}) with
     $124202, and every output's ([(output, word)]) with $1243DA, like Clavia's (CompareAB's,
     ClkDivFix's). part: 0 audio, 1 control. Branches are word-sized, resolved here."""
@@ -238,6 +260,16 @@ def connection_routine(inputs, outputs, part=1, led=None):
     outs = b"".join(m68k("3f3c", f"{w:04x}", "3f3c", f"{o:04x}",  # word, output
                          "2f0a", "3f3c", f"{part:04x}",           # a2, part
                          "4eb9 001243da", "4fef 000a") for o, w in outputs)
+    if meter:
+        # a led-array (a sequencer's step), on the slot's meter list, as the CtrlSeq does:
+        # $1169BA(slot, section, module, value routine, 0)
+        outs += m68k("4267",                         # clr.w -(sp)
+                     "4879", f"{meter:08x}",         # pea value routine
+                     "102a 0003 3f00",               # move.b (3,a2),d0 / move.w d0,-(sp)   module
+                     "102a 0001 3f00",               # move.b (1,a2),d0 / move.w d0,-(sp)   section
+                     "1012 3f00",                    # move.b (a2),d0 / move.w d0,-(sp)     slot
+                     "4eb9 001169ba",                # jsr $1169BA
+                     "4fef 000c")                    # lea (12,sp),sp
     if led:
         # the module's LED, on the slot's LED list, as the RndPulsGen does: the OS keeps one
         # entry per module (a second call for the same module adds nothing)
@@ -315,10 +347,11 @@ class Param:
 BRANCH = re.compile(r"^\s+(b|j)(cc|cs|ec|eq|es|ge|gt|lc|le|ls|lt|mi|ne|nn|nr|pl|ra|sr)\b", re.M)
 
 
-def control_type(b, new_type, asm, x_init, params=(), led=None):
+def control_type(b, new_type, asm, x_init, params=(), led=None, steps=None):
     """A control-rate type, described once: its DSP code (dsp/<asm>, its inputs and outputs from
     the @inN/@outN marks), the initial values of its X words, its parameters and maybe one LED
-    (the X word it shows). Everything the OS reads about the type is derived from that: the counts
+    (the X word it shows) or a row of step LEDs (steps: the X word with the step, the last step).
+    Everything the OS reads about the type is derived from that: the counts
     at +$18, the parameter table, the parameter routines (+$00, +$04, and ClkDiv's +$08, which
     answers 0: the value goes through our routine), the connection routine, and the descriptor
     (outputs, cycles, X and P words, the record's size). Each of those, copied by hand from a
@@ -339,8 +372,9 @@ def control_type(b, new_type, asm, x_init, params=(), led=None):
             b, [b.put(write_x_routine(p.x_word, p.transform)) for p in params])
         fields[0x1C] = b.put(param_table([(p.name, p.maximum) for p in params]))
     led_at = b.put(led_routine(led)) if led is not None else None
+    meter_at = b.put(value_routine(*steps)) if steps is not None else None
     fields[0x0C] = b.put(connection_routine(inputs, [(o, w[0]) for o, w in sorted(outputs.items())],
-                                            led=led_at))
+                                            led=led_at, meter=meter_at))
     x_at = b.put(words(*x_init))
     p_at = b.put(words(*code))
     # the descriptor: ClkDiv's (control part only), with every field we know of set here, and
@@ -386,6 +420,17 @@ def noise_sh(b, new_type=122):
                   Param("Uni", 1, 5, "7000 4a82 6706 203c 007fffff")])
 
 
+def seq5(b, new_type=123):
+    """5-Step Seq: Clk and Rst in, Out, five bipolar knobs (-64..+63 units), the step's LEDs."""
+    # value v = 0..127: (v - 64) control units, a unit being $8000
+    #   move.l d2,d0 / subi.l #64,d0 / moveq #15,d1 / asl.l d1,d0
+    bipolar = "2002 0480 00000040 720f e3a0"
+    control_type(b, new_type, "seq5.asm",
+                 (0, 0, 0, 0, 0, 0, 0, 0),            # step, Clk's last, Rst's last, the values
+                 [Param(f"Step {i + 1}", 127, 3 + i, bipolar) for i in range(5)],
+                 steps=(0, 4))
+
+
 # name: (what it shows, the new types, or the DSP words to change in place)
 EXPERIMENTS = {
     "mixer3-silent": (
@@ -397,8 +442,9 @@ EXPERIMENTS = {
         [mixer_inv], [],
     ),
     "all": (
-        "every new type: 119 (Mixer Inv), 120 (FlipFlop), 121 (Mix1-1A), 122 (Noise S&H)",
-        [mixer_inv, flipflop, mix1_1a, noise_sh], [],
+        "every new type: 119 (Mixer Inv), 120 (FlipFlop), 121 (Mix1-1A), 122 (Noise S&H), "
+        "123 (5-Step Seq)",
+        [mixer_inv, flipflop, mix1_1a, noise_sh, seq5], [],
     ),
 }
 
