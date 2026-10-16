@@ -166,55 +166,84 @@ def mix1_1a(b, new_type=121):
                    params=[("Level", 127), ("Ch 1", 1)])
 
 
-# The D flip-flop's control-rate code (see NOTES.md, "Type 120: a D flip-flop").
-# X data: [0] the logic high, [1] the clock's last value, [2] Q.
-FLIPFLOP_X = (0x200000, 0, 0)
-FLIPFLOP_CODE = (
-    0x468000,  # move x:$0,y0       clock (input 0); word 0 lands in the previous module's nop slot
-    0x578000,  # move x:$0,b        D (input 1)
-    0x45DB00,  # move x:(r3)+,x1    x1 = high
-    0x44E300,  # move x:(r3),x0     x0 = last clock
-    0x465B00,  # move y0,x:(r3)+    last clock = clock
-    0x47E300,  # move x:(r3),y1     y1 = Q
-    0x20000B,  # tst b
-    0x202F1B,  # clr b ifle         b = D > 0 ? high : 0
-    0x202769,  # tfr x1,b ifgt
-    0x200051,  # tfr y0,a
-    0x200003,  # tst a
-    0x202F79,  # tfr y1,b ifle      clock low: keep Q
-    0x200041,  # tfr x0,a
-    0x200003,  # tst a
-    0x202779,  # tfr y1,b ifgt      clock was already high: keep Q
-    0x575B00,  # move b,x:(r3)+     Q = b
-    0x000000,  # nop                where the next module's word 0 goes
-    0x570000,  # move b,x:$0        out (output 0)
-)
-FLIPFLOP_OUT_WORD = len(FLIPFLOP_CODE) - 1
+def m68k(*parts):
+    """Concatenates hex strings of hand-assembled 68k code."""
+    return bytes.fromhex("".join(parts).replace(" ", ""))
+
+
+def connection_routine(inputs, outputs, part=1):
+    """A type's +$0C: patches each input's address into its code words ({input: [words]}) with
+    $124202, and every output's ([(output, word)]) with $1243DA, like Clavia's (CompareAB's,
+    ClkDivFix's). part: 0 audio, 1 control. Branches are word-sized, resolved here."""
+    head = m68k("48e7 0030",      # movem.l a2-a3,-(sp)
+                "246f 000c",      # movea.l (12,sp),a2   the connection
+                "266f 0010",      # movea.l (16,sp),a3
+                "7000",           # moveq #0,d0
+                "102a 0005")      # move.b (5,a2),d0     which input, or -1: the outputs
+    end = m68k("4cdf 0c00", "4e75")  # movem.l (sp)+,a2-a3 / rts
+    cases = [(i, b"".join(m68k("3f3c", f"{w:04x}",       # move.w #word,-(sp)
+                               "2f0b 2f0a",              # move.l a3,-(sp) / move.l a2,-(sp)
+                               "3f3c", f"{part:04x}",    # move.w #part,-(sp)
+                               "4eb9 00124202",          # jsr $124202
+                               "4fef 000c") for w in ws))  # lea (12,sp),sp
+             for i, ws in sorted(inputs.items())]
+    cases.append((0xFF, b"".join(m68k("3f3c", f"{w:04x}", "3f3c", f"{o:04x}",  # word, output
+                                      "2f0a", "3f3c", f"{part:04x}",           # a2, part
+                                      "4eb9 001243da", "4fef 000a") for o, w in outputs)))
+    tests_len = 8 * len(cases)                      # cmpi.b #n,d0 (4) + beq.w (4) each
+    body_at = len(head) + tests_len + len(end)
+    tests, bodies, at = b"", b"", body_at
+    for n, (key, body) in enumerate(cases):
+        here = len(head) + 8 * n + 4                # the beq.w's address
+        tests += m68k("0c00", f"{key:04x}", "6700", f"{(at - (here + 2)) & 0xFFFF:04x}")
+        jump_from = at + len(body)                  # bra.w back to end
+        bodies += body + m68k("6000", f"{(len(head) + tests_len - (jump_from + 2)) & 0xFFFF:04x}")
+        at += len(body) + 4
+    return head + tests + end + bodies
 
 
 def flipflop(b, new_type=120):
-    """A D flip-flop: Q takes D on the clock's rising edge. CompareAB (type 89) is the donor:
-    two inputs, one output, no parameters, control rate."""
-    # CompareAB's entry is built in RAM at boot; what it points to (read from a RAM dump) is in ROM
-    conn_src, desc_src = 0x134FBA, 0x14A4EE
-    # +$0C, the connections: CompareAB's, with the output patched at our last word, not its 5th
-    conn = bytearray(b.rom_bytes(conn_src, 0x78))
-    at = conn.find(bytes.fromhex("3f3c0005"))
-    assert at > 0 and conn[-2:] == bytes.fromhex("4e75")
-    conn[at + 2:at + 4] = FLIPFLOP_OUT_WORD.to_bytes(2, "big")
-    conn_at = b.put(conn)
-    x_at = b.put(words(*FLIPFLOP_X))
-    p_at = b.put(words(*FLIPFLOP_CODE))
-    # +$28, the descriptor: CompareAB's, with our counts
-    desc = bytearray(b.rom_bytes(desc_src, 0x30))
-    assert desc[0x1A:0x1C] == b"\0\0" and desc[0x22:0x24] == (6).to_bytes(2, "big")
-    desc[0x06:0x08] = (len(FLIPFLOP_CODE) - 1).to_bytes(2, "big")   # control cycles
-    desc[0x1A:0x1C] = len(FLIPFLOP_X).to_bytes(2, "big")            # control X words
-    desc[0x22:0x24] = len(FLIPFLOP_CODE).to_bytes(2, "big")         # control P words
+    """The G2's FlipFlop: D-type or RS-type, with Rst, Q and NotQ (dsp/flipflop.asm). Built on
+    ClkDiv (type 69), a control-rate type with one parameter, whose +$00 hands the parameter's
+    value over unchanged; its +$04 is copied to call our own routine, which writes the Type into
+    X[1]."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import dspasm
+    code, marks, _ = dspasm.assemble(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                  "..", "dsp", "flipflop.asm"))
+    x_init = (0x200000, 0, 0, 0, 0)            # high, Type, Clk's last, In's last, Q
+    # the parameter: ClkDiv's +$04 ($136E86) calls $10C49E with a routine for the value; ours
+    # writes it to X[1] with $10D142(module, value, X word), as ClkDiv's does for its words
+    write_type = b.put(m68k("48e7 2030",        # movem.l d2/a2-a3,-(sp)
+                            "242f 0014",        # move.l (20,sp),d2     the value
+                            "246f 0010",        # movea.l (16,sp),a2    the module
+                            "3f3c 0001",        # move.w #1,-(sp)       X[1]
+                            "2f02 2f0a",        # move.l d2,-(sp) / move.l a2,-(sp)
+                            "4eb9 0010d142",    # jsr $10D142
+                            "4fef 000a",        # lea (10,sp),sp
+                            "4cdf 0c04",        # movem.l (sp)+,d2/a2-a3
+                            "4e75"))            # rts
+    param = bytearray(b.rom_bytes(0x136E86, 0x2E))
+    at = param.find(bytes.fromhex("487900136eb4"))   # pea $136EB4: ClkDiv's own routine
+    assert at > 0 and param[-2:] == bytes.fromhex("4e75")
+    param[at + 2:at + 6] = write_type.to_bytes(4, "big")
+    param_at = b.put(param)
+    conn_at = b.put(connection_routine(
+        {0: marks["in0"], 1: marks["in1"], 2: marks["in2"]},
+        [(0, marks["out0"][0]), (1, marks["out1"][0])]))
+    names_at = b.put(param_table([("Type", 1)]))
+    x_at = b.put(words(*x_init))
+    p_at = b.put(words(*code))
+    desc = bytearray(b.rom_bytes(0x14ADBC, 0x30))   # ClkDiv's descriptor: control part only
+    assert desc[0x1A:0x1C] == (7).to_bytes(2, "big") and desc[0x22:0x24] == (20).to_bytes(2, "big")
+    desc[0x06:0x08] = (len(code) + 16).to_bytes(2, "big")    # control cycles, branches included
+    desc[0x1A:0x1C] = len(x_init).to_bytes(2, "big")         # control X words
+    desc[0x1E:0x20] = (0).to_bytes(2, "big")                 # control Y words
+    desc[0x20:0x24] = len(code).to_bytes(4, "big")           # control P words
     desc_at = b.put(desc)
-    # +$24: audio X/Y/P (unused: no audio part), control X/Y/P, and the two nop offsets
     data_at = b.put(words(x_at, x_at, p_at, x_at, x_at, p_at) + bytes.fromhex("fffe"))
-    b.add_type(new_type, 89, {0x0C: conn_at, 0x24: data_at, 0x28: desc_at})
+    b.add_type(new_type, 69, {0x04: param_at, 0x0C: conn_at, 0x18: 0x01030200, 0x1C: names_at,
+                              0x24: data_at, 0x28: desc_at})
 
 
 # name: (what it shows, the new types, or the DSP words to change in place)
@@ -228,7 +257,7 @@ EXPERIMENTS = {
         [mixer_inv], [],
     ),
     "all": (
-        "every new type: 119 (Mixer Inv), 120 (FlipFlop, a D flip-flop), 121 (Mix1-1A)",
+        "every new type: 119 (Mixer Inv), 120 (FlipFlop), 121 (Mix1-1A)",
         [mixer_inv, flipflop, mix1_1a], [],
     ),
 }

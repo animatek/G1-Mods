@@ -152,6 +152,77 @@ the entry's counts set to 1 parameter, 2 inputs, 1 output:
   level. That is 68k code of some size: time for an assembler (`vasm`) instead of hand
   assembly.
 
+## How a module's lights reach the editor (2026-10-16)
+
+Read from the CtrlSeq (type 91), whose step LED is a `led-array` 0–16 in NME:
+
+- **The editor gets them in two messages**: plain LEDs in `Lights` (NMInfo `$39`: a start index and
+  2 bits per LED) and meters and sequencers' step arrays in `Meters` (`$3A`, 7-bit values in
+  pairs). Each module with lights takes the next slots in the patch's order (NME's
+  `LightMeterLayout`).
+- **The OS registers a module's light when its outputs are connected**: in the `+$0C` routine's
+  output case (−1), after `$1243DA`, the CtrlSeq calls **`$1169BA(slot, section, module, value
+  routine, 0)`** with the bytes at 0, 1 and 3 of the connection record. That adds the module to
+  the slot's meter list (`$110666(slot) + $5252`). `$1169FC`, next to it, does the same on the
+  list at `+$5636`, most likely the plain LEDs.
+- **The value routine** (CtrlSeq's: `$13A618`) is called with the module's two records (A2, A3)
+  and reads one of its X words through the DSP's host port: **`$10C32E(dsp, address)`**, address
+  = the two records' X bases (word at +8 of each) + the word index (2 for the CtrlSeq). It
+  returns the value to send; the CtrlSeq keeps a pointer there and turns it into the step 0–15,
+  or 16 for none.
+- So **a module of ours can light**: its code keeps the value in an X word, its `+$0C` registers
+  a value routine with `$1169BA`, and the routine reads that word with `$10C32E`.
+
+## Flashing a real G1 (plan, 2026-10-16)
+
+Feasible, and hard to brick (from `../G1-Emu/NOTES.md`, "Boot and memory map"): the loader, the
+MIDI update utility and the factory OS are in the **512 KB ROM, which cannot be written**; the
+installed OS and the patch banks are in the 1 MB flash. At power-on the loader copies the flash's
+OS to RAM, or enters the MIDI update mode if the flash is empty or a key combination is held, or
+boots the ROM's own factory OS with another combination. So an OS of ours that hangs, or a power
+cut halfway through, is recovered by sending Clavia's 3.03b update again. Which physical buttons
+make those combinations (the loader reads raw panel rows: D1/D2/D3) is still to be checked in
+the emulator.
+
+Risks: whether an OS update keeps the patch banks is not known (back them all up first); a
+patch with new types stored in a bank may trip Clavia's OS later (while testing, upload such
+patches to a slot, never store them); and the real hardware against the emulator.
+
+Before a real G1:
+1. **Port the experiments to the 3.03b update's OS**, which is what a real G1 runs: the same
+   code linked with other addresses (G1-Emu's notes: mostly `$20` higher), so every address in
+   `tools/patch_rom.py` needs its update counterpart, and the untouched RAM must be checked again.
+2. **An updater of our own**, sending the modified OS the way Clavia's updater does. G1-Emu
+   already takes the official updater's MIDI (in Wine): capture it, learn the format, reproduce it.
+3. **Rehearse in G1-Emu**: flash ours, boot, play, flash Clavia's back, try the key combinations.
+4. **On the G1**: back up the banks, flash Clavia's once (the procedure works), then ours, test,
+   and back to Clavia's.
+
+## Type 120, complete: D-type and RS-type (2026-10-16)
+
+The FlipFlop is now the G2's: inputs Clk, In and Rst, outputs Q and NotQ, a Type parameter
+(D / RS). Code in `dsp/flipflop.asm` (55 words, with short relative branches), assembled by
+`tools/dspasm.py`, which looks every instruction up by its text in an index of all one-word
+opcodes disassembled by G1-Emu's `dspdis` (built once into `out/`).
+
+- **Built on ClkDiv (type 69)**, a control-rate type with one parameter: its `+$00` hands the
+  value over unchanged, and a copy of its `+$04` calls a routine of ours that writes the Type to
+  X[1] with **`$10D142(module, value, X word)`** (what ClkDiv uses for its own words). LogicProc's
+  shows the other way: **`$10D046(module, instruction, code word)`** rewrites an instruction.
+- **The connection routine is generated** (`connection_routine` in `patch_rom.py`) from the
+  assembler's marks: an input may be patched into several words (In is read at three places) with
+  `$124202(part, connection, record, word)`; the outputs, all in the −1 case, with
+  `$1243DA(part, connection, output, word)`.
+- **Rules for code with branches**: no branch leaves word 0 (it runs in the previous module's
+  nop slot) and none lands on the nop slot or after it (the next module's word 0 goes there).
+- **Checked** (`tests/check_flipflop.py`, 4 cases of 6 s): D-type follows In at every clock
+  edge; RS with In unplugged toggles on all 288 edges (a divider by 2); RS with Rst from an LFO
+  holds Q at 0 while Rst is high and toggles 152 times while it is low; RS with Clk unplugged sets
+  Q on In and keeps it. NotQ is Q's opposite everywhere after the first 50 ms. Weak spots: in the
+  set case In is already high at the first sample, so the edge is the start; and once, in the
+  toggle case, NotQ had a stray value for 2 samples 4 ms in, while the patch was being set up,
+  not explained.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash

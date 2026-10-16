@@ -24,6 +24,7 @@ Version=Nord Modular patch 3.0
 0 5 0 0 6 0 1 
 0 5 1 0 3 1 1 
 0 5 2 0 4 0 1 
+0 5 3 0 6 1 1 
 [/CableDump]
 [CableDump]
 0 
@@ -35,7 +36,7 @@ Version=Nord Modular patch 3.0
 3 24 8 64 1 0 0 0 0 64 0 
 4 68 2 64 1 
 5 3 1 100 
-6 120 0  
+6 120 1 0 
 [/ParameterDump]
 [ParameterDump]
 0 

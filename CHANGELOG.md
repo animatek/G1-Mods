@@ -5,6 +5,15 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **the FlipFlop is complete** (the G2's: D/RS Type, Clk, In, Rst, Q, NotQ), with DSP code
+  written in assembly (`dsp/flipflop.asm`) and a small assembler (`tools/dspasm.py`) that finds
+  encodings in an index of G1-Emu's disassembler. ClkDiv is the donor; the Type is written to X by
+  a routine of ours; the connection routine is generated from the code's marks.
+  `tests/check_flipflop.py` checks four cases (D, toggle, reset, set) and passes; so does
+  `check_mix1_1a.py`. `make_nme_data.py` takes whole entries (the FlipFlop's). Also in `NOTES.md`:
+  how a module's lights reach the editor (from the CtrlSeq), and the plan to flash a real G1;
+  in `PORTING.md`: G1 and G2 sequencers compared, and new modules of our own (Noise S&H, 5-step
+  sequencer, small reverb, Turing Machine). `tools/__pycache__` out of Git.
 - Claude: `PORTING.md`, the porting checklist: every G2-only module and the G2 versions that do
   more than the G1's, with their DSP size in the demo, whether a real G1 can run them (the limit:
   each DSP has 4K program and 2K+2K data words, no external RAM, so long delays and the reverb

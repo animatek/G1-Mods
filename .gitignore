@@ -6,3 +6,6 @@
 *.exe
 /Roms/
 /out/
+
+# Python caches
+__pycache__/
