@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-16
 
+- Claude: **fixed the modified OS hanging on its second boot.** The package crossed `$70000` in
+  the flash, where the patch banks start and which the OS formats on its first boot, erasing the
+  registration routine. Now it is stored at `$166574`, inside the OS's sectors, and a bootstrap
+  copies it to `$170000` at boot. Checked: three boots on the same flash, the old hanging flash,
+  both module tests, and a replayed 2 MB NME session (package intact). `NOTES.md` corrected.
 - Claude: with a fresh flash the G1-Emu window boots the G1-Mods ROM (checked by Javier), so the
   blank display came from the old `out/flash-all.bin` (kept aside). Noted in `NOTES.md` as an open
   problem to solve before a real G1.

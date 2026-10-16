@@ -17,7 +17,13 @@ import sys
 ROM_SHA256 = "d9b199f2"  # start of the rack OS 3.03's sha256 (G1-Emu/NOTES.md, "The ROM")
 ROM_SIZE = 512 * 1024
 
-FREE = 0x16FB80           # RAM the OS leaves untouched (NOTES.md, "Where new code can live")
+# Where the new types live (NOTES.md, "Where new code can live"). The flash keeps the OS only up
+# to $70000 (RAM $16FFE0): past that are the patch banks, which the OS formats. So the package is
+# stored at STAGE, in a run of the OS image the OS leaves alone until well after the types are
+# registered, and a bootstrap there copies it at boot to RUN, RAM the OS never uses, where it runs.
+STAGE = 0x166574          # in the image, inside the flash's OS area
+STAGE_END = 0x16B078
+FREE = RUN = 0x170000      # where the package runs: every address in it is a RUN address
 FREE_END = 0x173800
 LIST_LAST_JSR = 0x10DF1E  # the registration list's last jsr (type 17's, $143350)
 LIST_LAST_TARGET = 0x143350
@@ -73,11 +79,25 @@ class Build:
         self.types.append(new_type)
 
     def finish(self):
-        routine = bytes.fromhex(f"4eb9{LIST_LAST_TARGET:08x}")   # the call it replaces
-        routine += b"".join(self.register) + bytes.fromhex("4e75")  # rts
-        reg = self.put(routine)
-        hook = (LIST_LAST_JSR + 2, LIST_LAST_TARGET.to_bytes(4, "big"), reg.to_bytes(4, "big"))
-        return self.blocks, hook
+        """Returns ([(RAM address in the image, bytes)], hook): the package with its registration
+        routine at the end, behind a bootstrap at STAGE that copies it to RUN and calls it."""
+        reg = self.put(b"".join(self.register) + bytes.fromhex("4e75"))   # ...rts
+        package = b"".join(data for _, data in self.blocks)
+        assert len(package) == self.at - RUN
+        boot_len = 0x24
+        src = STAGE + boot_len
+        boot = m68k("4eb9", f"{LIST_LAST_TARGET:08x}",       # jsr $143350: the call it replaces
+                    "41f9", f"{src:08x}",                    # lea package,a0
+                    "43f9", f"{RUN:08x}",                    # lea RUN,a1
+                    "303c", f"{len(package) - 1:04x}",       # move.w #n-1,d0
+                    "12d8",                                  # move.b (a0)+,(a1)+
+                    "51c8 fffc",                             # dbra d0,*-2
+                    "4eb9", f"{reg:08x}",                    # jsr registration
+                    "4e75")                                  # rts
+        assert len(boot) <= boot_len and src + len(package) <= STAGE_END
+        boot += bytes.fromhex("4e71") * ((boot_len - len(boot)) // 2)   # nop
+        hook = (LIST_LAST_JSR + 2, LIST_LAST_TARGET.to_bytes(4, "big"), STAGE.to_bytes(4, "big"))
+        return [(STAGE, boot + package)], hook
 
 
 def param_table(params):
@@ -294,7 +314,7 @@ def main():
         if rom[o:o + 4] != old:
             sys.exit(f"unexpected hook at ${addr:06X}: {rom[o:o + 4].hex()}")
         rom[o:o + 4] = new
-        print(f"new types {b.types}, {b.at - FREE} bytes at ${FREE:06X}, registered by ${int.from_bytes(new, 'big'):06X}")
+        print(f"new types {b.types}, {b.at - RUN} bytes, stored at ${STAGE:06X}, run at ${RUN:06X}")
     os.makedirs(os.path.dirname(os.path.abspath(dst)), exist_ok=True)
     open(dst + ".tmp", "wb").write(rom)
     os.replace(dst + ".tmp", dst)   # never a half-written ROM for an emulator starting meanwhile

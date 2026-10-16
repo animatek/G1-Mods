@@ -45,11 +45,16 @@ Read from a RAM dump after boot (`G1_RAMDUMP=file g1boot ROM 60`, in `../G1-Emu`
   already registered it stores it in `$162CDA` (a duplicate). `$10DC70(type)` answers whether a
   type is registered (type 0 always is); no direct `jsr`/`bsr` to it was found, so who asks
   (probably the patch loader, through a pointer) is still open.
-- **Where new code can live:** the ROM's empty end (`$6A7E0`–`$7FFFF`, 88 KB of `$FF`) is copied
-  to RAM `$15DFE0`–`$1737FF` with the rest of the OS, but the OS uses its lower part for
-  variables: after boot it has written up to `$16FB7E`. **`$16FB7F`–`$1737FF` (~15 KB) stays
-  untouched**; still to check after patch loads and editing. The `$FF` runs in between (8 KB,
-  19 KB) look like buffers.
+- **Where new code can live (corrected 2026-10-16).** The ROM's empty end (`$6A7E0`–`$7FFFF`)
+  is copied to RAM `$15DFE0`–`$1737FF` with the rest of the OS, but two limits apply:
+  - **the flash keeps the OS only up to `$70000`** (RAM `$16FFE0`); past that are the patch
+    banks, formatted on the first boot, so nothing stored past `$16FFDF` survives a real G1's
+    second boot;
+  - the OS uses most of `$15DFE0`–`$16FB7E` as variables, except some runs (two of 19 KB at
+    `$166573` and `$16B079`, two of 8 KB) that are still untouched when the types are registered.
+  So the package is **stored** in the 19 KB run at `$166574` and **runs** from `$170000`
+  (`$170000`–`$1737FF`, 14 KB, never used by the OS: untouched after a replayed 2 MB NME
+  session); a 36-byte bootstrap at `$166574` copies it there at boot, before registering.
 
 ## The first new type: 119 (2026-10-16)
 
@@ -188,16 +193,19 @@ Risks: whether an OS update keeps the patch banks is not known (back them all up
 patch with new types stored in a bank may trip Clavia's OS later (while testing, upload such
 patches to a slot, never store them); and the real hardware against the emulator.
 
-**An open problem (2026-10-16):** G1-Emu's window showed a blank display (the OS hung before
-it wrote the LCD) with the ROM of every new type and the flash it had been using since the first
-experiment that morning (`out/flash-all.bin`, kept as `out/flash-all-apartada-2026-10-16.bin`),
-while the same ROM booted in `g1boot` and `g1patchtest`, and in the window with a fresh flash.
-The emulator replaces the flash's OS with the ROM's, so what hangs it is the rest of the flash:
-the patch storage or the settings written under earlier versions of the new types. **Not
-explained yet, and it has to be before a real G1**, whose flash is full of banks.
+**Solved (2026-10-16): an OS of ours that hung on its second boot.** G1-Emu's window showed a
+blank display with a flash the OS had already formatted. The flash keeps the OS only up to
+`$70000` (RAM `$16FFE0`): from there on are the patch banks, which the OS formats ("INIT FLASH")
+on its first boot, and G1-Emu, like the loader, restores the OS only up to there
+(`Engine::OsBytes`). The package then ran from `$16FB80` to past `$170000`, so its registration
+routine was in the banks' sector: erased by the formatting, and on the next boot the list jumped
+into `$FF`. `g1boot` with `G1_FLASH` did not see it because that option first restored the whole
+image. Now the package is stored at `$166574` (inside the OS's sectors) and copied at boot to
+`$170000` (see "Where new code can live"). Checked: three boots in a row on the same flash with
+`g1run`, the old hanging flash, both module tests, and a 2 MB recorded NME session replayed with
+the package still intact at the end.
 
 Before a real G1:
-0. Find out why that flash hangs the modified OS at boot (above).
 1. **Port the experiments to the 3.03b update's OS**, which is what a real G1 runs: the same
    code linked with other addresses (G1-Emu's notes: mostly `$20` higher), so every address in
    `tools/patch_rom.py` needs its update counterpart, and the untouched RAM must be checked again.
