@@ -5,6 +5,10 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: `PORTING.md`, ideas from Javier's first tries: the Random's range and a Uni/Bi button
+  to check, one NME and one G1-Emu that tell the modified OS by themselves, and the mods tabs
+  under their family's.
+
 - Javier (Claude wrote it down): **the Random's Poly works**, checked by ear in G1-Emu: each voice
   plays its own sequence.
 

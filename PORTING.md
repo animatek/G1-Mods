@@ -248,6 +248,17 @@ Ideas built from what is known now. Same scale of feasibility.
 
 ## Ideas, not started
 
+- **From Javier's first tries (2026-10-17), to check**: the Random into a filter's modulation
+  seemed to move it little (its Out is ±64 units, bipolar, as a G1 LFO's; check Step and Edge
+  there), and the notes through a Scale Quantizer and a S&H sounded odd at times. A **Uni/Bi
+  button** on the Random. Uni↔Bi conversion itself is the G1's InvLevShift, no new type.
+- **One NME, one G1-Emu** (Javier, 2026-10-17): NME asks the synth which OS it runs and shows the
+  mods modules only with the modified one (the `g1-mods` branch merged into `main`); G1-Emu is
+  already the same emulator, the modified OS is only another ROM, so no fork of it. The patcher
+  stays here (it needs the user's own OS and never ships Clavia's).
+- **The mods categories in NME's module bar** (Javier): not a tab beside each family but under
+  it (a second row), or the same tab in another colour.
+
 - **G2 patches on a G1** (Javier, 2026-10-16): not loaded as they are (another file format and
   171 module types), but converted, in NME, for a patch whose every module has a counterpart on
   the G1 or in G1-Mods; one with a module never ported, or too big for the G1's DSPs, would not
