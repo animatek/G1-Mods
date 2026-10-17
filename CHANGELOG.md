@@ -5,6 +5,14 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: **type 125, Scale Quantizer** (`dsp/quant.asm`, Javier's idea, after JW-Modules'
+  Quantizer): In, Out, Root (C..B), Scale (16 by name) and Octave (−4..+4). A table per scale
+  written by the Scale routine (`write_table_routine`, `Param(table=)`). Found on the way: 0 at a
+  pitch input is an E, and n2 is not free between modules. NME data in "Control (mods)" (NME
+  `g1-mods` `3f849f8`). New `tests/check_quant.py` (every scale, sample by sample) passes;
+  `check_nme_data.py` checks the scale names; `check_turing.py` reads only whole Meters messages
+  (the PC Port log cut one once). All tests pass.
+
 - Claude: **the Turing Machine grows** (Javier): eight gate outputs, bits 0–7 while Clk is high
   (the Gate output goes: it was gate 1), a Scale knob for CV, and eight LEDs with the register's
   low byte, through the meter (`bits_routine`, `control_type`'s `bits`; NME `g1-mods` `led-array`

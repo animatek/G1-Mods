@@ -7,8 +7,9 @@ For each new type the ROM is built with, modules.xml (as tools/make_nme_data.py 
 have the same parameters, each with the same maximum (NME packs a patch's parameters by it, the
 OS unpacks them by the ROM's: a mismatch shifts every parameter after it), and the same number of
 inputs and outputs. And NME's ParameterEncoder (in its g1-mods branch, read with git show, so
-whatever branch is checked out) must give each parameter the width of its maximum. No emulator
-is needed.
+whatever branch is checked out) must give each parameter the width of its maximum, and its
+fmtScaleName as many names as the Scale Quantizer has scales (it shows them by their order). No
+emulator is needed.
 """
 import os
 import re
@@ -61,6 +62,14 @@ def main():
               f" encoder {widths.get(t)} bits for {bits}"
               f" -> {'ok' if good else 'WRONG'}")
         ok &= good
+    fmt = subprocess.run(["git", "-C", os.path.join(ROOT, "..", "Nomad2026"), "show",
+                          "g1-mods:source/format/ValueFormatters.cpp"],
+                         check=True, capture_output=True, text=True).stdout
+    m = re.search(r"fmtScaleName \(int value\)\s*\{\s*static const char\* names\[\] = \{([^}]*)\}", fmt)
+    names = re.findall(r'"([^"]*)"', m.group(1)) if m else []
+    good = len(names) == len(patch_rom.SCALES)
+    print(f"scale names: NME {len(names)}, OS {len(patch_rom.SCALES)} -> {'ok' if good else 'WRONG'}")
+    ok &= good
     print("OK" if ok else "FAILED")
     sys.exit(0 if ok else 1)
 

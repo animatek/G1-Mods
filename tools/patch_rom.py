@@ -357,12 +357,49 @@ def param_routines(b, callbacks):
     return p00, b.put(head + tests + default + bodies)
 
 
+def write_table_routine(x_word, table_at, width):
+    """A parameter's value routine for $10C49E that writes a row of a table: for the value v it
+    writes the `width` signed bytes at table_at + v * width to the module's X words x_word,
+    x_word + 1..., each with $10D142 as write_x_routine does."""
+    return m68k("48e7 3030",          # movem.l d2-d3/a2-a3,-(sp)
+                "242f 0018",          # move.l (24,sp),d2     the value
+                "246f 0014",          # movea.l (20,sp),a2    the module
+                "47f9", f"{table_at:08x}",  # lea table,a3
+                "c4fc", f"{width:04x}",     # mulu.w #width,d2
+                "d7c2",               # adda.l d2,a3          the row
+                "7600",               # moveq #0,d3
+                # loop:
+                "101b 4880 48c0",     # move.b (a3)+,d0 / ext.w d0 / ext.l d0
+                "3203",               # move.w d3,d1
+                "0641", f"{x_word:04x}",    # addi.w #x_word,d1
+                "3f01 2f00 2f0a",     # move.w d1,-(sp) / move.l d0,-(sp) / move.l a2,-(sp)
+                "4eb9 0010d142",      # jsr $10D142
+                "4fef 000a",          # lea (10,sp),sp
+                "5243",               # addq.w #1,d3
+                "0c43", f"{width:04x}",     # cmpi.w #width,d3
+                "66dc",               # bne.s loop
+                "4cdf 0c0c",          # movem.l (sp)+,d2-d3/a2-a3
+                "4e75")               # rts
+
+
 class Param:
     """A parameter of a control type: its name and maximum (param_table), and the X word its
-    value is written to, through a 68k transform (write_x_routine; none: the value as it is)."""
+    value is written to, through a 68k transform (write_x_routine; none: the value as it is),
+    or, with a table (a row of signed bytes for each value), the X words from x_word on that
+    take the value's row (write_table_routine)."""
 
-    def __init__(self, name, maximum, x_word, transform=""):
+    def __init__(self, name, maximum, x_word, transform="", table=None):
         self.name, self.maximum, self.x_word, self.transform = name, maximum, x_word, transform
+        self.table = table
+        if table is not None:
+            assert len(table) == maximum + 1 and len({len(r) for r in table}) == 1
+
+    def routine(self, b):
+        if self.table is None:
+            return b.put(write_x_routine(self.x_word, self.transform))
+        width = len(self.table[0])
+        at = b.put(bytes(v & 0xFF for row in self.table for v in row))
+        return b.put(write_table_routine(self.x_word, at, width))
 
 
 BRANCH = re.compile(r"^\s+(b|j)(cc|cs|ec|eq|es|ge|gt|lc|le|ls|lt|mi|ne|nn|nr|pl|ra|sr)\b", re.M)
@@ -387,11 +424,11 @@ def control_type(b, new_type, asm, x_init, params=(), led=None, steps=None, bits
     assert sorted(inputs) == list(range(len(inputs))) and sorted(outputs) == list(range(len(outputs)))
     assert all(len(v) == 1 for v in outputs.values()), "an output is written at one word"
     for p in params:
-        assert p.x_word < len(x_init)
+        assert p.x_word + (len(p.table[0]) if p.table else 1) <= len(x_init)
     fields = {}
     if params:
         fields[0x00], fields[0x04] = param_routines(
-            b, [b.put(write_x_routine(p.x_word, p.transform)) for p in params])
+            b, [p.routine(b) for p in params])
         fields[0x1C] = b.put(param_table([(p.name, p.maximum) for p in params]))
     led_at = b.put(led_routine(led)) if led is not None else None
     meter_at = (b.put(value_routine(*steps)) if steps is not None
@@ -479,6 +516,50 @@ def turing(b, new_type=124):
                  bits=(3, 0xFF))
 
 
+# The Scale Quantizer's scales: (name, the notes in it, as semitones from the root)
+SCALES = [
+    ("Chromatic", range(12)),
+    ("Major", (0, 2, 4, 5, 7, 9, 11)),
+    ("Minor", (0, 2, 3, 5, 7, 8, 10)),
+    ("Dorian", (0, 2, 3, 5, 7, 9, 10)),
+    ("Phrygian", (0, 1, 3, 5, 7, 8, 10)),
+    ("Lydian", (0, 2, 4, 6, 7, 9, 11)),
+    ("Mixolydian", (0, 2, 4, 5, 7, 9, 10)),
+    ("Locrian", (0, 1, 3, 5, 6, 8, 10)),
+    ("Harmonic minor", (0, 2, 3, 5, 7, 8, 11)),
+    ("Melodic minor", (0, 2, 3, 5, 7, 9, 11)),
+    ("Major pentatonic", (0, 2, 4, 7, 9)),
+    ("Minor pentatonic", (0, 3, 5, 7, 10)),
+    ("Blues", (0, 3, 5, 6, 7, 10)),
+    ("Whole tone", (0, 2, 4, 6, 8, 10)),
+    ("Hirajoshi", (0, 2, 3, 7, 8)),
+    ("Double harmonic", (0, 1, 4, 5, 7, 8, 11)),
+]
+
+
+def corrections(notes):
+    """For each note 0..11 of the key, the distance to the nearest note of the scale (an octave
+    up or down counts), the lower one on a tie."""
+    row = []
+    for k in range(12):
+        best = min((abs(d), d) for n in notes for o in (-12, 0, 12) for d in [n + o - k])
+        row.append(best[1])
+    return row
+
+
+def quant(b, new_type=125):
+    """Scale Quantizer: In and Out; Root, Scale (by name) and Octave."""
+    control_type(b, new_type, "quant.asm",
+                 # half a semitone, Root (C), 12 * Octave (0), 136 (0 is an E, and m kept
+                 # positive), ceil(2^23 / 12), the corrections (Chromatic: none), unused
+                 (0x4000, 0, 0, 136, (2 ** 23 + 11) // 12) + (0,) * 12 + (0,),
+                 [Param("Root", 11, 1),
+                  Param("Scale", len(SCALES) - 1, 5, table=[corrections(n) for _, n in SCALES]),
+                  # Octave: value v = 0..8 for -4..+4, 12 * (v - 4) semitones
+                  #   move.l d2,d0 / subq.l #4,d0 / muls.w #12,d0
+                  Param("Octave", 8, 2, "2002 5980 c1fc 000c")])
+
+
 # name: (what it shows, the new types, or the DSP words to change in place)
 EXPERIMENTS = {
     "mixer3-silent": (
@@ -491,8 +572,8 @@ EXPERIMENTS = {
     ),
     "all": (
         "every new type: 119 (Mixer Inv), 120 (FlipFlop), 121 (Mix1-1A), 122 (Noise S&H), "
-        "123 (5-Step Seq), 124 (Turing Machine)",
-        [mixer_inv, flipflop, mix1_1a, noise_sh, seq5, turing], [],
+        "123 (5-Step Seq), 124 (Turing Machine), 125 (Scale Quantizer)",
+        [mixer_inv, flipflop, mix1_1a, noise_sh, seq5, turing, quant], [],
     ),
 }
 

@@ -392,6 +392,29 @@ runs every test.
   and bit 7 on A, and NME's `led-array` with `bits="true"` lights one LED a bit. Height 5.
 - **Not yet**: a Rst, and the expander's mixes (1+2, 2+4, 4+7, 1+2+4+7).
 
+## Type 125: Scale Quantizer (2026-10-17)
+
+- **The pitch scale**: a semitone is one control unit ($8000) and **0 is note 64, an E** (the
+  Keyboard's Note out): the first version took 0 as a C, so "C major" was E major. The key's note
+  is (n + 4 - Root) mod 12.
+- **In to semitones**: `+ $4000`, `asr #$f,a,a`: a1 is In rounded to the nearest semitone,
+  negative ones too (an arithmetic shift floors).
+- **mod 12 without a divide**: m = n + 136 - Root (never negative for the inputs a G1 has), times
+  ceil(2^23 / 12) with `mpy`: b1 = floor(m / 12), exact for every m up to a few thousand; 12q by
+  shifts (`asl #$2`, `asl`, `add`).
+- **A table of 12 corrections per scale**, the distance to the scale's nearest note (the lower
+  one on a tie), computed in `patch_rom.py` (`SCALES`, `corrections`) and written whole by the
+  Scale routine: `write_table_routine` writes a value's row of signed bytes to 12 X words, one
+  `$10D142` each, and `Param(..., table=)` builds it. The DSP looks it up at r3 + 5 + the note,
+  through r2.
+- **n2 is not scratch**: reading the table with `move a1,n2` / `x:(r2+n2)` stopped the whole DSP
+  (the LFO next to it froze); the address made in b and `move b1,r2` works.
+- NME shows the root, the scale's name and the octave with formatters of its own; their names
+  are in NME, so `check_nme_data.py` checks it has as many scale names as `SCALES`.
+- `tests/check_quant.py`: an LFO over the whole range into In, and every sample of Out the note
+  the table gives, for the 16 scales on C and three other roots and octaves; `check_insert.py`
+  plays it too.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash

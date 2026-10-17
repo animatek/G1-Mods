@@ -20,6 +20,7 @@ NEW_TYPES = {
     122: (53, None, None, None, None),   # written whole: FULL_ENTRIES below
     123: (91, None, None, None, None),   # written whole: FULL_ENTRIES below
     124: (123, None, None, None, None),  # written whole: FULL_ENTRIES below
+    125: (124, None, None, None, None),  # written whole: FULL_ENTRIES below
     121: (19, "Mix1-1A", "1 Input Chain Mixer (G1-Mods)",
           [('name="in1"', 'name="in"'), ('name="in2"', 'name="chain"'),
            ('\n    <connector component-id="c3" index="2" name="in3" type="input" signal="audio" />', ''),
@@ -304,6 +305,62 @@ FULL_ENTRIES = {
 \t\t</connector>
 \t\t<connector x="221" y="57" size="13" class="cLOGIC">
 \t\t\t<connector component-id="c10" alt="gate 8" />
+\t\t</connector>
+\t</module>"""),
+    125: ("""
+  <module component-id="m125" index="125" name="ScaleQuant" fullname="Scale Quantizer, a pitch to the nearest note of a scale (G1-Mods)" category="Control (mods)">
+    <image type="screenshot" src="img/modules/module-98.png" width="256" height="30" />
+    <image type="icon16x16" src="img/icons/16x16/module-id-98.png" width="16" height="16" />
+    <image type="icon32x32" src="img/icons/32x32/module-id-98.png" width="32" height="32" />
+    <connector component-id="c1" index="0" name="in" type="input" signal="control" />
+    <connector component-id="c2" index="0" name="out" type="output" signal="control" />
+    <!-- parameter(s) -->
+    <parameter component-id="p1" index="0" name="root" class="parameter" maxValue="11" formatter="fmtRootNote" extension="m1" />
+    <parameter component-id="p2" index="1" name="scale" class="parameter" maxValue="15" defaultValue="1" formatter="fmtScaleName" extension="m2" />
+    <parameter component-id="p3" index="2" name="octave" class="parameter" maxValue="8" defaultValue="4" formatter="fmtOctaveShift" extension="m3" />
+    <parameter component-id="m1" index="0" name="morph:root" class="morph" role="morph"  minValue="-11" maxValue="11" />
+    <parameter component-id="m2" index="1" name="morph:scale" class="morph" role="morph"  minValue="-15" maxValue="15" />
+    <parameter component-id="m3" index="2" name="morph:octave" class="morph" role="morph"  minValue="-8" maxValue="8" />
+    <!-- custom attributes -->
+    <attribute name="cycles" type="double" value="0.35" />
+    <attribute name="x-mem" type="double" value="0.5" />
+    <attribute name="y-mem" type="double" value="0.0" />
+    <attribute name="prog-mem" type="double" value="0.75" />
+    <attribute name="dyn-mem" type="double" value="0.5" />
+    <attribute name="zero-page" type="double" value="0.875" />
+    <attribute name="height" type="integer" value="3" />
+    <attribute name="background" value="#c9d4a6" />
+  </module>""", """
+\t<module component-id="m125" width="255" height="45">
+\t\t<name>Scale Quantizer</name>
+\t\t<label x="5" y="17">In</label>
+\t\t<connector x="6" y="28" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c1" alt="in" />
+\t\t</connector>
+\t\t<label x="28" y="17">Root</label>
+\t\t<textDisplay x="28" y="28" width="22" height="14">
+\t\t\t<parameter component-id="p1" alt="root" />
+\t\t</textDisplay>
+\t\t<knob x="54" y="20" size="21">
+\t\t\t<parameter component-id="p1" alt="root" />
+\t\t</knob>
+\t\t<label x="82" y="17">Scale</label>
+\t\t<textDisplay x="82" y="28" width="62" height="14">
+\t\t\t<parameter component-id="p2" alt="scale" />
+\t\t</textDisplay>
+\t\t<knob x="148" y="20" size="21">
+\t\t\t<parameter component-id="p2" alt="scale" />
+\t\t</knob>
+\t\t<label x="176" y="17">Oct</label>
+\t\t<textDisplay x="176" y="28" width="20" height="14">
+\t\t\t<parameter component-id="p3" alt="octave" />
+\t\t</textDisplay>
+\t\t<knob x="200" y="20" size="21">
+\t\t\t<parameter component-id="p3" alt="octave" />
+\t\t</knob>
+\t\t<label x="230" y="17">Out</label>
+\t\t<connector x="236" y="28" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c2" alt="out" />
 \t\t</connector>
 \t</module>"""),
 }

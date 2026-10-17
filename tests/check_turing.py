@@ -93,7 +93,8 @@ def main():
 
         meters, at = set(), 0
         while (at := record.pc.find(bytes.fromhex("f033500601" "3a"), at)) >= 0:
-            meters.add(record.pc[at + 7] | record.pc[at + 8] << 7)   # B, then A
+            if record.pc[at + 18:at + 19] == b"\xf7":     # a whole message (19 bytes): the log
+                meters.add(record.pc[at + 7] | record.pc[at + 8] << 7)   # can cut one; B, then A
             at += 1
         report("8 LEDs", len(meters) > 4 and meters <= set(b) | {round(cv[SETTLE] / LSB)},
                f"the meter carried {sorted(meters)}, the bytes played {sorted(set(b))}")
