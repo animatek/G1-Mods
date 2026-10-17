@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: `NOTES.md`, starting the String: **only 2.3 KB of room for code are left** (the package
+  runs from 14 KB the OS never touches; the eleven types take 12 KB), how the OS writes a
+  parameter to a module's audio X (`$10C4B0` and `$10C248`), and the G1 Delay's memory as the
+  measure of a string's buffer. `PORTING.md`: room for code as the second limit.
+
 - Claude: **type 55, Envelope** (`dsp/env.asm`): the G2's ADDSR, H, D and AHD from one engine,
   Gate/Trig, Attack, Decay 1, Level 1, Decay 2, Sustain, Release, Env and End. NME `g1-mods`
   `8bee1f9`. New `tests/check_env.py` (levels, release time to a sample of the model, End, Trig)

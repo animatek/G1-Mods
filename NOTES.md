@@ -528,6 +528,28 @@ runs every test.
   fast enough gate for `check_insert.py`.
 - Not yet: the Mod AHD's inputs that modulate the times.
 
+## Room for code: 2.3 KB left (2026-10-17)
+
+- **The package (every new type's code, data and routines) runs from the 14 KB at `$170000`**
+  ("Where new code can live"), and with the eleven types it takes 11,992 bytes: some 2.3 KB are
+  left. A type takes 340 (Mix1-1A) to 1,480 bytes (Random); repeated blocks would save only 228.
+  What it is made of: the DSP code at 4 bytes a word, the X data's initial values, a 68k routine
+  per parameter (~40 bytes), the parameter table, the connection routine, the descriptor.
+- **The big modules need more**: more DSP code, and a delay line's initial X data (zeros) would
+  be 4 bytes a word (a 1,024-word string, 4 KB) unless the loader is pointed at zeros already in
+  RAM. So before the String: find more room that the OS never touches while it runs (as the 14 KB
+  were found: a long recorded NME session replayed and the RAM dumped), and point big buffers at
+  zeros.
+- **Audio parameters** (found for the String): the OS writes a parameter to a module's audio X
+  through `$10C4B0(module, request, word)`, which fills a 12-byte request (the DSP's host port, the
+  address = the voice's audio X base at +2 of its entry, + the module's at +6, + the word, and
+  `$B5`), and `$10C248(request, value)`, which writes it. The control part's `$10D142` is the same
+  with +8 and +8. The voice and module tables are the same for both parts.
+- **The G1's Delay** (type 78, 2.65 ms at 96 kHz) takes 133 X and 131 Y words, its buffer split
+  across both; NME rates that at 9.25 % of each: about 1,440 words of X and as many of Y a voice.
+  A string's buffer at the full rate reaches down to 96000 / words Hz: 512 words 187 Hz, 1,024
+  (about 70 % of X or of Y) 94 Hz; at half or a quarter rate it reaches 47 or 23 Hz.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash

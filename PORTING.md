@@ -40,6 +40,9 @@ than this list has, and they have to be chosen:
   One type then gives a family of 4–6 small modules.
 - **What a G1 module already does well is not ported again.**
 - `patch_rom.py` refuses a type not in `FREE_TYPES`.
+- **Room for code is the other limit (2026-10-17)**: the package runs from 14 KB of RAM the OS
+  never touches, and the eleven types take 12 KB of it. The big modules wait until more room is
+  found (`NOTES.md`, "Room for code").
 - Not doing: widening the type to more bits (the OS's loader, connections, patch and SysEx, and
   NME): a great deal of reverse engineering and patches nothing else could read. At most, a day
   to see whether the OS keeps the type in a whole byte inside.
