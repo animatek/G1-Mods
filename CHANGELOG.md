@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: **type 55, Envelope** (`dsp/env.asm`): the G2's ADDSR, H, D and AHD from one engine,
+  Gate/Trig, Attack, Decay 1, Level 1, Decay 2, Sustain, Release, Env and End. NME `g1-mods`
+  `8bee1f9`. New `tests/check_env.py` (levels, release time to a sample of the model, End, Trig)
+  passes; all tests pass. Seven free types left.
+
 - Claude: **type 42, Level** (`dsp/level.asm`): the G2's ModAmt, MinMax, T&H and WindSw in one
   module with a Mode selector, A, B, Out 1, Out 2, Amount, Lo and Hi. **The Random gets a Bi/Uni
   button** (Javier), its seventh parameter. NME `g1-mods` `fba49d5`. New `tests/check_level.py`

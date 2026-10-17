@@ -511,6 +511,23 @@ runs every test.
   (Out + 64 units) / 2, 0..+64, with an `asr` and an add at the output. A patch saved with the
   six-parameter Random loads its Out as Bi.
 
+## Type 55: Envelope (2026-10-17)
+
+- The G2's ADDSR, H, D and AHD from one engine: attack, decay 1 to Level 1, decay 2 to Sustain,
+  release, each an exponential approach by a factor a control sample (the Random's Edge formula:
+  from at once to about 2.4 s a time constant, some 17 s down to -60 dB). Gate mode holds at
+  Sustain and releases when Gate falls (ADDSR); Trig mode goes on into release at Sustain, whatever
+  the gate (D, H with Decay 1 at Level 1 as the hold, AHD).
+- The attack aims at 0.3 to reach the top (0.25, +64 units) and stops there; a decay moves on
+  within $200 of its level; the release stops at 0 there and End goes high. Env is kept in 48 bits.
+- Stage numbers are kept in X words (an 8-bit immediate move to a data register would land in its
+  top byte, not as an integer).
+- The recording of a level at 0 reads about 0.009 units: the output chain leaves a hair of offset.
+- `tests/check_env.py`: the levels (top, Level 1, Sustain), the release's time constant (684
+  samples against 683 from the factor), Attack 40 against 80, End, Trig mode. `env.pch` has a
+  fast enough gate for `check_insert.py`.
+- Not yet: the Mod AHD's inputs that modulate the times.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash
@@ -522,7 +539,7 @@ refuses a patch with them. In the maintainer's desktop both have launchers ("G1-
 
 ## Next
 
-- The Envelopes family (`PORTING.md`), then NME's virtual modules for the switches in the Mux8-1's type and the G2 mixers in the Mix1-1A's.
+- NME's virtual modules for the switches in the Mux8-1's type, the G2 mixers in the Mix1-1A's, then the big modules (`PORTING.md`).
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.

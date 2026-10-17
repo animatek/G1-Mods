@@ -24,6 +24,7 @@ NEW_TYPES = {
     6: (101, None, None, None, None),    # written whole: FULL_ENTRIES below
     41: (126, None, None, None, None),   # written whole: FULL_ENTRIES below
     42: (101, None, None, None, None),   # written whole: FULL_ENTRIES below
+    55: (42, None, None, None, None),    # written whole: FULL_ENTRIES below
     121: (19, "Mix1-1A", "1 Input Chain Mixer (G1-Mods)",
           [('name="in1"', 'name="in"'), ('name="in2"', 'name="chain"'),
            ('\n    <connector component-id="c3" index="2" name="in3" type="input" signal="audio" />', ''),
@@ -724,6 +725,83 @@ FULL_ENTRIES = {
 \t\t<knob x="206" y="38" size="21">
 \t\t\t<parameter component-id="p4" alt="hi" />
 \t\t</knob>
+\t</module>"""),
+    55: ("""
+  <module component-id="m55" index="55" name="Envelope" fullname="Envelope: ADDSR, or one shot (D, H, AHD) (G1-Mods)" category="Envelope (mods)">
+    <image type="screenshot" src="img/modules/module-20.png" width="256" height="30" />
+    <image type="icon16x16" src="img/icons/16x16/module-id-20.png" width="16" height="16" />
+    <image type="icon32x32" src="img/icons/32x32/module-id-20.png" width="32" height="32" />
+    <connector component-id="c1" index="0" name="gate" type="input" signal="logic" />
+    <connector component-id="c2" index="0" name="env" type="output" signal="control" />
+    <connector component-id="c3" index="1" name="end" type="output" signal="logic" />
+    <!-- parameter(s) -->
+    <parameter component-id="p1" index="0" name="mode" class="parameter" maxValue="1" extension="m1" />
+    <parameter component-id="p2" index="1" name="attack" class="parameter" defaultValue="0" extension="m2" />
+    <parameter component-id="p3" index="2" name="decay 1" class="parameter" defaultValue="40" extension="m3" />
+    <parameter component-id="p4" index="3" name="level 1" class="parameter" defaultValue="100" extension="m4" />
+    <parameter component-id="p5" index="4" name="decay 2" class="parameter" defaultValue="60" extension="m5" />
+    <parameter component-id="p6" index="5" name="sustain" class="parameter" defaultValue="80" extension="m6" />
+    <parameter component-id="p7" index="6" name="release" class="parameter" defaultValue="60" extension="m7" />
+    <parameter component-id="m1" index="0" name="morph:mode" class="morph" role="morph"  minValue="-1" maxValue="1" />
+    <parameter component-id="m2" index="1" name="morph:attack" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m3" index="2" name="morph:decay 1" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m4" index="3" name="morph:level 1" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m5" index="4" name="morph:decay 2" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m6" index="5" name="morph:sustain" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m7" index="6" name="morph:release" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <!-- custom attributes -->
+    <attribute name="cycles" type="double" value="0.6" />
+    <attribute name="x-mem" type="double" value="0.6" />
+    <attribute name="y-mem" type="double" value="0.0" />
+    <attribute name="prog-mem" type="double" value="1.75" />
+    <attribute name="dyn-mem" type="double" value="0.5" />
+    <attribute name="zero-page" type="double" value="0.875" />
+    <attribute name="height" type="integer" value="3" />
+    <attribute name="background" value="#e0c896" />
+  </module>""", """
+\t<module component-id="m55" width="255" height="45">
+\t\t<name>Envelope</name>
+\t\t<label x="5" y="16">Gate</label>
+\t\t<connector x="6" y="27" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c1" alt="gate" />
+\t\t</connector>
+\t\t<button x="28" y="26" width="30" height="16" cyclic="true" landscape="false">
+\t\t\t<parameter component-id="p1" alt="mode" />
+\t\t\t<btn index="0">Gate</btn>
+\t\t\t<btn index="1">Trig</btn>
+\t\t</button>
+\t\t<label x="65" y="13">A</label>
+\t\t<knob x="62" y="22" size="21">
+\t\t\t<parameter component-id="p2" alt="attack" />
+\t\t</knob>
+\t\t<label x="91" y="13">D1</label>
+\t\t<knob x="88" y="22" size="21">
+\t\t\t<parameter component-id="p3" alt="decay 1" />
+\t\t</knob>
+\t\t<label x="117" y="13">L1</label>
+\t\t<knob x="114" y="22" size="21">
+\t\t\t<parameter component-id="p4" alt="level 1" />
+\t\t</knob>
+\t\t<label x="143" y="13">D2</label>
+\t\t<knob x="140" y="22" size="21">
+\t\t\t<parameter component-id="p5" alt="decay 2" />
+\t\t</knob>
+\t\t<label x="169" y="13">S</label>
+\t\t<knob x="166" y="22" size="21">
+\t\t\t<parameter component-id="p6" alt="sustain" />
+\t\t</knob>
+\t\t<label x="195" y="13">R</label>
+\t\t<knob x="192" y="22" size="21">
+\t\t\t<parameter component-id="p7" alt="release" />
+\t\t</knob>
+\t\t<label x="216" y="16">Env</label>
+\t\t<connector x="218" y="27" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c2" alt="env" />
+\t\t</connector>
+\t\t<label x="236" y="16">End</label>
+\t\t<connector x="238" y="27" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c3" alt="end" />
+\t\t</connector>
 \t</module>"""),
 }
 
