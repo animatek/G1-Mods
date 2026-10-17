@@ -263,6 +263,10 @@ Ideas built from what is known now. Same scale of feasibility.
   is being made it is built alone, so the room limit does not stop development. Home: NME (it
   knows the modules and has a window), or a small tool of its own. Removing Clavia modules to free
   their code's RAM is possible but breaks old patches: not first.
+- **All the G1's modules swapped for the G2's** (Javier, 2026-10-17, as a thought): not
+  recommended. Every G1 patch (his and the community's 34,000) would stop loading, each G2 module
+  is written new here, and most of the G2's are the G1's own (`../G2-Emu/MODULOS.md`). At most,
+  later, the builder could let a user leave out a few heavy Clavia modules for room, warned.
 
 - **From Javier's first tries (2026-10-17), to check**: the Random into a filter's modulation
   seemed to move it little (its Out is ±64 units, bipolar, as a G1 LFO's; check Step and Edge

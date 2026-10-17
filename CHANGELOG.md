@@ -5,6 +5,9 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: `PORTING.md`, the builder picks among the new modules only (Javier); swapping all the
+  G1's modules for the G2's noted as not recommended, and why.
+
 - Claude: `PORTING.md`, Javier's idea of an OS builder (pick the modules, a bar for the room
   left, build from the user's own OS), with the rules it needs.
 
