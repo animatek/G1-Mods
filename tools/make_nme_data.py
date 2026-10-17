@@ -215,59 +215,95 @@ FULL_ENTRIES = {
 \t\t</connector>
 \t</module>"""),
     124: ("""
-  <module component-id="m124" index="124" name="TuringMachine" fullname="Turing Machine, a looping random shift register (G1-Mods)" category="Sequencer (mods)">
+  <module component-id="m124" index="124" name="TuringMachine" fullname="Turing Machine, a looping random shift register with eight gates (G1-Mods)" category="Sequencer (mods)">
     <image type="screenshot" src="img/modules/module-91.png" width="256" height="105" />
     <image type="icon16x16" src="img/icons/16x16/module-id-91.png" width="16" height="16" />
     <image type="icon32x32" src="img/icons/32x32/module-id-91.png" width="32" height="32" />
     <connector component-id="c1" index="0" name="clock" type="input" signal="logic" />
     <connector component-id="c2" index="0" name="cv" type="output" signal="control" />
-    <connector component-id="c3" index="1" name="gate" type="output" signal="logic" />
+    <connector component-id="c3" index="1" name="gate 1" type="output" signal="logic" />
+    <connector component-id="c4" index="2" name="gate 2" type="output" signal="logic" />
+    <connector component-id="c5" index="3" name="gate 3" type="output" signal="logic" />
+    <connector component-id="c6" index="4" name="gate 4" type="output" signal="logic" />
+    <connector component-id="c7" index="5" name="gate 5" type="output" signal="logic" />
+    <connector component-id="c8" index="6" name="gate 6" type="output" signal="logic" />
+    <connector component-id="c9" index="7" name="gate 7" type="output" signal="logic" />
+    <connector component-id="c10" index="8" name="gate 8" type="output" signal="logic" />
     <!-- parameter(s) -->
     <parameter component-id="p1" index="0" name="prob" class="parameter" defaultValue="64" formatter="value-64" extension="m1" />
     <parameter component-id="p2" index="1" name="length" class="parameter" maxValue="15" defaultValue="7" formatter="value+1" extension="m2" />
     <parameter component-id="p3" index="2" name="lock" class="parameter" maxValue="1" formatter="fmtOffOn" extension="m3" />
+    <parameter component-id="p4" index="3" name="scale" class="parameter" defaultValue="127" extension="m4" />
     <parameter component-id="m1" index="0" name="morph:prob" class="morph" role="morph"  minValue="-127" maxValue="127" />
     <parameter component-id="m2" index="1" name="morph:length" class="morph" role="morph"  minValue="-15" maxValue="15" />
     <parameter component-id="m3" index="2" name="morph:lock" class="morph" role="morph"  minValue="-1" maxValue="1" />
+    <parameter component-id="m4" index="3" name="morph:scale" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <light component-id="ledBits" type="led-array" name="Bits 1-8" minValue="0" maxValue="255" />
     <!-- custom attributes -->
-    <attribute name="cycles" type="double" value="0.6" />
-    <attribute name="x-mem" type="double" value="0.3" />
+    <attribute name="cycles" type="double" value="0.9" />
+    <attribute name="x-mem" type="double" value="0.35" />
     <attribute name="y-mem" type="double" value="0.0" />
-    <attribute name="prog-mem" type="double" value="1.25" />
+    <attribute name="prog-mem" type="double" value="2.0" />
     <attribute name="dyn-mem" type="double" value="0.5" />
     <attribute name="zero-page" type="double" value="0.875" />
-    <attribute name="height" type="integer" value="3" />
+    <attribute name="height" type="integer" value="5" />
     <attribute name="background" value="#e5babf" />
   </module>""", """
-\t<module component-id="m124" width="255" height="45">
+\t<module component-id="m124" width="255" height="75">
 \t\t<name>Turing Machine</name>
 \t\t<label x="5" y="17">Clk</label>
 \t\t<connector x="6" y="28" size="13" class="cLOGIC">
 \t\t\t<connector component-id="c1" alt="clock" />
 \t\t</connector>
-\t\t<label x="34" y="17">Prob</label>
-\t\t<knob x="58" y="20" size="21">
+\t\t<label x="30" y="17">Prob</label>
+\t\t<knob x="52" y="20" size="21">
 \t\t\t<parameter component-id="p1" alt="prob" />
 \t\t</knob>
-\t\t<label x="90" y="17">Length</label>
-\t\t<textDisplay x="90" y="28" width="24" height="14">
+\t\t<label x="84" y="17">Length</label>
+\t\t<textDisplay x="84" y="28" width="22" height="14">
 \t\t\t<parameter component-id="p2" alt="length" />
 \t\t</textDisplay>
-\t\t<knob x="118" y="20" size="21">
+\t\t<knob x="110" y="20" size="21">
 \t\t\t<parameter component-id="p2" alt="length" />
 \t\t</knob>
-\t\t<button x="146" y="24" width="30" height="16" cyclic="true" landscape="false">
+\t\t<button x="138" y="24" width="28" height="16" cyclic="true" landscape="false">
 \t\t\t<parameter component-id="p3" alt="lock" />
 \t\t\t<btn index="0">Lock</btn>
 \t\t\t<btn index="1">Lock</btn>
 \t\t</button>
-\t\t<label x="194" y="17">CV</label>
-\t\t<connector x="196" y="28" size="13" class="cCONTROL">
+\t\t<label x="170" y="17">Scale</label>
+\t\t<knob x="194" y="20" size="21">
+\t\t\t<parameter component-id="p4" alt="scale" />
+\t\t</knob>
+\t\t<label x="222" y="17">CV</label>
+\t\t<connector x="236" y="28" size="13" class="cCONTROL">
 \t\t\t<connector component-id="c2" alt="cv" />
 \t\t</connector>
-\t\t<label x="226" y="17">Gate</label>
-\t\t<connector x="236" y="28" size="13" class="cLOGIC">
-\t\t\t<connector component-id="c3" alt="gate" />
+\t\t<label x="5" y="58">Gates</label>
+\t\t<light component-id="ledBits" type="led-array" steps="8" bits="true" x="40" y="47" width="200" height="7" />
+\t\t<connector x="46" y="57" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c3" alt="gate 1" />
+\t\t</connector>
+\t\t<connector x="71" y="57" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c4" alt="gate 2" />
+\t\t</connector>
+\t\t<connector x="96" y="57" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c5" alt="gate 3" />
+\t\t</connector>
+\t\t<connector x="121" y="57" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c6" alt="gate 4" />
+\t\t</connector>
+\t\t<connector x="146" y="57" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c7" alt="gate 5" />
+\t\t</connector>
+\t\t<connector x="171" y="57" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c8" alt="gate 6" />
+\t\t</connector>
+\t\t<connector x="196" y="57" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c9" alt="gate 7" />
+\t\t</connector>
+\t\t<connector x="221" y="57" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c10" alt="gate 8" />
 \t\t</connector>
 \t</module>"""),
 }

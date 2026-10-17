@@ -5,6 +5,12 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: **the Turing Machine grows** (Javier): eight gate outputs, bits 0–7 while Clk is high
+  (the Gate output goes: it was gate 1), a Scale knob for CV, and eight LEDs with the register's
+  low byte, through the meter (`bits_routine`, `control_type`'s `bits`; NME `g1-mods` `led-array`
+  with `bits="true"`). Height 5. `tests/check_turing.py` now also checks gates 1, 4 and 8, Scale
+  64 and the byte in the Meters messages; all tests pass.
+
 - Claude: **a meter carries 14 bits**, read in the OS's meter poll and sender (`NOTES.md`): the
   value routine's word goes out as two 7-bit values, so the Turing Machine's 8 LEDs fit in one
   module's meter. `PORTING.md`: a Mutator inside the synth, as an idea (the G1's morph already

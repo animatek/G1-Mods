@@ -241,6 +241,27 @@ def value_routine(x_word, maximum):
                 "4e75")               # rts
 
 
+def bits_routine(x_word, mask):
+    """A meter's value routine, for $1169BA, that sends bits: reads the module's X word as
+    led_routine does and returns it masked. The OS sends the word's low 7 bits and the next 7 as
+    the meter's two values (NOTES.md), so up to 14 bits; NME's led-array with `bits` lights one
+    LED a bit."""
+    return m68k("48e7 2030",          # movem.l d2/a2-a3,-(sp)
+                "246f 0010",          # movea.l (16,sp),a2
+                "266f 0014",          # movea.l (20,sp),a3
+                "7000 302a 0008",     # moveq #0,d0 / move.w (8,a2),d0
+                "7200 322b 0008",     # moveq #0,d1 / move.w (8,a3),d1
+                "d081",               # add.l d1,d0
+                "0680", f"{x_word:08x}",  # addi.l #x_word,d0
+                "2f00",               # move.l d0,-(sp)       the address
+                "1012 3f00",          # move.b (a2),d0 / move.w d0,-(sp)   the DSP
+                "4eb9 0010c32e",      # jsr $10C32E           read X
+                "5c8f",               # addq.l #6,sp
+                "0280", f"{mask:08x}",  # andi.l #mask,d0
+                "4cdf 0c04",          # movem.l (sp)+,d2/a2-a3
+                "4e75")               # rts
+
+
 def connection_routine(inputs, outputs, part=1, led=None, meter=None):
     """A type's +$0C: patches each input's address into its code words ({input: [words]}) with
     $124202, and every output's ([(output, word)]) with $1243DA, like Clavia's (CompareAB's,
@@ -347,10 +368,11 @@ class Param:
 BRANCH = re.compile(r"^\s+(b|j)(cc|cs|ec|eq|es|ge|gt|lc|le|ls|lt|mi|ne|nn|nr|pl|ra|sr)\b", re.M)
 
 
-def control_type(b, new_type, asm, x_init, params=(), led=None, steps=None):
+def control_type(b, new_type, asm, x_init, params=(), led=None, steps=None, bits=None):
     """A control-rate type, described once: its DSP code (dsp/<asm>, its inputs and outputs from
     the @inN/@outN marks), the initial values of its X words, its parameters and maybe one LED
-    (the X word it shows) or a row of step LEDs (steps: the X word with the step, the last step).
+    (the X word it shows) or a row of step LEDs (steps: the X word with the step, the last step)
+    or of bit LEDs (bits: the X word, the mask of the bits shown, up to 14).
     Everything the OS reads about the type is derived from that: the counts
     at +$18, the parameter table, the parameter routines (+$00, +$04, and ClkDiv's +$08, which
     answers 0: the value goes through our routine), the connection routine, and the descriptor
@@ -372,7 +394,8 @@ def control_type(b, new_type, asm, x_init, params=(), led=None, steps=None):
             b, [b.put(write_x_routine(p.x_word, p.transform)) for p in params])
         fields[0x1C] = b.put(param_table([(p.name, p.maximum) for p in params]))
     led_at = b.put(led_routine(led)) if led is not None else None
-    meter_at = b.put(value_routine(*steps)) if steps is not None else None
+    meter_at = (b.put(value_routine(*steps)) if steps is not None
+                else b.put(bits_routine(*bits)) if bits is not None else None)
     fields[0x0C] = b.put(connection_routine(inputs, [(o, w[0]) for o, w in sorted(outputs.items())],
                                             led=led_at, meter=meter_at))
     x_at = b.put(words(*x_init))
@@ -434,11 +457,12 @@ def seq5(b, new_type=123):
 
 
 def turing(b, new_type=124):
-    """Turing Machine: Clk in; CV and Gate out; Prob, Length (1-16) and Lock."""
+    """Turing Machine: Clk in; CV and eight gates (bits 0-7) out; Prob, Length (1-16), Lock and
+    Scale; eight LEDs, the register's low byte."""
     control_type(b, new_type, "turing.asm",
                  # the noise's taps and seed (as the Noise S&H's), Clk's last, the register, the
-                 # mask (Length 16), the threshold, Lock, $FFFF, $FF, high
-                 (0xE10000, 0x5A3C96, 0, 0x9D2B, 0x8000, 0, 0, 0xFFFF, 0xFF, 0x200000),
+                 # mask (Length 16), the threshold, Lock, $FFFF, $FF, high, Scale (1)
+                 (0xE10000, 0x5A3C96, 0, 0x9D2B, 0x8000, 0, 0, 0xFFFF, 0xFF, 0x200000, 0x7FFE00),
                  # Prob, bipolar as the original's big knob: value v = 0..127, the threshold
                  # (127 - v) << 16, a chance of (127 - v)/128: 127 (right) locked, 64 (centre)
                  # random, 0 (left) nearly every bit flipped, the pattern inverted each pass
@@ -447,7 +471,12 @@ def turing(b, new_type=124):
                   # Length: value v = 0..15 for 1..16, the mask 1 << v
                   #   moveq #1,d0 / move.l d2,d1 / asl.l d1,d0
                   Param("Length", 15, 4, "7001 2202 e3a0"),
-                  Param("Lock", 1, 6)])
+                  Param("Lock", 1, 6),
+                  # Scale: value v = 0..127, the fraction (v << 16) + (v << 9), 127 nearly 1
+                  #   move.l d2,d0 / swap d0 / clr.w d0 / move.l d2,d1 / asl.l #8,d1 /
+                  #   add.l d1,d1 / add.l d1,d0
+                  Param("Scale", 127, 10, "2002 4840 4240 2202 e181 d281 d081")],
+                 bits=(3, 0xFF))
 
 
 # name: (what it shows, the new types, or the DSP words to change in place)

@@ -30,7 +30,7 @@ a guide to the effort, not code to copy. Our code is written new.
 | FlipFlop | 120 | ✅ | D-type and RS-type, Clk, In, Rst, Q and NotQ (`dsp/flipflop.asm`; `tests/check_flipflop.py`). |
 | Noise S&H (our own) | 122 | ✅ | Range 1–5 octaves, Bi/Uni, Out and Inv (`dsp/noise_sh.asm`, `tests/check_noise_sh.py`). Every voice starts from the same seed, so in a poly patch they draw the same sequence. |
 | 5-Step Seq (our own) | 123 | ✅ | Clk, Rst, Out, five bipolar knobs and a row of five step LEDs (`dsp/seq5.asm`, `tests/check_seq5.py`). |
-| Turing Machine (our own) | 124 | 🟡 | Clk, CV, Gate, Prob, Length 1–16 and Lock (`dsp/turing.asm`, `tests/check_turing.py`). Prob bipolar as the original's big knob (centre random, right locked, left inverted). Missing: the 8 LEDs (needs NME to draw a byte), and Rst. Idea (Javier, 2026-10-17): once the LEDs work, a bigger module (as the DrumSynth) with the expander's outputs, a gate per bit and the 1+2, 2+4, 4+7, 1+2+4+7 mixes. |
+| Turing Machine (our own) | 124 | ✅ | Clk, CV, 8 gates (bits 0–7), Prob (bipolar, as the original's big knob), Length 1–16, Lock, Scale and 8 LEDs (`dsp/turing.asm`, `tests/check_turing.py`). Missing: a Rst, and the expander's mixes (1+2, 2+4, 4+7, 1+2+4+7). |
 | Mixer Inv (test only) | 119 | ✅ | Not a G2 module: the first test, the Mixer (3) with input 1 inverted. |
 
 ## Modules only the G2 has

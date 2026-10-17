@@ -381,10 +381,16 @@ runs every test.
   on both paths.
 - Length is 1–16 (`value+1`, a formatter NME has) rather than the 2–16 planned: no NME change.
 - `tests/check_turing.py`: Prob 127 repeats every Length clocks (8 and 16), Prob 0 comes back
-  inverted after Length, Lock holds it, 64 drifts, CV changes only on clock edges, Gate is bit 0
+  inverted after Length, gates 1, 4 and 8 are their bits, Scale 64 halves CV, the Meters
+  messages carry the byte, Lock holds it, 64 drifts, CV changes only on clock edges, Gate is bit 0
   and Clk. `check_insert.py` plays it too.
-- **Not yet**: the 8 LEDs (the meter list's value is drawn by NME as one lit step; a byte would
-  need a new kind of led-array there), and a Rst.
+- **Eight gates, Scale and the 8 LEDs** (2026-10-17, Javier's bigger module): outputs 1-8 are
+  bits 0-7 while Clk is high, each `clr b / lsr a / tfr x1,b ifcs / move b,x:$0` (the bits
+  shifted out through the carry; a is cleared first when Clk is low). The Gate output went: it
+  was gate 1. Scale multiplies CV (`mpy`, the fraction (v << 16) + (v << 9)). The LEDs are the
+  meter list with `bits_routine` (the register's X word `and` $FF): the OS sends bits 0-6 on B
+  and bit 7 on A, and NME's `led-array` with `bits="true"` lights one LED a bit. Height 5.
+- **Not yet**: a Rst, and the expander's mixes (1+2, 2+4, 4+7, 1+2+4+7).
 
 ## Trying it by hand
 
@@ -403,7 +409,7 @@ It also shows **the two mixers working in one patch** despite the RAM variables 
 
 ## Next
 
-- The Turing Machine's 8 LEDs (a led-array NME draws as a byte), then an 8Counter (eight
+- An 8Counter (eight
   outputs, a led-array of 8), the switches and muxes, and the G2's randoms (a seed per voice).
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
