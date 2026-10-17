@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: **type 41, Bits** (`dsp/bits.asm`): the G2's BinCounter, ADConv and DAConv in one module
+  with a Mode selector (Count, A>D, D>A) and all their connectors, Out, eight bits and eight LEDs.
+  NME data in "Logic (mods)" (NME `g1-mods` `3a23de3`). New `tests/check_bits.py` passes;
+  `bits.pch` starts in D>A for `check_insert.py`. All tests pass. Nine free types left.
+
 - Claude: `PORTING.md`, ideas from Javier's first tries: the Random's range and a Uni/Bi button
   to check, one NME and one G1-Emu that tell the modified OS by themselves, and the mods tabs
   under their family's.

@@ -479,6 +479,21 @@ runs every test.
   and Length, Rst, Prob, Step and Edge. Poly the bench cannot check (it plays one voice): Javier
   checked it by ear, chords on a Random in Poly give a sequence a voice.
 
+## Type 41: Bits (2026-10-17)
+
+- The G2's BinCounter, ADConv and DAConv in one module, with a Mode selector and the connectors
+  of all three (Clk, Rst, In, B1-B8 in; Out, Bit 1-8 out), as the DrumSynth has many: no virtual
+  modules needed. Each mode makes a byte; Out is it as a level (<< 13, 0..+64 units), Bit 1-8 its
+  bits, the eight LEDs (the meter, `bits=(0, $FF)`) show it.
+- Count: the 5-Step Seq's clock and Rst, the counter in its own X word, so it keeps counting in the
+  other modes. A>D: In `asr #$d`, held to 0..255. D>A: B8 down to B1, `asl b` and `add y1,b ifgt`
+  (y1 = 1): a conditional add, one word.
+- NME's three-way selector is a `button` with `cyclic="false" landscape="true"`: three segments
+  in a row.
+- `tests/check_bits.py`: Count a step a clock with its bits and LEDs, A>D against an LFO in
+  every sample, D>A from eight Constants. `tests/bits.pch` starts in D>A: `check_insert.py`
+  compares the peak of the first and last seconds, which a counter's ramp would not keep.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash
@@ -490,7 +505,7 @@ refuses a patch with them. In the maintainer's desktop both have launchers ("G1-
 
 ## Next
 
-- The next family (`PORTING.md`: Conversion and logic, Level, Envelopes), and NME's virtual modules for the switches in the Mux8-1's type.
+- The next families (`PORTING.md`: Level, Envelopes), and NME's virtual modules for the switches in the Mux8-1's type.
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.

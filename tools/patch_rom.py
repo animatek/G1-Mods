@@ -582,6 +582,16 @@ def random(b, new_type=6):
                   Param("Length", 16, 6, "2002 6606 203c 007fffff")])
 
 
+def bits(b, new_type=41):
+    """Bits: the G2's BinCounter, ADConv and DAConv in one, by Mode (Count, A>D, D>A): Clk, Rst,
+    In and B1-B8 in; Out and Bit 1-8; eight LEDs with the byte."""
+    control_type(b, new_type, "bits.asm",
+                 # the byte, Clk's last, Rst's last, armed, Mode (Count), high, 255, the counter
+                 # (255: the first clock gives 0), unused, 1
+                 (0, 0, 0, 0, 0, 0x200000, 255, 255, 0, 1),
+                 [Param("Mode", 2, 4)], bits=(0, 0xFF))
+
+
 # The Scale Quantizer's scales: (name, the notes in it, as semitones from the root)
 SCALES = [
     ("Chromatic", range(12)),
@@ -634,8 +644,8 @@ EXPERIMENTS = {
     ),
     "all": (
         "every new type: 120 (FlipFlop), 121 (Mix1-1A), 123 (5-Step Seq), 124 (Turing Machine), "
-        "125 (Scale Quantizer), 126 (8Counter), 101 (Mux8-1), 6 (Random)",
-        [flipflop, mix1_1a, seq5, turing, quant, counter8, mux8, random], [],
+        "125 (Scale Quantizer), 126 (8Counter), 101 (Mux8-1), 6 (Random), 41 (Bits)",
+        [flipflop, mix1_1a, seq5, turing, quant, counter8, mux8, random, bits], [],
     ),
 }
 
