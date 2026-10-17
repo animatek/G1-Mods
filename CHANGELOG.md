@@ -5,6 +5,8 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: `PORTING.md`, the modules asked for after the first post, in one entry.
+
 - Javier (Claude wrote it down): **the ROM with the package at `$1C6000` works**, played in
   G1-Emu.
 

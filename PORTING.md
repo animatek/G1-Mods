@@ -255,6 +255,12 @@ Ideas built from what is known now. Same scale of feasibility.
 
 ## Ideas, not started
 
+- **Asked for after the first post (2026-10-17, Facebook and Patreon)**, to weigh, not promised:
+  a sequential switch matrix (WMD SSM), a VCA or matrix mixer, an LFO synced to the DAW (MIDI
+  clock), a control sequencer, 8-1/1-8 switches (planned: type 101 and NME panels), the Event
+  Seq sending to MIDI out and its Random button triggerable from a patch. An oscilloscope in NME
+  (Cristiano Silva, who works on mods for the Micro Modular in an emulator of his own).
+
 - **The Osc String, as the G2's** (Javier, 2026-10-17, from a picture of it): the G2's has no
   pluck of its own (it sounds only from what its audio input brings), a Pitch knob in semitones and
   cents and a KBT button. Ours was written from the textbook Karplus-Strong, not from the G2's
