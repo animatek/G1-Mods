@@ -25,8 +25,8 @@ a guide to the effort, not code to copy. Our code is written new.
 ## Only eleven types left
 
 **The G1 has room for 128 module types (0–127), and that cannot grow**: the OS's table has 128
-entries and a patch keeps a module's type in 7 bits. Clavia's take 110 of them; G1-Mods uses 101,
-120, 121 and 123–126. **Free now: 6, 41, 42, 55, 56, 60, 93, 109, 116, 119, 122** (0 is left out:
+entries and a patch keeps a module's type in 7 bits. Clavia's take 110 of them; G1-Mods uses 6, 101,
+120, 121 and 123–126. **Free now: 41, 42, 55, 56, 60, 93, 109, 116, 119, 122** (0 is left out:
 it may read as "no module"). Found 2026-10-17, when 127 and 128 were about to be used (127 is the
 PolyAreaIn); the same day the Mixer Inv (119, a first test) and the Noise S&H (122, easy to patch
 from G1 modules) were taken out to free theirs (in git history). So far fewer G2 modules can come
@@ -52,7 +52,7 @@ outputs of all its variants and each panel shows its own.
 | --- | --- |
 | 101 (Mux8-1) | Switches: Sw1-2, Sw2-1, Sw1-8, Mux1-8, the momentary ones |
 | 121 (Mix1-1A) | The G2's mixers with Lin/dB/Exp |
-| new | Random: Random A/B, Rnd Clock, Rnd Trig (Seed, Poly, Edge) |
+| 6 (Random) | Random: one clocked module does Random A/B (Out, Step, Edge), Rnd Trig (Prob) and Rnd Pattern (Seed, Length); done 2026-10-17 |
 | new | Conversion and logic: DAConv, ADConv, BinCounter |
 | new | Level: ModAmt, MinMax, T&H, WindSw |
 | new | Envelopes: ADDSR, H, D, Mod AHD |
@@ -69,6 +69,7 @@ outputs of all its variants and each panel shows its own.
 | Scale Quantizer (our own) | 125 | ✅ | In, Out, Root, Scale (16 by name) and Octave, after JW-Modules' Quantizer (`dsp/quant.asm`, `tests/check_quant.py`). Missing: CV inputs for Root and Scale. |
 | 8Counter | 126 | ✅ | Clk, Rst (as the G1's sequencers'), eight outputs, one high a step, and eight step LEDs (`dsp/counter8.asm`, `tests/check_counter8.py`). |
 | Mux8-1 (with the Sw8-1) | 101 | ✅ | In 1–8, Ctrl, Out, a Sel knob that Ctrl adds to (8 units a step), eight LEDs (`dsp/mux8.asm`, `tests/check_mux8.py`). Control rate. |
+| Random (the G2's randoms in one) | 6 | ✅ | Clk, Rst, Out, Trig; Seed, Poly, Step, Edge, Prob, Length (`dsp/random.asm`, `tests/check_random.py`). Poly checked by ear only (the bench plays one voice). |
 
 ## Modules only the G2 has
 
@@ -225,11 +226,11 @@ Ideas built from what is known now. Same scale of feasibility.
 
 | G2 module | G1 module | What the G2's adds | Feasible | Status |
 | --- | --- | --- | --- | --- |
-| Random A | RndStepGen | Mono/Poly, rate range, Step and Edge amounts | Medium | ⬜ |
-| Random B | RandomGen | Poly, rate range, KBT, Step, Edge | Medium | ⬜ |
-| Rnd Clock A | ClkRndGen | Seed (repeatable sequences), Poly, Step, reset | Medium | ⬜ |
-| Rnd Trig | RndPulsGen | Clocked, Seed, probability | Medium | ⬜ |
-| Rnd Pattern | PatternGen | Pattern A/B, Step/Prob, loop length | Medium | ⬜ |
+| Random A | RndStepGen | Mono/Poly, rate range, Step and Edge amounts | Medium | ✅ in the Random (type 6) |
+| Random B | RandomGen | Poly, rate range, KBT, Step, Edge | Medium | ✅ in the Random (type 6) |
+| Rnd Clock A | ClkRndGen | Seed (repeatable sequences), Poly, Step, reset | Medium | ⬜ (the Random, clocked by a ClkRndGen, covers most of it) |
+| Rnd Trig | RndPulsGen | Clocked, Seed, probability | Medium | ✅ in the Random (type 6) |
+| Rnd Pattern | PatternGen | Pattern A/B, Step/Prob, loop length | Medium | ✅ in the Random (type 6) |
 | Mixers (all) | Mixer (3), Mixer (8) | Lin / dB / Exp curves, channel buttons, chain | Easy once the curves are done | 🟡 (Mix1-1A) |
 | FlipFlop | — | (see above) | Easy | ✅ |
 | Envelopes | ADSR, AHD… | Shapes per segment, more modulation | Medium | ⬜ |

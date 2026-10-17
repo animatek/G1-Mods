@@ -5,6 +5,12 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: **type 6, Random** (`dsp/random.asm`): the G2's randoms in one clocked module, Clk, Rst,
+  Out, Trig, with Seed, Poly (a seed per voice: the Seed routine gets the voice), Step, Edge,
+  Prob and Length. NME data in "LFO (mods)" (NME `g1-mods` `5847ad1`). New
+  `tests/check_random.py`: the values match a Python model of the module one by one; Length, Rst,
+  Prob, Step and Edge checked; Poly by ear only. All tests pass. Ten free types left.
+
 - Claude: `PORTING.md`: the plan for the free types, revised with Javier: the switches go into
   the Mux8-1's type and the G2 mixers into the Mix1-1A's, so four new types cover the small
   families and seven are left for big modules (oscillators, effects), one a type.

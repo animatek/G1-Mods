@@ -21,6 +21,7 @@ NEW_TYPES = {
     125: (124, None, None, None, None),  # written whole: FULL_ENTRIES below
     126: (120, None, None, None, None),  # written whole: FULL_ENTRIES below
     101: (126, None, None, None, None),  # written whole: FULL_ENTRIES below
+    6: (101, None, None, None, None),    # written whole: FULL_ENTRIES below
     121: (19, "Mix1-1A", "1 Input Chain Mixer (G1-Mods)",
           [('name="in1"', 'name="in"'), ('name="in2"', 'name="chain"'),
            ('\n    <connector component-id="c3" index="2" name="in3" type="input" signal="audio" />', ''),
@@ -447,6 +448,85 @@ FULL_ENTRIES = {
 \t\t</connector>
 \t\t<connector x="231" y="46" size="13" class="cCONTROL">
 \t\t\t<connector component-id="c8" alt="in 8" />
+\t\t</connector>
+\t</module>"""),
+    6: ("""
+  <module component-id="m6" index="6" name="Random" fullname="Random, clocked, with Seed, Poly, Step, Edge, Prob and Length (G1-Mods)" category="LFO (mods)">
+    <image type="screenshot" src="img/modules/module-110.png" width="256" height="30" />
+    <image type="icon16x16" src="img/icons/16x16/module-id-110.png" width="16" height="16" />
+    <image type="icon32x32" src="img/icons/32x32/module-id-110.png" width="32" height="32" />
+    <connector component-id="c1" index="0" name="clock" type="input" signal="logic" />
+    <connector component-id="c2" index="1" name="reset" type="input" signal="logic" />
+    <connector component-id="c3" index="0" name="out" type="output" signal="control" />
+    <connector component-id="c4" index="1" name="trig" type="output" signal="logic" />
+    <!-- parameter(s) -->
+    <parameter component-id="p1" index="0" name="seed" class="parameter" maxValue="127" defaultValue="0" extension="m1" />
+    <parameter component-id="p2" index="1" name="poly" class="parameter" maxValue="1" defaultValue="0" formatter="fmtOffOn" extension="m2" />
+    <parameter component-id="p3" index="2" name="step" class="parameter" maxValue="127" defaultValue="127" extension="m3" />
+    <parameter component-id="p4" index="3" name="edge" class="parameter" maxValue="127" defaultValue="0" extension="m4" />
+    <parameter component-id="p5" index="4" name="prob" class="parameter" maxValue="127" defaultValue="64" extension="m5" />
+    <parameter component-id="p6" index="5" name="length" class="parameter" maxValue="16" defaultValue="0" formatter="fmtLoopLength" extension="m6" />
+    <parameter component-id="m1" index="0" name="morph:seed" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m2" index="1" name="morph:poly" class="morph" role="morph"  minValue="-1" maxValue="1" />
+    <parameter component-id="m3" index="2" name="morph:step" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m4" index="3" name="morph:edge" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m5" index="4" name="morph:prob" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m6" index="5" name="morph:length" class="morph" role="morph"  minValue="-16" maxValue="16" />
+    <!-- custom attributes -->
+    <attribute name="cycles" type="double" value="1.0" />
+    <attribute name="x-mem" type="double" value="0.5" />
+    <attribute name="y-mem" type="double" value="0.0" />
+    <attribute name="prog-mem" type="double" value="2.5" />
+    <attribute name="dyn-mem" type="double" value="0.5" />
+    <attribute name="zero-page" type="double" value="0.875" />
+    <attribute name="height" type="integer" value="4" />
+    <attribute name="background" value="#d9c3e6" />
+  </module>""", """
+\t<module component-id="m6" width="255" height="60">
+\t\t<name>Random</name>
+\t\t<label x="5" y="15">Clk</label>
+\t\t<connector x="6" y="30" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c1" alt="clock" />
+\t\t</connector>
+\t\t<label x="27" y="15">Rst</label>
+\t\t<connector x="28" y="30" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c2" alt="reset" />
+\t\t</connector>
+\t\t<label x="46" y="15">Seed</label>
+\t\t<knob x="46" y="26" size="21">
+\t\t\t<parameter component-id="p1" alt="seed" />
+\t\t</knob>
+\t\t<button x="70" y="29" width="28" height="16" cyclic="true" landscape="false">
+\t\t\t<parameter component-id="p2" alt="poly" />
+\t\t\t<btn index="0">Mono</btn>
+\t\t\t<btn index="1">Poly</btn>
+\t\t</button>
+\t\t<label x="102" y="15">Step</label>
+\t\t<knob x="102" y="26" size="21">
+\t\t\t<parameter component-id="p3" alt="step" />
+\t\t</knob>
+\t\t<label x="128" y="15">Edge</label>
+\t\t<knob x="128" y="26" size="21">
+\t\t\t<parameter component-id="p4" alt="edge" />
+\t\t</knob>
+\t\t<label x="154" y="15">Prob</label>
+\t\t<knob x="154" y="26" size="21">
+\t\t\t<parameter component-id="p5" alt="prob" />
+\t\t</knob>
+\t\t<label x="180" y="15">Len</label>
+\t\t<knob x="180" y="26" size="21">
+\t\t\t<parameter component-id="p6" alt="length" />
+\t\t</knob>
+\t\t<textDisplay x="179" y="48" width="23" height="11">
+\t\t\t<parameter component-id="p6" alt="length" />
+\t\t</textDisplay>
+\t\t<label x="208" y="15">Out</label>
+\t\t<connector x="210" y="30" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c3" alt="out" />
+\t\t</connector>
+\t\t<label x="230" y="15">Trig</label>
+\t\t<connector x="236" y="30" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c4" alt="trig" />
 \t\t</connector>
 \t</module>"""),
 }

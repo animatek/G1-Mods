@@ -456,6 +456,28 @@ runs every test.
 - `tests/check_mux8.py`: eight Constants of known levels, and every Sel and Ctrl tried picks its
   input; `check_insert.py` plays it too.
 
+## Type 6: Random (2026-10-17)
+
+- **The G2's randoms in one clocked module**, since the G1 already has free-running ones: Seed,
+  Poly, Step, Edge, Prob and Length. One engine does Random A/B (Out), Rnd Trig (Trig and Prob)
+  and Rnd Pattern (Seed and Length).
+- **A seed per voice is possible**: a parameter's routine is called once a voice (`$10DA00`),
+  and the structure it gets has the voice in its byte 2 (what `$10D142` reads to find the voice's
+  X base). The Seed routine (`seed_routine`) writes the seed's value, the voice's, and a "load"
+  flag, three `$10D142` calls; the DSP loads seed ^ (voice & Poly).
+- **The draw**: 16 steps of the 24-bit Galois register a clock (unrolled, 32 words), so the top 16
+  bits are new each clock; Out from all of it (a quarter, ±64 units), the chance from the low 16.
+  After the shifts a2 is still the old sign (`lsr` moves a1 only): the register is read again
+  before it is used as a number (the first version spanned ±128 units).
+- **Out** moves toward the draw by Step (`T + S (draw - T)`), and glides with Edge, a factor of
+  1 down to about 2^-16 (`($800000 - (v & 7) << 19) >> (v >> 3)`), on a 48-bit Out (two X words)
+  so a slow glide still moves.
+- **Load**: the first clock after the Seed is written, after a Rst edge (armed, as the
+  sequencers), and every Length clocks. A patch takes about 15 clocks (at 48 Hz) to set up before
+  a recording starts; the Seed routine sets the load flag, so the values start from the seed.
+- `tests/check_random.py` checks the values against a model in Python, one by one, for two seeds,
+  and Length, Rst, Prob, Step and Edge. **Poly is not checked** (the bench plays one voice).
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash
@@ -467,7 +489,7 @@ refuses a patch with them. In the maintainer's desktop both have launchers ("G1-
 
 ## Next
 
-- The G2's randoms (a seed per voice), with the few free types in mind (`PORTING.md`).
+- The next family (`PORTING.md`: Conversion and logic, Level, Envelopes), and NME's virtual modules for the switches in the Mux8-1's type.
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.
