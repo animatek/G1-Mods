@@ -34,6 +34,13 @@ def ram_to_rom(addr):
     return addr - 0x100000 + 0xC800
 
 
+# The types the OS leaves free: its table has 128 (0-127, and a patch keeps a type in 7 bits, so
+# there can be no more), and these are the ones without a module (unregistered entries in a RAM
+# dump after boot, none in NME's modules.xml). 0 is left out, as "no module" may be read into it.
+# 119-126 are taken by G1-Mods already; what is left has to be spent with care (NOTES.md).
+FREE_TYPES = (6, 41, 42, 55, 56, 60, 93, 101, 109, 116, 119, 120, 121, 122, 123, 124, 125, 126)
+
+
 def entry(t):
     return 0x1C3B00 + t * 0x30
 
@@ -66,6 +73,7 @@ class Build:
 
     def add_type(self, new_type, donor, fields):
         """new_type gets donor's 48-byte entry with some fields replaced {offset: long}."""
+        assert new_type in FREE_TYPES and new_type not in self.types, f"type {new_type} is not free"
         e = entry(new_type)
         code = ("3f3c" f"{new_type:04x}"     # move.w #type,-(sp)
                 "4eb9 0010dc42"              # jsr $10DC42          mark it registered
@@ -525,6 +533,12 @@ def counter8(b, new_type=126):
                  steps=(0, 7))
 
 
+def mux8(b, new_type=101):
+    """Mux8-1: In 1-8 and Ctrl in, Out; the G2's Mux8-1 and Sw8-1 in one type: Sel (1-8) plus
+    Ctrl (8 units a step) picks the input; eight LEDs show which."""
+    control_type(b, new_type, "mux8.asm", (7, 0, 0), [Param("Sel", 7, 1)], steps=(2, 7))
+
+
 # The Scale Quantizer's scales: (name, the notes in it, as semitones from the root)
 SCALES = [
     ("Chromatic", range(12)),
@@ -581,8 +595,8 @@ EXPERIMENTS = {
     ),
     "all": (
         "every new type: 119 (Mixer Inv), 120 (FlipFlop), 121 (Mix1-1A), 122 (Noise S&H), "
-        "123 (5-Step Seq), 124 (Turing Machine), 125 (Scale Quantizer), 126 (8Counter)",
-        [mixer_inv, flipflop, mix1_1a, noise_sh, seq5, turing, quant, counter8], [],
+        "123 (5-Step Seq), 124 (Turing Machine), 125 (Scale Quantizer), 126 (8Counter), 101 (Mux8-1)",
+        [mixer_inv, flipflop, mix1_1a, noise_sh, seq5, turing, quant, counter8, mux8], [],
     ),
 }
 

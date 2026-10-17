@@ -22,6 +22,20 @@ G1 already has when they do more. Updated as modules get ported. How a module is
 **DSP words** is the size of the module's code in the G2 demo (its parts added, approximate):
 a guide to the effort, not code to copy. Our code is written new.
 
+## Only ten types left
+
+**The G1 has room for 128 module types (0–127), and that cannot grow**: the OS's table has 128
+entries and a patch keeps a module's type in 7 bits. Clavia's take 110 of them; G1-Mods has taken
+119–126 and 101. **Free now: 6, 41, 42, 55, 56, 60, 93, 109, 116** (0 is left out: it may read as
+"no module"). Found 2026-10-17, when 127 and 128 were about to be used (127 is the PolyAreaIn).
+So far fewer G2 modules can come than this list has, and they have to be chosen:
+
+- **Variants share a type**: a mode button or a knob instead of a module each (the Mux8-1 is the
+  G2's Mux8-1 and Sw8-1 at once; Sw1-2/2-1, the M versions or the Lin/dB/Exp mixers would go the
+  same way).
+- **What a G1 module already does well is not ported again.**
+- `patch_rom.py` refuses a type not in `FREE_TYPES`.
+
 ## Already on the G1-Mods OS
 
 | Module | G1-Mods type | Status | What is missing |
@@ -33,6 +47,7 @@ a guide to the effort, not code to copy. Our code is written new.
 | Turing Machine (our own) | 124 | ✅ | Clk, CV, 8 gates (bits 0–7), Prob (bipolar, as the original's big knob), Length 1–16, Lock, Scale and 8 LEDs (`dsp/turing.asm`, `tests/check_turing.py`). Missing: a Rst, and the expander's mixes (1+2, 2+4, 4+7, 1+2+4+7). |
 | Scale Quantizer (our own) | 125 | ✅ | In, Out, Root, Scale (16 by name) and Octave, after JW-Modules' Quantizer (`dsp/quant.asm`, `tests/check_quant.py`). Missing: CV inputs for Root and Scale. |
 | 8Counter | 126 | ✅ | Clk, Rst (as the G1's sequencers'), eight outputs, one high a step, and eight step LEDs (`dsp/counter8.asm`, `tests/check_counter8.py`). |
+| Mux8-1 (with the Sw8-1) | 101 | ✅ | In 1–8, Ctrl, Out, a Sel knob that Ctrl adds to (8 units a step), eight LEDs (`dsp/mux8.asm`, `tests/check_mux8.py`). Control rate. |
 | Mixer Inv (test only) | 119 | ✅ | Not a G2 module: the first test, the Mixer (3) with input 1 inverted. |
 
 ## Modules only the G2 has
@@ -53,10 +68,10 @@ a guide to the effort, not code to copy. Our code is written new.
 | --- | --- | --- | --- | --- |
 | Sw1-2, Sw2-1 | 6–7 | Easy | ⬜ | |
 | Sw1-2M, Sw2-1M | 6–7 | Easy | ⬜ | Momentary versions. |
-| Sw1-8, Sw8-1 | 15–16 | Easy | ⬜ | The G1 has 1-4 and 4-1 only. |
+| Sw1-8, Sw8-1 | 15–16 | Easy | 🟡 | Sw8-1: in the Mux8-1 (type 101), its Sel knob. Sw1-8 to do. |
 | SwOnOffM | 5 | Easy | ⬜ | Momentary on/off. |
 | ValSw1-2, ValSw2-1 | 9–12 | Easy | ⬜ | Switched by a control value. |
-| Mux1-8, Mux8-1, Mux8-1X | 14–57 | Easy | ⬜ | Selected by a control input; the X one crossfades. |
+| Mux1-8, Mux8-1, Mux8-1X | 14–57 | Easy | 🟡 | Mux8-1: type 101. Mux1-8 and the crossfading X to do. |
 | WindSw | 11 | Easy | ⬜ | Window switch. |
 | T&H | 7 | Easy | ⬜ | Track and hold. |
 

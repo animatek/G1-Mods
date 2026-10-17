@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: **type 101, Mux8-1** (`dsp/mux8.asm`): the G2's Mux8-1 and Sw8-1 in one type, In 1–8,
+  Ctrl, Out, a Sel knob that Ctrl adds to (8 units a step) and eight LEDs. **Found: the G1 has
+  128 types and only nine are left free** (6, 41, 42, 55, 56, 60, 93, 109, 116); 127 is Clavia's
+  PolyAreaIn and 128 does not exist. `FREE_TYPES` in `patch_rom.py`, which refuses any other;
+  `PORTING.md` says how to spend them. NME `g1-mods` `c7980d6`, `60c29ca` (its mods test knew only
+  119 and above). New `tests/check_mux8.py` passes; all tests pass.
+
 - Claude: **type 126, 8Counter** (`dsp/counter8.asm`), the G2's: Clk, Rst (as the 5-Step Seq's,
   so it keeps in step with the G1's sequencers), eight outputs, one high a step, and eight step
   LEDs. NME data in "Logic (mods)" (NME `g1-mods` `0fdcd0c`). New `tests/check_counter8.py` (every

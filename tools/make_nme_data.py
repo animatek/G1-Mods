@@ -22,6 +22,7 @@ NEW_TYPES = {
     124: (123, None, None, None, None),  # written whole: FULL_ENTRIES below
     125: (124, None, None, None, None),  # written whole: FULL_ENTRIES below
     126: (120, None, None, None, None),  # written whole: FULL_ENTRIES below
+    101: (126, None, None, None, None),  # written whole: FULL_ENTRIES below
     121: (19, "Mix1-1A", "1 Input Chain Mixer (G1-Mods)",
           [('name="in1"', 'name="in"'), ('name="in2"', 'name="chain"'),
            ('\n    <connector component-id="c3" index="2" name="in3" type="input" signal="audio" />', ''),
@@ -424,6 +425,79 @@ FULL_ENTRIES = {
 \t\t</connector>
 \t\t<connector x="231" y="28" size="13" class="cLOGIC">
 \t\t\t<connector component-id="c10" alt="out 8" />
+\t\t</connector>
+\t</module>"""),
+    101: ("""
+  <module component-id="m101" index="101" name="Mux8-1" fullname="8 to 1 selector, by a knob and a level (G1-Mods)" category="Mixer (mods)">
+    <image type="screenshot" src="img/modules/module-79.png" width="256" height="30" />
+    <image type="icon16x16" src="img/icons/16x16/module-id-79.png" width="16" height="16" />
+    <image type="icon32x32" src="img/icons/32x32/module-id-79.png" width="32" height="32" />
+    <connector component-id="c1" index="0" name="in 1" type="input" signal="control" />
+    <connector component-id="c2" index="1" name="in 2" type="input" signal="control" />
+    <connector component-id="c3" index="2" name="in 3" type="input" signal="control" />
+    <connector component-id="c4" index="3" name="in 4" type="input" signal="control" />
+    <connector component-id="c5" index="4" name="in 5" type="input" signal="control" />
+    <connector component-id="c6" index="5" name="in 6" type="input" signal="control" />
+    <connector component-id="c7" index="6" name="in 7" type="input" signal="control" />
+    <connector component-id="c8" index="7" name="in 8" type="input" signal="control" />
+    <connector component-id="c9" index="8" name="ctrl" type="input" signal="control" />
+    <connector component-id="c10" index="0" name="out" type="output" signal="control" />
+    <!-- parameter(s) -->
+    <parameter component-id="p1" index="0" name="sel" class="parameter" maxValue="7" formatter="value+1" extension="m1" />
+    <parameter component-id="m1" index="0" name="morph:sel" class="morph" role="morph"  minValue="-7" maxValue="7" />
+    <light component-id="ledSel1-8" type="led-array" name="Sel 1-8" minValue="0" maxValue="8" />
+    <!-- custom attributes -->
+    <attribute name="cycles" type="double" value="0.5" />
+    <attribute name="x-mem" type="double" value="0.1" />
+    <attribute name="y-mem" type="double" value="0.0" />
+    <attribute name="prog-mem" type="double" value="1.0" />
+    <attribute name="dyn-mem" type="double" value="0.25" />
+    <attribute name="zero-page" type="double" value="0.875" />
+    <attribute name="height" type="integer" value="4" />
+    <attribute name="background" value="#bfcde0" />
+  </module>""", """
+\t<module component-id="m101" width="255" height="60">
+\t\t<name>Mux8-1</name>
+\t\t<label x="5" y="17">Ctrl</label>
+\t\t<connector x="6" y="28" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c9" alt="ctrl" />
+\t\t</connector>
+\t\t<label x="30" y="17">Sel</label>
+\t\t<textDisplay x="30" y="28" width="18" height="14">
+\t\t\t<parameter component-id="p1" alt="sel" />
+\t\t</textDisplay>
+\t\t<knob x="52" y="20" size="21">
+\t\t\t<parameter component-id="p1" alt="sel" />
+\t\t</knob>
+\t\t<label x="226" y="17">Out</label>
+\t\t<connector x="236" y="28" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c10" alt="out" />
+\t\t</connector>
+\t\t<label x="5" y="47">In</label>
+\t\t<light component-id="ledSel1-8" type="led-array" steps="8" x="50" y="38" width="200" height="7" />
+\t\t<connector x="56" y="46" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c1" alt="in 1" />
+\t\t</connector>
+\t\t<connector x="81" y="46" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c2" alt="in 2" />
+\t\t</connector>
+\t\t<connector x="106" y="46" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c3" alt="in 3" />
+\t\t</connector>
+\t\t<connector x="131" y="46" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c4" alt="in 4" />
+\t\t</connector>
+\t\t<connector x="156" y="46" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c5" alt="in 5" />
+\t\t</connector>
+\t\t<connector x="181" y="46" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c6" alt="in 6" />
+\t\t</connector>
+\t\t<connector x="206" y="46" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c7" alt="in 7" />
+\t\t</connector>
+\t\t<connector x="231" y="46" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c8" alt="in 8" />
 \t\t</connector>
 \t</module>"""),
 }

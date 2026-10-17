@@ -426,6 +426,28 @@ runs every test.
   be a step behind the model: the first clock can come while the patch is still being set up
   (the 5-Step Seq too; nothing to fix). `check_insert.py` plays it too.
 
+## Only 128 types (2026-10-17)
+
+- The type table at `$1C3B00` has 128 entries, and a patch keeps a type in 7 bits: there can be
+  no type 128. 127 is Clavia's PolyAreaIn. In a RAM dump after boot, the unregistered entries (the
+  default routines `$1198FE`...) are 0, 6, 41, 42, 55, 56, 60, 93, 101, 109, 116 and 119-126, the
+  same ones modules.xml has no module for. `FREE_TYPES` in `patch_rom.py` lists them (without 0)
+  and `add_type` refuses any other: types 127 and 128 were nearly used.
+- NME's `test_mods_categories` took every mods type as 119 or above; it knows the free types now.
+
+## Type 101: Mux8-1, with the Sw8-1 (2026-10-17)
+
+- The G2's Mux8-1 and Sw8-1 in one type, to spare types: the input picked is Sel (a knob, 0-7)
+  plus Ctrl in steps of 8 units (`asr #$12`: Ctrl / 2^18), held to 0..7. Unplugged, Ctrl is 0
+  and the knob picks.
+- Picking without an index: each input is read and `tfr x0,b ifeq` after `cmp #<$k,a`, eight
+  times (an input's address is patched into its own word, so they cannot be indexed).
+- The LEDs: the input picked in X[2], a led-array of 8 (`steps=(2, 7)`). The OS sends a meter only
+  when it changes, starting from 0: with In 1 picked nothing is sent, and NME lights the first.
+- Control rate: for levels and gates. Audio through it is sampled at the control rate.
+- `tests/check_mux8.py`: eight Constants of known levels, and every Sel and Ctrl tried picks its
+  input; `check_insert.py` plays it too.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash
@@ -443,7 +465,7 @@ It also shows **the two mixers working in one patch** despite the RAM variables 
 
 ## Next
 
-- The switches and muxes, and the G2's randoms (a seed per voice).
+- The G2's randoms (a seed per voice), with the few free types in mind (`PORTING.md`).
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.
