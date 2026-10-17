@@ -5,6 +5,9 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Javier (Claude wrote it down): **the ROM with the package at `$1C6000` works**, played in
+  G1-Emu.
+
 - Claude: **more room for the package**: it runs from `$1C6000` (136 KB the OS never touches,
   found by replaying NME's 2.1 MB session with the RAM filled with a pattern) and is stored in
   both 19 KB runs of the OS image, copied by a 52-byte bootstrap: 38 KB in all, 24 KB left (was
