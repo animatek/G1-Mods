@@ -76,7 +76,7 @@ outputs of all its variants and each panel shows its own.
 | Bits (BinCounter, ADConv, DAConv) | 41 | ✅ | Clk, Rst, In, B1–B8; Out, Bit 1–8; Mode (Count, A>D, D>A); eight LEDs (`dsp/bits.asm`, `tests/check_bits.py`). |
 | Level (ModAmt, MinMax, T&H, WindSw) | 42 | ✅ | A, B; Out 1, Out 2; Mode, Amount, Lo, Hi (`dsp/level.asm`, `tests/check_level.py`). Control rate. |
 | Envelope (ADDSR, H, D, AHD) | 55 | ✅ | Gate; Env, End; Gate/Trig, Attack, Decay 1, Level 1, Decay 2, Sustain, Release (`dsp/env.asm`, `tests/check_env.py`). Control rate; no time modulation inputs (the Mod AHD's) yet. |
-| Osc String | 56 | ✅ | Trig, Pitch, Exc; Out; Note, Decay, Damp (`dsp/string.asm`, `tests/check_string.py`). Audio rate. Lowest note about 94 Hz (a 1,024-word line); lower would need the line run at half or a quarter of the rate. |
+| Osc String | 56 | ✅ | Trig, Pitch, Exc; Out; Note, Decay, Damp (`dsp/string.asm`, `tests/check_string.py`). Audio rate. Lowest note about 94 Hz (a 1,024-word line); lower would need the line run at half or a quarter of the rate. Javier played it (2026-10-17): it works. |
 
 ## Modules only the G2 has
 

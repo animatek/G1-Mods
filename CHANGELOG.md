@@ -5,6 +5,8 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Javier (Claude wrote it down): **the Osc String works**, played in G1-Emu.
+
 - Claude: **type 56, Osc String** (`dsp/string.asm`), a plucked string (Karplus-Strong), the
   first audio-rate type: `audio_type` and `write_audio_x_routine` (checked first on a VCA, the
   `audiotest` experiment), a 1,024-word line the code clears itself, the period from Note and
