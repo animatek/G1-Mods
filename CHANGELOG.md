@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: **more room for the package**: it runs from `$1C6000` (136 KB the OS never touches,
+  found by replaying NME's 2.1 MB session with the RAM filled with a pattern) and is stored in
+  both 19 KB runs of the OS image, copied by a 52-byte bootstrap: 38 KB in all, 24 KB left (was
+  under 900 bytes). The 97 KB after the old room are OS buffers, not free. Checked: all tests
+  pass; a ROM split over both runs by force plays bit for bit as the normal one. `NOTES.md`,
+  "More room".
+
 - Claude: `PORTING.md`, the Osc String next to the G2's (no pluck of its own, Cent and KBT): add
   Cent and KBT to ours, keeping Trig and Exc (Javier likes ours).
 

@@ -20,12 +20,14 @@ ROM_SIZE = 512 * 1024
 
 # Where the new types live (NOTES.md, "Where new code can live"). The flash keeps the OS only up
 # to $70000 (RAM $16FFE0): past that are the patch banks, which the OS formats. So the package is
-# stored at STAGE, in a run of the OS image the OS leaves alone until well after the types are
-# registered, and a bootstrap there copies it at boot to RUN, RAM the OS never uses, where it runs.
-STAGE = 0x166574          # in the image, inside the flash's OS area
-STAGE_END = 0x16B078
-FREE = RUN = 0x170000      # where the package runs: every address in it is a RUN address
-FREE_END = 0x173800
+# stored in two runs of the OS image the OS leaves alone until well after the types are registered
+# (STAGES; the bootstrap at the first's start), and copied at boot to RUN, RAM the OS never uses,
+# where it runs.
+STAGE = 0x166574          # in the image, inside the flash's OS area: the bootstrap, then the package
+STAGES = ((STAGE, 0x16B078), (0x16B07A, 0x16FB7E))   # the OS writes the bytes at $16B078 and $16FB7E
+BOOT_LEN = 0x34
+FREE = RUN = 0x1C6000      # where the package runs: every address in it is a RUN address
+FREE_END = 0x1E8000        # (the OS leaves $1C57F0-$1EFECF alone; 32 KB kept below its stacks)
 LIST_LAST_JSR = 0x10DF1E  # the registration list's last jsr (type 17's, $143350)
 LIST_LAST_TARGET = 0x143350
 
@@ -96,20 +98,26 @@ class Build:
         reg = self.put(b"".join(self.register) + bytes.fromhex("4e75"))   # ...rts
         package = b"".join(data for _, data in self.blocks)
         assert len(package) == self.at - RUN
-        boot_len = 0x24
-        src = STAGE + boot_len
+        (s1, e1), (s2, e2) = STAGES
+        first, rest = package[:e1 - s1 - BOOT_LEN], package[e1 - s1 - BOOT_LEN:]
+        assert len(rest) <= e2 - s2, f"the package ({len(package)} bytes) does not fit the stages"
         boot = m68k("4eb9", f"{LIST_LAST_TARGET:08x}",       # jsr $143350: the call it replaces
-                    "41f9", f"{src:08x}",                    # lea package,a0
+                    "41f9", f"{s1 + BOOT_LEN:08x}",          # lea package,a0
                     "43f9", f"{RUN:08x}",                    # lea RUN,a1
-                    "303c", f"{len(package) - 1:04x}",       # move.w #n-1,d0
+                    "303c", f"{len(first) - 1:04x}",         # move.w #n-1,d0
                     "12d8",                                  # move.b (a0)+,(a1)+
-                    "51c8 fffc",                             # dbra d0,*-2
-                    "4eb9", f"{reg:08x}",                    # jsr registration
-                    "4e75")                                  # rts
-        assert len(boot) <= boot_len and src + len(package) <= STAGE_END
-        boot += bytes.fromhex("4e71") * ((boot_len - len(boot)) // 2)   # nop
+                    "51c8 fffc")                             # dbra d0,*-2
+        if rest:                                             # the second stage, after it
+            boot += m68k("41f9", f"{s2:08x}",                # lea stage 2,a0
+                         "303c", f"{len(rest) - 1:04x}",     # move.w #n-1,d0
+                         "12d8",                             # move.b (a0)+,(a1)+
+                         "51c8 fffc")                        # dbra d0,*-2
+        boot += m68k("4eb9", f"{reg:08x}",                   # jsr registration
+                     "4e75")                                 # rts
+        assert len(boot) <= BOOT_LEN
+        boot += bytes.fromhex("4e71") * ((BOOT_LEN - len(boot)) // 2)   # nop
         hook = (LIST_LAST_JSR + 2, LIST_LAST_TARGET.to_bytes(4, "big"), STAGE.to_bytes(4, "big"))
-        return [(STAGE, boot + package)], hook
+        return [(s1, boot + first)] + ([(s2, rest)] if rest else []), hook
 
 
 def param_table(params):

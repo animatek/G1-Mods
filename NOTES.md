@@ -52,9 +52,9 @@ Read from a RAM dump after boot (`G1_RAMDUMP=file g1boot ROM 60`, in `../G1-Emu`
     second boot;
   - the OS uses most of `$15DFE0`–`$16FB7E` as variables, except some runs (two of 19 KB at
     `$166573` and `$16B079`, two of 8 KB) that are still untouched when the types are registered.
-  So the package is **stored** in the 19 KB run at `$166574` and **runs** from `$170000`
-  (`$170000`–`$1737FF`, 14 KB, never used by the OS: untouched after a replayed 2 MB NME
-  session); a 36-byte bootstrap at `$166574` copies it there at boot, before registering.
+  So the package was first **stored** in the 19 KB run at `$166574` and **ran** from `$170000`
+  (`$170000`-`$1737FF`, 14 KB); since 2026-10-17 it is stored in both 19 KB runs and runs from
+  `$1C6000` (see "More room: the RAM the OS never touches").
 
 ## The first new type: 119 (2026-10-16)
 
@@ -528,7 +528,29 @@ runs every test.
   fast enough gate for `check_insert.py`.
 - Not yet: the Mod AHD's inputs that modulate the times.
 
-## Room for code: 2.3 KB left (2026-10-17)
+## More room: the RAM the OS never touches (2026-10-17)
+
+- **Found** as the first 14 KB were: NME's recorded session (2.1 MB, every byte read by the OS)
+  replayed in `g1boot` and the RAM dumped at the end, then the same replay with the candidate runs
+  filled with `$A5` just before it (a local, uncommitted fill option in `g1boot`), to tell a run
+  the OS never touches from one it uses and leaves at zero.
+- **`$1C57F0`-`$1EFECF` (170 KB) is free**: the pattern came out whole, and no code in the OS
+  holds an address in it (the 198 longwords that fall in it are jump tables and data). Above it,
+  up to `$1FFF00` (the reset SP), are the OS's stacks and variables; just below, a tick counter at
+  `$1C57E0`. **The package runs from `$1C6000`-`$1E7FFF`** (136 KB), 32 KB kept below the stacks.
+- **The 97 KB right after the old room (`$173810`-`$18BDA2`) is not free**: five OS buffers of
+  exactly `$4B06` bytes from `$174684`, zero in that session, but the OS wrote their headers
+  (`00 00 16 45 AA`...) as soon as they held anything else. The three 13.8 KB runs at `$1B16F0`,
+  `$1B76F0` and `$1BD6F0` are used too (some 300 bytes written in each).
+- **Storing it is now the limit**: the package lives in the ROM, inside the OS image the flash
+  keeps (up to RAM `$16FFDF`). The bootstrap (52 bytes at `$166574`) copies the first 19 KB run
+  (`$1665A8`-`$16B077`) and then the second (`$16B07A`-`$16FB7D`; the OS writes the bytes at
+  `$16B078` and `$16FB7E`) to `$1C6000`. 38,352 bytes in all: with 13,460 used, **24 KB left**.
+  Checked: all tests pass, and a ROM split by force (the first run cut to 4,000 bytes, the String
+  in the second) plays the String, Turing and Envelope patches bit for bit as the normal one.
+  The two 8 KB runs of "Where new code can live" could be a third and fourth stage if needed.
+
+## Room for code: 2.3 KB left (2026-10-17, before the move)
 
 - **The package (every new type's code, data and routines) runs from the 14 KB at `$170000`**
   ("Where new code can live"), and with the eleven types it takes 11,992 bytes: some 2.3 KB are
