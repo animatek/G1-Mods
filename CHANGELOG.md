@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: **type 126, 8Counter** (`dsp/counter8.asm`), the G2's: Clk, Rst (as the 5-Step Seq's,
+  so it keeps in step with the G1's sequencers), eight outputs, one high a step, and eight step
+  LEDs. NME data in "Logic (mods)" (NME `g1-mods` `0fdcd0c`). New `tests/check_counter8.py` (every
+  sample against a model of the counter, Rst included, and the step LEDs) passes; all tests pass.
+
 - Claude: **type 125, Scale Quantizer** (`dsp/quant.asm`, Javier's idea, after JW-Modules'
   Quantizer): In, Out, Root (C..B), Scale (16 by name) and Octave (−4..+4). A table per scale
   written by the Scale routine (`write_table_routine`, `Param(table=)`). Found on the way: 0 at a

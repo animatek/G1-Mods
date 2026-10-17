@@ -516,6 +516,15 @@ def turing(b, new_type=124):
                  bits=(3, 0xFF))
 
 
+def counter8(b, new_type=126):
+    """8Counter: Clk and Rst in, eight outputs, one high a step, and a row of eight step LEDs."""
+    control_type(b, new_type, "counter8.asm",
+                 # the step (the last: the first clock plays the first), Clk's last, Rst's last,
+                 # armed, high
+                 (7, 0, 0, 0, 0x200000),
+                 steps=(0, 7))
+
+
 # The Scale Quantizer's scales: (name, the notes in it, as semitones from the root)
 SCALES = [
     ("Chromatic", range(12)),
@@ -572,8 +581,8 @@ EXPERIMENTS = {
     ),
     "all": (
         "every new type: 119 (Mixer Inv), 120 (FlipFlop), 121 (Mix1-1A), 122 (Noise S&H), "
-        "123 (5-Step Seq), 124 (Turing Machine), 125 (Scale Quantizer)",
-        [mixer_inv, flipflop, mix1_1a, noise_sh, seq5, turing, quant], [],
+        "123 (5-Step Seq), 124 (Turing Machine), 125 (Scale Quantizer), 126 (8Counter)",
+        [mixer_inv, flipflop, mix1_1a, noise_sh, seq5, turing, quant, counter8], [],
     ),
 }
 

@@ -415,6 +415,17 @@ runs every test.
   the table gives, for the 16 scales on C and three other roots and octaves; `check_insert.py`
   plays it too.
 
+## Type 126: 8Counter (2026-10-17)
+
+- The 5-Step Seq's clock and Rst code (Rst arms, the next clock goes to the first step, it
+  starts on the last), the step 0-7 in X[0] for a row of eight step LEDs (`steps=(0, 7)`), and
+  eight outputs, each `clr a / cmp #<$k,b / tfr x1,a ifeq / move a,x:$0`: high for the whole
+  step. No parameters (NME's encoder has an empty case for it, which `check_nme_data.py` wants).
+- `tests/check_counter8.py`: a model of the counter on the recorded clock and an LFO's Rst, and
+  every sample of Out 1, 2 and 8 the model's, from the first Rst on. Before it, the counter may
+  be a step behind the model: the first clock can come while the patch is still being set up
+  (the 5-Step Seq too; nothing to fix). `check_insert.py` plays it too.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash
@@ -432,8 +443,7 @@ It also shows **the two mixers working in one patch** despite the RAM variables 
 
 ## Next
 
-- An 8Counter (eight
-  outputs, a led-array of 8), the switches and muxes, and the G2's randoms (a seed per voice).
+- The switches and muxes, and the G2's randoms (a seed per voice).
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.

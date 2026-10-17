@@ -32,6 +32,7 @@ a guide to the effort, not code to copy. Our code is written new.
 | 5-Step Seq (our own) | 123 | ✅ | Clk, Rst, Out, five bipolar knobs and a row of five step LEDs (`dsp/seq5.asm`, `tests/check_seq5.py`). |
 | Turing Machine (our own) | 124 | ✅ | Clk, CV, 8 gates (bits 0–7), Prob (bipolar, as the original's big knob), Length 1–16, Lock, Scale and 8 LEDs (`dsp/turing.asm`, `tests/check_turing.py`). Missing: a Rst, and the expander's mixes (1+2, 2+4, 4+7, 1+2+4+7). |
 | Scale Quantizer (our own) | 125 | ✅ | In, Out, Root, Scale (16 by name) and Octave, after JW-Modules' Quantizer (`dsp/quant.asm`, `tests/check_quant.py`). Missing: CV inputs for Root and Scale. |
+| 8Counter | 126 | ✅ | Clk, Rst (as the G1's sequencers'), eight outputs, one high a step, and eight step LEDs (`dsp/counter8.asm`, `tests/check_counter8.py`). |
 | Mixer Inv (test only) | 119 | ✅ | Not a G2 module: the first test, the Mixer (3) with input 1 inverted. |
 
 ## Modules only the G2 has
@@ -41,7 +42,7 @@ a guide to the effort, not code to copy. Our code is written new.
 | Module | DSP words | Feasible | Status | Notes |
 | --- | --- | --- | --- | --- |
 | FlipFlop | 9 + latch 17–18 | Easy | ✅ | See above. |
-| 8Counter | 34 | Easy | ⬜ | Eight outputs, one high per clock; reset. The one most asked for. |
+| 8Counter | 34 | Easy | ✅ | Type 126, see above. |
 | BinCounter | 36 | Easy | ⬜ | Binary counter, several outputs. |
 | ADConv | 31 | Easy | ⬜ | Level to 8 logic bits. |
 | DAConv | 29 | Easy | ⬜ | 8 logic bits to a level. |
