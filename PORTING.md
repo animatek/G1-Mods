@@ -253,6 +253,25 @@ Ideas built from what is known now. Same scale of feasibility.
 5. Later, if ever: MIDI modules (68k work), PShift and Scratch, and the long delays and the
    reverb as G1-Emu-only.
 
+## Next: opening it up (agreed with Javier, 2026-10-17)
+
+After the first post, people want to use it and add modules (Cristiano Silva works on Micro Modular
+mods in an emulator of his own). Before it grows, in this order:
+
+1. **One folder per module** (`modules/<name>/`: its DSP code, parameters, routines, NME data and
+   test), and `patch_rom.py` reduced to the builder that reads them. Adding a module = adding a
+   folder. Every test must still pass and the ROM come out byte for byte the same.
+2. **A registry of type numbers**: each accepted module keeps its type for ever, so a patch opens
+   on any build that has that module. Only six are left (60, 93, 109, 116, 119, 122): the
+   registry is where it is decided which modules get one.
+3. **Publish G1-Mods on GitHub**, public, GPLv3 like G1-Emu: README (no ROM or OS given, it builds
+   from yours), CONTRIBUTING (the module folder, the tests, nothing of Clavia's). Before: check
+   the whole history for anything of Clavia's. Ask Javier before publishing.
+4. **The builder in NME** (see "An OS builder" below): pick your OS, tick modules, get the ROM;
+   with it the `g1-mods` branch into `main` and NME telling the modified OS apart.
+
+Real hardware only after this, once the ROM's MIDI boot mode is known to recover a bad OS.
+
 ## Ideas, not started
 
 - **Asked for after the first post (2026-10-17, Facebook and Patreon)**, to weigh, not promised:
