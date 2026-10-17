@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Checks the 8Counter (type 126) in G1-Emu with the G1-Mods ROM.
 
-    tests/check_counter8.py
+    modules/counter8/check_counter8.py
 
-tests/counter8.pch: ClkGen (48 Hz) into Clk and an LFO (about 2 Hz) into Rst, so its edges fall
+counter8.pch: ClkGen (48 Hz) into Clk and an LFO (about 2 Hz) into Rst, so its edges fall
 between clocks; on the outputs, Out 1, Out 2, the clock and the LFO. A model of the counter runs
 on the recorded clock and reset (starts on step 8; a Rst edge arms it; the next clock, or one in
 the same sample, goes to step 1; any other clock to the next step, the eighth back to the
@@ -20,7 +20,7 @@ import tempfile
 import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 SETTLE = 4800          # 50 ms at 96 kHz: the patch being set up

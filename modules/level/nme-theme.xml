@@ -1,0 +1,44 @@
+	<module component-id="m42" width="255" height="60">
+		<name>Level</name>
+		<label x="6" y="15">A</label>
+		<connector x="6" y="26" size="13" class="cCONTROL">
+			<connector component-id="c1" alt="a" />
+		</connector>
+		<label x="28" y="15">B</label>
+		<connector x="28" y="26" size="13" class="cCONTROL">
+			<connector component-id="c2" alt="b" />
+		</connector>
+		<button x="50" y="25" width="150" height="16" cyclic="false" landscape="true">
+			<parameter component-id="p1" alt="mode" />
+			<btn index="0">ModAmt</btn>
+			<btn index="1">MinMax</btn>
+			<btn index="2">T&amp;H</btn>
+			<btn index="3">Window</btn>
+		</button>
+		<label x="214" y="15">1</label>
+		<connector x="212" y="26" size="13" class="cCONTROL">
+			<connector component-id="c3" alt="out 1" />
+		</connector>
+		<label x="238" y="15">2</label>
+		<connector x="236" y="26" size="13" class="cCONTROL">
+			<connector component-id="c4" alt="out 2" />
+		</connector>
+		<label x="5" y="45">Amount</label>
+		<knob x="44" y="38" size="21">
+			<parameter component-id="p2" alt="amount" />
+		</knob>
+		<label x="86" y="45">Lo</label>
+		<textDisplay x="100" y="42" width="24" height="14">
+			<parameter component-id="p3" alt="lo" />
+		</textDisplay>
+		<knob x="128" y="38" size="21">
+			<parameter component-id="p3" alt="lo" />
+		</knob>
+		<label x="164" y="45">Hi</label>
+		<textDisplay x="178" y="42" width="24" height="14">
+			<parameter component-id="p4" alt="hi" />
+		</textDisplay>
+		<knob x="206" y="38" size="21">
+			<parameter component-id="p4" alt="hi" />
+		</knob>
+	</module>

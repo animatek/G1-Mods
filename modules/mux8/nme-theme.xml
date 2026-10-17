@@ -1,0 +1,44 @@
+	<module component-id="m101" width="255" height="60">
+		<name>Mux8-1</name>
+		<label x="5" y="17">Ctrl</label>
+		<connector x="6" y="28" size="13" class="cCONTROL">
+			<connector component-id="c9" alt="ctrl" />
+		</connector>
+		<label x="30" y="17">Sel</label>
+		<textDisplay x="30" y="28" width="18" height="14">
+			<parameter component-id="p1" alt="sel" />
+		</textDisplay>
+		<knob x="52" y="20" size="21">
+			<parameter component-id="p1" alt="sel" />
+		</knob>
+		<label x="226" y="17">Out</label>
+		<connector x="236" y="28" size="13" class="cCONTROL">
+			<connector component-id="c10" alt="out" />
+		</connector>
+		<label x="5" y="47">In</label>
+		<light component-id="ledSel1-8" type="led-array" steps="8" x="50" y="38" width="200" height="7" />
+		<connector x="56" y="46" size="13" class="cCONTROL">
+			<connector component-id="c1" alt="in 1" />
+		</connector>
+		<connector x="81" y="46" size="13" class="cCONTROL">
+			<connector component-id="c2" alt="in 2" />
+		</connector>
+		<connector x="106" y="46" size="13" class="cCONTROL">
+			<connector component-id="c3" alt="in 3" />
+		</connector>
+		<connector x="131" y="46" size="13" class="cCONTROL">
+			<connector component-id="c4" alt="in 4" />
+		</connector>
+		<connector x="156" y="46" size="13" class="cCONTROL">
+			<connector component-id="c5" alt="in 5" />
+		</connector>
+		<connector x="181" y="46" size="13" class="cCONTROL">
+			<connector component-id="c6" alt="in 6" />
+		</connector>
+		<connector x="206" y="46" size="13" class="cCONTROL">
+			<connector component-id="c7" alt="in 7" />
+		</connector>
+		<connector x="231" y="46" size="13" class="cCONTROL">
+			<connector component-id="c8" alt="in 8" />
+		</connector>
+	</module>

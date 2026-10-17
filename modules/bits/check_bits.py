@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Checks the Bits module (type 41) in G1-Emu with the G1-Mods ROM.
 
-    tests/check_bits.py
+    modules/bits/check_bits.py
 
-tests/bits.pch (in D>A, whose steady Out check_insert.py can compare): ClkGen (48 Hz) into Clk, an LFO into In, eight Constants into B1-B8 (1 0 1 1 0 0
+bits.pch (in D>A, whose steady Out check_insert.py can compare): ClkGen (48 Hz) into Clk, an LFO into In, eight Constants into B1-B8 (1 0 1 1 0 0
 1 0, Bit 1 first: 77); Out on output 1, Bit 1 on 2, Bit 8 on 3, the clock on 4 (the LFO in A>D).
 Each mode plays 3 s:
 - Count: the byte goes up one a clock, 255 back to 0; Bit 1 and Bit 8 are its bits; the OS's
@@ -19,7 +19,7 @@ import tempfile
 import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 SETTLE = 4800          # 50 ms at 96 kHz: the patch being set up

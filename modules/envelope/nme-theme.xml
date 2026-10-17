@@ -1,0 +1,44 @@
+	<module component-id="m55" width="255" height="45">
+		<name>Envelope</name>
+		<label x="5" y="16">Gate</label>
+		<connector x="6" y="27" size="13" class="cLOGIC">
+			<connector component-id="c1" alt="gate" />
+		</connector>
+		<button x="28" y="26" width="30" height="16" cyclic="true" landscape="false">
+			<parameter component-id="p1" alt="mode" />
+			<btn index="0">Gate</btn>
+			<btn index="1">Trig</btn>
+		</button>
+		<label x="65" y="13">A</label>
+		<knob x="62" y="22" size="21">
+			<parameter component-id="p2" alt="attack" />
+		</knob>
+		<label x="91" y="13">D1</label>
+		<knob x="88" y="22" size="21">
+			<parameter component-id="p3" alt="decay 1" />
+		</knob>
+		<label x="117" y="13">L1</label>
+		<knob x="114" y="22" size="21">
+			<parameter component-id="p4" alt="level 1" />
+		</knob>
+		<label x="143" y="13">D2</label>
+		<knob x="140" y="22" size="21">
+			<parameter component-id="p5" alt="decay 2" />
+		</knob>
+		<label x="169" y="13">S</label>
+		<knob x="166" y="22" size="21">
+			<parameter component-id="p6" alt="sustain" />
+		</knob>
+		<label x="195" y="13">R</label>
+		<knob x="192" y="22" size="21">
+			<parameter component-id="p7" alt="release" />
+		</knob>
+		<label x="216" y="16">Env</label>
+		<connector x="218" y="27" size="13" class="cCONTROL">
+			<connector component-id="c2" alt="env" />
+		</connector>
+		<label x="236" y="16">End</label>
+		<connector x="238" y="27" size="13" class="cLOGIC">
+			<connector component-id="c3" alt="end" />
+		</connector>
+	</module>

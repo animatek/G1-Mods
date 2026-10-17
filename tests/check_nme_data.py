@@ -67,8 +67,9 @@ def main():
                          check=True, capture_output=True, text=True).stdout
     m = re.search(r"fmtScaleName \(int value\)\s*\{\s*static const char\* names\[\] = \{([^}]*)\}", fmt)
     names = re.findall(r'"([^"]*)"', m.group(1)) if m else []
-    good = len(names) == len(patch_rom.SCALES)
-    print(f"scale names: NME {len(names)}, OS {len(patch_rom.SCALES)} -> {'ok' if good else 'WRONG'}")
+    scales = patch_rom.Module("scale-quantizer").code.SCALES
+    good = len(names) == len(scales)
+    print(f"scale names: NME {len(names)}, OS {len(scales)} -> {'ok' if good else 'WRONG'}")
     ok &= good
     print("OK" if ok else "FAILED")
     sys.exit(0 if ok else 1)

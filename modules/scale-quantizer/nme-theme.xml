@@ -1,0 +1,32 @@
+	<module component-id="m125" width="255" height="45">
+		<name>Scale Quantizer</name>
+		<label x="5" y="17">In</label>
+		<connector x="6" y="28" size="13" class="cCONTROL">
+			<connector component-id="c1" alt="in" />
+		</connector>
+		<label x="28" y="17">Root</label>
+		<textDisplay x="28" y="28" width="22" height="14">
+			<parameter component-id="p1" alt="root" />
+		</textDisplay>
+		<knob x="54" y="20" size="21">
+			<parameter component-id="p1" alt="root" />
+		</knob>
+		<label x="82" y="17">Scale</label>
+		<textDisplay x="82" y="28" width="62" height="14">
+			<parameter component-id="p2" alt="scale" />
+		</textDisplay>
+		<knob x="148" y="20" size="21">
+			<parameter component-id="p2" alt="scale" />
+		</knob>
+		<label x="176" y="17">Oct</label>
+		<textDisplay x="176" y="28" width="20" height="14">
+			<parameter component-id="p3" alt="octave" />
+		</textDisplay>
+		<knob x="200" y="20" size="21">
+			<parameter component-id="p3" alt="octave" />
+		</knob>
+		<label x="230" y="17">Out</label>
+		<connector x="236" y="28" size="13" class="cCONTROL">
+			<connector component-id="c2" alt="out" />
+		</connector>
+	</module>

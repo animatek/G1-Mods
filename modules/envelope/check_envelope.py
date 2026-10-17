@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Checks the Envelope (type 55) in G1-Emu with the G1-Mods ROM.
 
-    tests/check_env.py
+    modules/envelope/check_envelope.py
 
-tests/env.pch: a square LFO into Gate; Env on output 1, End on 2, the gate on 3. Parameters:
+env.pch: a square LFO into Gate; Env on output 1, End on 2, the gate on 3. Parameters:
 Mode, Attack, Decay 1, Level 1, Decay 2, Sustain, Release. Each case plays 4 s, a few notes (the
 LFO fast enough for check_insert.py to find notes in its first and last seconds):
 - Gate mode, Attack 0, Level 1 20 (10.1 units), Sustain 100 (50.4): at each gate on, Env is at
@@ -22,7 +22,7 @@ import tempfile
 import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 SETTLE = 4800          # 50 ms at 96 kHz: the patch being set up

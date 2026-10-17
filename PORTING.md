@@ -66,17 +66,17 @@ outputs of all its variants and each panel shows its own.
 | Module | G1-Mods type | Status | What is missing |
 | --- | --- | --- | --- |
 | Mixer 1-1 A (Mix1-1A) | 121 | 🟡 | Level, Ch 1 button and chain work (checked). Missing: the Lin / dB / Exp curves (needs a 68k routine of our own; see `NOTES.md`). |
-| FlipFlop | 120 | ✅ | D-type and RS-type, Clk, In, Rst, Q and NotQ (`dsp/flipflop.asm`; `tests/check_flipflop.py`). |
-| 5-Step Seq (our own) | 123 | ✅ | Clk, Rst, Out, five bipolar knobs and a row of five step LEDs (`dsp/seq5.asm`, `tests/check_seq5.py`). |
-| Turing Machine (our own) | 124 | ✅ | Clk, CV, 8 gates (bits 0–7), Prob (bipolar, as the original's big knob), Length 1–16, Lock, Scale and 8 LEDs (`dsp/turing.asm`, `tests/check_turing.py`). Missing: a Rst, and the expander's mixes (1+2, 2+4, 4+7, 1+2+4+7). |
-| Scale Quantizer (our own) | 125 | ✅ | In, Out, Root, Scale (16 by name) and Octave, after JW-Modules' Quantizer (`dsp/quant.asm`, `tests/check_quant.py`). Missing: CV inputs for Root and Scale. |
-| 8Counter | 126 | ✅ | Clk, Rst (as the G1's sequencers'), eight outputs, one high a step, and eight step LEDs (`dsp/counter8.asm`, `tests/check_counter8.py`). |
-| Mux8-1 (with the Sw8-1) | 101 | ✅ | In 1–8, Ctrl, Out, a Sel knob that Ctrl adds to (8 units a step), eight LEDs (`dsp/mux8.asm`, `tests/check_mux8.py`). Control rate. |
-| Random (the G2's randoms in one) | 6 | ✅ | Clk, Rst, Out, Trig; Seed, Poly, Step, Edge, Prob, Length, Uni/Bi (`dsp/random.asm`, `tests/check_random.py`). Poly checked by Javier by ear (2026-10-17: the voices play different sequences). |
-| Bits (BinCounter, ADConv, DAConv) | 41 | ✅ | Clk, Rst, In, B1–B8; Out, Bit 1–8; Mode (Count, A>D, D>A); eight LEDs (`dsp/bits.asm`, `tests/check_bits.py`). |
-| Level (ModAmt, MinMax, T&H, WindSw) | 42 | ✅ | A, B; Out 1, Out 2; Mode, Amount, Lo, Hi (`dsp/level.asm`, `tests/check_level.py`). Control rate. |
-| Envelope (ADDSR, H, D, AHD) | 55 | ✅ | Gate; Env, End; Gate/Trig, Attack, Decay 1, Level 1, Decay 2, Sustain, Release (`dsp/env.asm`, `tests/check_env.py`). Control rate; no time modulation inputs (the Mod AHD's) yet. |
-| Osc String | 56 | ✅ | Trig, Pitch, Exc; Out; Note, Decay, Damp (`dsp/string.asm`, `tests/check_string.py`). Audio rate. Lowest note about 94 Hz (a 1,024-word line); lower would need the line run at half or a quarter of the rate. Javier played it (2026-10-17): it works. |
+| FlipFlop | 120 | ✅ | D-type and RS-type, Clk, In, Rst, Q and NotQ (`modules/flipflop/flipflop.asm`; `modules/flipflop/check_flipflop.py`). |
+| 5-Step Seq (our own) | 123 | ✅ | Clk, Rst, Out, five bipolar knobs and a row of five step LEDs (`modules/step-seq-5/seq5.asm`, `modules/step-seq-5/check_step_seq_5.py`). |
+| Turing Machine (our own) | 124 | ✅ | Clk, CV, 8 gates (bits 0–7), Prob (bipolar, as the original's big knob), Length 1–16, Lock, Scale and 8 LEDs (`modules/turing-machine/turing.asm`, `modules/turing-machine/check_turing_machine.py`). Missing: a Rst, and the expander's mixes (1+2, 2+4, 4+7, 1+2+4+7). |
+| Scale Quantizer (our own) | 125 | ✅ | In, Out, Root, Scale (16 by name) and Octave, after JW-Modules' Quantizer (`modules/scale-quantizer/quant.asm`, `modules/scale-quantizer/check_scale_quantizer.py`). Missing: CV inputs for Root and Scale. |
+| 8Counter | 126 | ✅ | Clk, Rst (as the G1's sequencers'), eight outputs, one high a step, and eight step LEDs (`modules/counter8/counter8.asm`, `modules/counter8/check_counter8.py`). |
+| Mux8-1 (with the Sw8-1) | 101 | ✅ | In 1–8, Ctrl, Out, a Sel knob that Ctrl adds to (8 units a step), eight LEDs (`modules/mux8/mux8.asm`, `modules/mux8/check_mux8.py`). Control rate. |
+| Random (the G2's randoms in one) | 6 | ✅ | Clk, Rst, Out, Trig; Seed, Poly, Step, Edge, Prob, Length, Uni/Bi (`modules/random/random.asm`, `modules/random/check_random.py`). Poly checked by Javier by ear (2026-10-17: the voices play different sequences). |
+| Bits (BinCounter, ADConv, DAConv) | 41 | ✅ | Clk, Rst, In, B1–B8; Out, Bit 1–8; Mode (Count, A>D, D>A); eight LEDs (`modules/bits/bits.asm`, `modules/bits/check_bits.py`). |
+| Level (ModAmt, MinMax, T&H, WindSw) | 42 | ✅ | A, B; Out 1, Out 2; Mode, Amount, Lo, Hi (`modules/level/level.asm`, `modules/level/check_level.py`). Control rate. |
+| Envelope (ADDSR, H, D, AHD) | 55 | ✅ | Gate; Env, End; Gate/Trig, Attack, Decay 1, Level 1, Decay 2, Sustain, Release (`modules/envelope/env.asm`, `modules/envelope/check_envelope.py`). Control rate; no time modulation inputs (the Mod AHD's) yet. |
+| Osc String | 56 | ✅ | Trig, Pitch, Exc; Out; Note, Decay, Damp (`modules/osc-string/string.asm`, `modules/osc-string/check_osc_string.py`). Audio rate. Lowest note about 94 Hz (a 1,024-word line); lower would need the line run at half or a quarter of the rate. Javier played it (2026-10-17): it works. |
 
 ## Modules only the G2 has
 
@@ -258,12 +258,14 @@ Ideas built from what is known now. Same scale of feasibility.
 After the first post, people want to use it and add modules (Cristiano Silva works on Micro Modular
 mods in an emulator of his own). Before it grows, in this order:
 
-1. **One folder per module** (`modules/<name>/`: its DSP code, parameters, routines, NME data and
-   test), and `patch_rom.py` reduced to the builder that reads them. Adding a module = adding a
-   folder. Every test must still pass and the ROM come out byte for byte the same.
-2. **A registry of type numbers**: each accepted module keeps its type for ever, so a patch opens
-   on any build that has that module. Only six are left (60, 93, 109, 116, 119, 122): the
-   registry is where it is decided which modules get one.
+1. ✅ **One folder per module** (2026-10-18; `modules/README.md`): `modules/<name>/` holds its
+   `module.json`, its `build.py`, its DSP code, NME's entries and its test with its patches;
+   `tools/g1rom.py` is what every build uses and `patch_rom.py` the builder that reads the
+   folders. Adding a module = adding a folder. The ROMs and NME's data came out byte for byte
+   the same.
+2. ✅ **A registry of type numbers** (`modules/registry.json`): each accepted module keeps its
+   type for ever, so a patch opens on any build that has that module. Only six are left (60, 93,
+   109, 116, 119, 122): the registry is where it is decided which modules get one.
 3. **Publish G1-Mods on GitHub**, public, GPLv3 like G1-Emu: README (no ROM or OS given, it builds
    from yours, the notices below), CONTRIBUTING (the module folder in your own repo, the tests,
    nothing of Clavia's). Before: check the whole history for anything of Clavia's. Ask Javier

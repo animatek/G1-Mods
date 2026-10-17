@@ -1,0 +1,21 @@
+	<module component-id="m121" width="255" height="30">
+		<name>Mix1-1A</name>
+		<connector x="53" y="8" size="13" class="cAUDIO">
+			<connector component-id="c1" alt="in" />
+		</connector>
+		<connector x="190" y="8" size="13" class="cAUDIO">
+			<connector component-id="c2" alt="chain" />
+		</connector>
+		<connector x="234" y="8" size="13" class="cAUDIO">
+			<connector component-id="c4" alt="out" />
+		</connector>
+		<knob x="70" y="4" size="21">
+			<parameter component-id="p1" alt="level" />
+		</knob>
+		<button x="100" y="7" width="30" height="16" cyclic="true" landscape="false">
+			<parameter component-id="p2" alt="on" />
+			<btn index="0">Ch 1</btn>
+			<btn index="1">Ch 1</btn>
+		</button>
+		<label x="158" y="9">Chain</label>
+	</module>

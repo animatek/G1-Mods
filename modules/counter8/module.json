@@ -1,0 +1,13 @@
+{
+  "type": 126,
+  "name": "8Counter",
+  "fullname": "8 Counter, one output a step",
+  "kind": "control",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 120,
+  "tests": [
+    "check_counter8.py"
+  ]
+}

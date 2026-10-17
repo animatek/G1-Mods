@@ -1,0 +1,53 @@
+{
+  "_": "Type numbers, given for ever: a patch keeps a module's type, so a number once given is never given to another module. 'build' is the order the builder lays them out in (changing it changes the image, not what it does); 'nme' the order NME's data is written in.",
+  "free": [
+    60,
+    93,
+    109,
+    116,
+    119,
+    122
+  ],
+  "given": {
+    "120": "flipflop",
+    "121": "mix1-1a",
+    "123": "step-seq-5",
+    "124": "turing-machine",
+    "125": "scale-quantizer",
+    "126": "counter8",
+    "101": "mux8",
+    "6": "random",
+    "41": "bits",
+    "42": "level",
+    "55": "envelope",
+    "56": "osc-string"
+  },
+  "build": [
+    "flipflop",
+    "mix1-1a",
+    "step-seq-5",
+    "turing-machine",
+    "scale-quantizer",
+    "counter8",
+    "mux8",
+    "random",
+    "bits",
+    "level",
+    "envelope",
+    "osc-string"
+  ],
+  "nme": [
+    "flipflop",
+    "step-seq-5",
+    "turing-machine",
+    "scale-quantizer",
+    "counter8",
+    "mux8",
+    "random",
+    "bits",
+    "level",
+    "envelope",
+    "osc-string",
+    "mix1-1a"
+  ]
+}

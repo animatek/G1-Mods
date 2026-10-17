@@ -3,6 +3,17 @@
 Everything that changes in G1-Mods, newest first. Every change that goes into the repo gets its
 line here, in the same commit (see `CLAUDE.md`).
 
+## 2026-10-18
+
+- Claude: **one folder per module** (`modules/<name>/`: `module.json`, `build.py`, its DSP code,
+  NME's entries whole, its test and patches) and **a registry of types**
+  (`modules/registry.json`), steps 1 and 2 of PORTING's "Next: opening it up". What every build
+  uses moved to `tools/g1rom.py`; `patch_rom.py` reads the folders, and takes a list of them
+  (`flipflop,mux8`) as well as an experiment; `make_nme_data.py` places each folder's entries
+  (928 lines to 53; Mix1-1A's entry, cloned from the Mixer (3)'s, now written whole). Checked:
+  the four ROMs (`all`, `stringtest`, `audiotest`, `mixer3-silent`) and NME's two files come out
+  byte for byte as before, and `tests/run_all.py` passes in G1-Emu.
+
 ## 2026-10-17
 
 - Claude: `PORTING.md`, open and free for good: nothing of the mods exclusive to Patreon or paid,

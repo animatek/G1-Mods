@@ -1,0 +1,13 @@
+{
+  "type": 125,
+  "name": "ScaleQuant",
+  "fullname": "Scale Quantizer, a pitch to the nearest note of a scale",
+  "kind": "control",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 124,
+  "tests": [
+    "check_scale_quantizer.py"
+  ]
+}

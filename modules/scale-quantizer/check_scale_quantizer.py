@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Checks the Scale Quantizer (type 125) in G1-Emu with the G1-Mods ROM.
 
-    tests/check_quant.py
+    modules/scale-quantizer/check_scale_quantizer.py
 
-tests/quant.pch: an LFO (sine, about 2 Hz, the full -64..+64 units) into In; Out on output 1, the
+quant.pch: an LFO (sine, about 2 Hz, the full -64..+64 units) into In; Out on output 1, the
 LFO on output 2. Each case plays 3 s with another Root, Scale and Octave, and every sample of Out
 must be the note the scale table gives for In a few samples before (In rounded to a semitone,
 corrected to the scale's nearest note, plus the octaves; 0 is note 64, an E), and every note out
@@ -18,15 +18,16 @@ import tempfile
 import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 SETTLE = 4800          # 50 ms at 96 kHz: the patch being set up
 UNIT = 428167 / 64     # one control unit, a semitone at a pitch input, in the recording
 LATE = 12              # Out may follow In by this many samples
 
-sys.path.insert(0, os.path.join(ROOT, "tools"))
-from patch_rom import SCALES, corrections  # noqa: E402
+sys.path.insert(0, HERE)
+sys.path.insert(1, os.path.join(ROOT, "tools"))
+from build import SCALES, corrections  # noqa: E402
 
 
 def record(rom, xml, patch, tmp):

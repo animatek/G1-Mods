@@ -19,7 +19,18 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
-PATCHES = ("mix1-1a-chain.pch", "flipflop-lfo.pch", "seq5.pch", "turing.pch", "quant.pch", "counter8.pch", "mux8.pch", "random.pch", "bits.pch", "level.pch", "env.pch", "string.pch")
+PATCHES = ("mix1-1a/mix1-1a-chain.pch",
+           "flipflop/flipflop-lfo.pch",
+           "step-seq-5/seq5.pch",
+           "turing-machine/turing.pch",
+           "scale-quantizer/quant.pch",
+           "counter8/counter8.pch",
+           "mux8/mux8.pch",
+           "random/random.pch",
+           "bits/bits.pch",
+           "level/level.pch",
+           "envelope/env.pch",
+           "osc-string/string.pch")   # in modules/
 RATE = 96000
 
 
@@ -34,7 +45,7 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         for name in PATCHES:
             wav = os.path.join(tmp, "w.wav")
-            subprocess.run([BIN, rom, os.path.join(HERE, name), "--seconds", "3",
+            subprocess.run([BIN, rom, os.path.join(ROOT, "modules", name), "--seconds", "3",
                             "--add-module-at", "1:51:20:5:0", "--wav", wav],
                            check=True, capture_output=True, env=dict(os.environ, G1_MODULES_XML=xml))
             w = wave.open(wav)

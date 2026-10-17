@@ -1,0 +1,13 @@
+{
+  "type": 101,
+  "name": "Mux8-1",
+  "fullname": "8 to 1 selector, by a knob and a level",
+  "kind": "control",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 126,
+  "tests": [
+    "check_mux8.py"
+  ]
+}

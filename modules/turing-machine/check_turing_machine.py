@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Checks the Turing Machine (type 124) in G1-Emu with the G1-Mods ROM.
 
-    tests/check_turing.py
+    modules/turing-machine/check_turing_machine.py
 
-tests/turing.pch: ClkGen (48 Hz) into Clk; CV on output 1, Gate 1 on 2, the clock on 3. Each case
+turing.pch: ClkGen (48 Hz) into Clk; CV on output 1, Gate 1 on 2, the clock on 3. Each case
 plays 6 s with other parameters (Prob, Length, Lock, Scale), and reads the register's low byte from
 CV at the end of each clock period:
 - Prob 127 (right, locked), Length 8: CV only changes on a rising clock edge, and the bytes repeat
@@ -27,7 +27,7 @@ import tempfile
 import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 SETTLE = 4800          # 50 ms at 96 kHz: the patch being set up

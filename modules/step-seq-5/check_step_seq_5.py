@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Checks the 5-Step Seq (type 123) in G1-Emu with the G1-Mods ROM.
 
-    tests/check_seq5.py
+    modules/step-seq-5/check_step_seq_5.py
 
-tests/seq5.pch: ClkGen (48 Hz) into Clk; Out on output 1, the clock on output 2. The knobs at 0,
+seq5.pch: ClkGen (48 Hz) into Clk; Out on output 1, the clock on output 2. The knobs at 0,
 32, 64, 96 and 127, so the steps give -64, -32, 0, +32 and +63 control units. Played for 6 s:
 - Out only changes on a rising clock edge, takes the five values and goes through them in order,
   the fifth back to the first.
-- tests/seq5-ctrlseq.pch: the same clock into Clavia's CtrlSeq (5 steps, the same values), and an
+- seq5-ctrlseq.pch: the same clock into Clavia's CtrlSeq (5 steps, the same values), and an
   LFO into both Rst inputs, so its edges fall between clocks: both on the same step at every
   sample, bar the CtrlSeq changing 4 samples (a control period) later at each clock. The G1's Rst arms the sequencer and the next clock
   goes to the first step; a Rst that jumped at once put this one a step ahead (Javier: the
@@ -25,7 +25,7 @@ import tempfile
 import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 SETTLE = 4800       # 50 ms at 96 kHz: the patch being set up

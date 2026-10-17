@@ -1,0 +1,36 @@
+	<module component-id="m123" width="255" height="60">
+		<name>5-Step Seq</name>
+		<label x="5" y="16">Clk</label>
+		<connector x="6" y="28" size="13" class="cLOGIC">
+			<connector component-id="c1" alt="clock" />
+		</connector>
+		<label x="27" y="16">Rst</label>
+		<connector x="28" y="28" size="13" class="cLOGIC">
+			<connector component-id="c2" alt="reset" />
+		</connector>
+		<light component-id="ledStep1-5" type="led-array" steps="5" x="55" y="18" width="175" height="7" />
+		<label x="55" y="16" width="11" height="10" align="centre">1</label>
+		<label x="90" y="16" width="11" height="10" align="centre">2</label>
+		<label x="125" y="16" width="11" height="10" align="centre">3</label>
+		<label x="160" y="16" width="11" height="10" align="centre">4</label>
+		<label x="195" y="16" width="11" height="10" align="centre">5</label>
+		<knob x="62" y="28" size="21">
+			<parameter component-id="p1" alt="step 1" />
+		</knob>
+		<knob x="97" y="28" size="21">
+			<parameter component-id="p2" alt="step 2" />
+		</knob>
+		<knob x="132" y="28" size="21">
+			<parameter component-id="p3" alt="step 3" />
+		</knob>
+		<knob x="167" y="28" size="21">
+			<parameter component-id="p4" alt="step 4" />
+		</knob>
+		<knob x="202" y="28" size="21">
+			<parameter component-id="p5" alt="step 5" />
+		</knob>
+		<label x="233" y="16">Out</label>
+		<connector x="236" y="28" size="13" class="cCONTROL">
+			<connector component-id="c3" alt="out" />
+		</connector>
+	</module>

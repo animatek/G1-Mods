@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Checks the Mux8-1 (type 101) in G1-Emu with the G1-Mods ROM.
 
-    tests/check_mux8.py
+    modules/mux8/check_mux8.py
 
-tests/mux8.pch: eight Constants into In 1-8 (+4, +8 ... +32 units, so each input is known by its
+mux8.pch: eight Constants into In 1-8 (+4, +8 ... +32 units, so each input is known by its
 level), a ninth into Ctrl; Out on output 1, Ctrl on output 2. Each case plays 1 s with another
 Sel and Ctrl and Out must be the input Sel + Ctrl / 8 units picks, held to 1..8:
 - Ctrl at 0 and Sel 1 to 8: the knob picks (the Sw8-1).
@@ -20,7 +20,7 @@ import tempfile
 import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 SETTLE = 4800          # 50 ms at 96 kHz: the patch being set up

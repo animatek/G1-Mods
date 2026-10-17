@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Checks the Mix1-1A (type 121) in G1-Emu with the G1-Mods ROM.
 
-    tests/check_mix1_1a.py
+    modules/mix1-1a/check_mix1_1a.py
 
-tests/mix1-1a-chain.pch: one OscA into a Mixer (3) with only input 1 (output 1, the reference),
+mix1-1a-chain.pch: one OscA into a Mixer (3) with only input 1 (output 1, the reference),
 into a Mix1-1A A (output 2) and into a Mix1-1A B whose chain input takes A's output (output 3),
 all at the same level. Played at levels 100, 64 and 0: output 2 must equal output 1 (same level
 curve as the Mixer (3)) and output 3 be 6 dB over it (the chain adds A to B); at 0, silence.
@@ -17,7 +17,7 @@ import sys
 import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 OUT = re.compile(r"output (\d): (silence|peak\s+(-?[\d.]+) dBFS)")

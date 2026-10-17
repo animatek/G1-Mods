@@ -1,0 +1,13 @@
+{
+  "type": 41,
+  "name": "Bits",
+  "fullname": "Bits: a binary counter, A to D and D to A",
+  "kind": "control",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 126,
+  "tests": [
+    "check_bits.py"
+  ]
+}

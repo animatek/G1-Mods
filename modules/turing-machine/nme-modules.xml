@@ -1,0 +1,34 @@
+  <module component-id="m124" index="124" name="TuringMachine" fullname="Turing Machine, a looping random shift register with eight gates (G1-Mods)" category="Sequencer (mods)">
+    <image type="screenshot" src="img/modules/module-91.png" width="256" height="105" />
+    <image type="icon16x16" src="img/icons/16x16/module-id-91.png" width="16" height="16" />
+    <image type="icon32x32" src="img/icons/32x32/module-id-91.png" width="32" height="32" />
+    <connector component-id="c1" index="0" name="clock" type="input" signal="logic" />
+    <connector component-id="c2" index="0" name="cv" type="output" signal="control" />
+    <connector component-id="c3" index="1" name="gate 1" type="output" signal="logic" />
+    <connector component-id="c4" index="2" name="gate 2" type="output" signal="logic" />
+    <connector component-id="c5" index="3" name="gate 3" type="output" signal="logic" />
+    <connector component-id="c6" index="4" name="gate 4" type="output" signal="logic" />
+    <connector component-id="c7" index="5" name="gate 5" type="output" signal="logic" />
+    <connector component-id="c8" index="6" name="gate 6" type="output" signal="logic" />
+    <connector component-id="c9" index="7" name="gate 7" type="output" signal="logic" />
+    <connector component-id="c10" index="8" name="gate 8" type="output" signal="logic" />
+    <!-- parameter(s) -->
+    <parameter component-id="p1" index="0" name="prob" class="parameter" defaultValue="64" formatter="value-64" extension="m1" />
+    <parameter component-id="p2" index="1" name="length" class="parameter" maxValue="15" defaultValue="7" formatter="value+1" extension="m2" />
+    <parameter component-id="p3" index="2" name="lock" class="parameter" maxValue="1" formatter="fmtOffOn" extension="m3" />
+    <parameter component-id="p4" index="3" name="scale" class="parameter" defaultValue="127" extension="m4" />
+    <parameter component-id="m1" index="0" name="morph:prob" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m2" index="1" name="morph:length" class="morph" role="morph"  minValue="-15" maxValue="15" />
+    <parameter component-id="m3" index="2" name="morph:lock" class="morph" role="morph"  minValue="-1" maxValue="1" />
+    <parameter component-id="m4" index="3" name="morph:scale" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <light component-id="ledBits" type="led-array" name="Bits 1-8" minValue="0" maxValue="255" />
+    <!-- custom attributes -->
+    <attribute name="cycles" type="double" value="0.9" />
+    <attribute name="x-mem" type="double" value="0.35" />
+    <attribute name="y-mem" type="double" value="0.0" />
+    <attribute name="prog-mem" type="double" value="2.0" />
+    <attribute name="dyn-mem" type="double" value="0.5" />
+    <attribute name="zero-page" type="double" value="0.875" />
+    <attribute name="height" type="integer" value="5" />
+    <attribute name="background" value="#e5babf" />
+  </module>

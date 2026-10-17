@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Checks the FlipFlop (type 120) in G1-Emu with the G1-Mods ROM.
 
-    tests/check_flipflop.py
+    modules/flipflop/check_flipflop.py
 
-tests/flipflop-lfo.pch: ClkGen (48 Hz) into Clk, an LFO (~0.7 Hz) into In; Q on output 1, the
+flipflop-lfo.pch: ClkGen (48 Hz) into Clk, an LFO (~0.7 Hz) into In; Q on output 1, the
 LFO on output 2, the clock on output 3, NotQ on output 4. Each case is that patch with its Type
 and some cables changed, played for 6 s in G1-Emu's g1patchtest and checked on the recording:
 
@@ -15,7 +15,7 @@ and some cables changed, played for 6 s in G1-Emu's g1patchtest and checked on t
 - RS-type, In unplugged, Rst from the LFO: Q is 0 while the LFO is high, and toggles otherwise.
 - RS-type, Clk unplugged: Q goes high on In's first rising edge (the first sample if In starts
   high) and stays there.
-- tests/flipflop-neighbour.pch: RS toggling with a Constant right after the FlipFlop, its output
+- flipflop-neighbour.pch: RS toggling with a Constant right after the FlipFlop, its output
   on output 2. The Constant stays constant and NotQ stays Q's opposite: each output of the
   FlipFlop has a word of its own (the descriptor says two outputs; with one, NotQ wrote into the
   next module's output).
@@ -33,7 +33,7 @@ import tempfile
 import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 CLK_TO_CLK, LFO_TO_IN = "0 6 0 0 4 0 1 \n", "0 6 1 0 3 1 1 \n"

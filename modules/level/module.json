@@ -1,0 +1,13 @@
+{
+  "type": 42,
+  "name": "Level",
+  "fullname": "Level: ModAmt, MinMax, Track and Hold, Window",
+  "kind": "control",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 101,
+  "tests": [
+    "check_level.py"
+  ]
+}

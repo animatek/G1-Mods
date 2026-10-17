@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Checks the Random (type 6) in G1-Emu with the G1-Mods ROM.
 
-    tests/check_random.py
+    modules/random/check_random.py
 
-tests/random.pch: ClkGen (48 Hz) into Clk; Out on output 1, Trig on 2, the clock on 3, an LFO on
+random.pch: ClkGen (48 Hz) into Clk; Out on output 1, Trig on 2, the clock on 3, an LFO on
 4 (into Rst too in one case). Parameters: Seed, Poly, Step, Edge, Prob, Length, Uni. Out is read just
 before each clock edge (the value of the clock before). Each case plays 3 s:
 - Seed: the values are a model's of the register (in Python here), for Seed 0 and Seed 5, from
@@ -27,7 +27,7 @@ import tempfile
 import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 SETTLE = 4800          # 50 ms at 96 kHz: the patch being set up

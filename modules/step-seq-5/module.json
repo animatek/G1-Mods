@@ -1,0 +1,13 @@
+{
+  "type": 123,
+  "name": "5-StepSeq",
+  "fullname": "5-Step Sequencer, one knob a step",
+  "kind": "control",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 91,
+  "tests": [
+    "check_step_seq_5.py"
+  ]
+}

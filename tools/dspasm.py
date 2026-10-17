@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """A small DSP56300 assembler for one-word instructions, labels and short branches.
 
-    tools/dspasm.py dsp/flipflop.asm          # prints the words and the marks
+    tools/dspasm.py modules/flipflop/flipflop.asm          # prints the words and the marks
 
 It knows no syntax of its own: each instruction's encoding is looked up by its text in an index
 made by disassembling every one-word opcode with G1-Emu's dspdis (built once into out/, a few

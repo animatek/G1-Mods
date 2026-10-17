@@ -1,0 +1,13 @@
+{
+  "type": 55,
+  "name": "Envelope",
+  "fullname": "Envelope: ADDSR, or one shot (D, H, AHD)",
+  "kind": "control",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 42,
+  "tests": [
+    "check_envelope.py"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": 56,
+  "name": "OscString",
+  "fullname": "Osc String, a plucked string (Karplus-Strong)",
+  "kind": "audio",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 55,
+  "tests": [
+    "check_osc_string.py"
+  ]
+}

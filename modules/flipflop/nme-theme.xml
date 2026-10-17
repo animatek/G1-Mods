@@ -1,0 +1,29 @@
+	<module component-id="m120" width="255" height="30">
+		<name>FlipFlop</name>
+		<label x="96" y="17">Rst</label>
+		<connector x="114" y="16" size="13" class="cLOGIC">
+			<connector component-id="c3" alt="rst" />
+		</connector>
+		<label x="132" y="17">Clk</label>
+		<connector x="152" y="16" size="13" class="cLOGIC">
+			<connector component-id="c1" alt="clk" />
+		</connector>
+		<label x="164" y="2">In</label>
+		<connector x="170" y="1" size="13" class="cLOGIC">
+			<connector component-id="c2" alt="in" />
+		</connector>
+		<button x="186" y="7" width="26" height="16" cyclic="true" landscape="false">
+			<parameter component-id="p1" alt="type" />
+			<btn index="0">D</btn>
+			<btn index="1">RS</btn>
+		</button>
+		<light component-id="ledQ" type="led" x="226" y="4" width="7" height="7" />
+		<label x="218" y="2">Q</label>
+		<connector x="236" y="1" size="13" class="cLOGIC">
+			<connector component-id="c4" alt="Q" />
+		</connector>
+		<label x="216" y="17">nQ</label>
+		<connector x="236" y="16" size="13" class="cLOGIC">
+			<connector component-id="c5" alt="NotQ" />
+		</connector>
+	</module>

@@ -1,0 +1,52 @@
+	<module component-id="m6" width="255" height="60">
+		<name>Random</name>
+		<label x="5" y="15">Clk</label>
+		<connector x="6" y="30" size="13" class="cLOGIC">
+			<connector component-id="c1" alt="clock" />
+		</connector>
+		<label x="27" y="15">Rst</label>
+		<connector x="28" y="30" size="13" class="cLOGIC">
+			<connector component-id="c2" alt="reset" />
+		</connector>
+		<label x="46" y="15">Seed</label>
+		<knob x="46" y="26" size="21">
+			<parameter component-id="p1" alt="seed" />
+		</knob>
+		<button x="70" y="29" width="28" height="16" cyclic="true" landscape="false">
+			<parameter component-id="p2" alt="poly" />
+			<btn index="0">Mono</btn>
+			<btn index="1">Poly</btn>
+		</button>
+		<button x="70" y="47" width="28" height="12" cyclic="true" landscape="false">
+			<parameter component-id="p7" alt="unipolar" />
+			<btn index="0">Bi</btn>
+			<btn index="1">Uni</btn>
+		</button>
+		<label x="102" y="15">Step</label>
+		<knob x="102" y="26" size="21">
+			<parameter component-id="p3" alt="step" />
+		</knob>
+		<label x="128" y="15">Edge</label>
+		<knob x="128" y="26" size="21">
+			<parameter component-id="p4" alt="edge" />
+		</knob>
+		<label x="154" y="15">Prob</label>
+		<knob x="154" y="26" size="21">
+			<parameter component-id="p5" alt="prob" />
+		</knob>
+		<label x="180" y="15">Len</label>
+		<knob x="180" y="26" size="21">
+			<parameter component-id="p6" alt="length" />
+		</knob>
+		<textDisplay x="179" y="48" width="23" height="11">
+			<parameter component-id="p6" alt="length" />
+		</textDisplay>
+		<label x="208" y="15">Out</label>
+		<connector x="210" y="30" size="13" class="cCONTROL">
+			<connector component-id="c3" alt="out" />
+		</connector>
+		<label x="230" y="15">Trig</label>
+		<connector x="236" y="30" size="13" class="cLOGIC">
+			<connector component-id="c4" alt="trig" />
+		</connector>
+	</module>

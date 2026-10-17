@@ -1,0 +1,13 @@
+{
+  "type": 6,
+  "name": "Random",
+  "fullname": "Random, clocked, with Seed, Poly, Step, Edge, Prob, Length and Uni/Bi",
+  "kind": "control",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 101,
+  "tests": [
+    "check_random.py"
+  ]
+}

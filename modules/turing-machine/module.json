@@ -1,0 +1,13 @@
+{
+  "type": 124,
+  "name": "TuringMachine",
+  "fullname": "Turing Machine, a looping random shift register with eight gates",
+  "kind": "control",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 123,
+  "tests": [
+    "check_turing_machine.py"
+  ]
+}

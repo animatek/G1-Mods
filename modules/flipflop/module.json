@@ -1,0 +1,13 @@
+{
+  "type": 120,
+  "name": "FlipFlop",
+  "fullname": "Flip-Flop D/RS",
+  "kind": "control",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 89,
+  "tests": [
+    "check_flipflop.py"
+  ]
+}

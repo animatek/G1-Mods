@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Checks the Osc String (type 56) in G1-Emu with the G1-Mods ROM.
 
-    tests/check_string.py
+    modules/osc-string/check_osc_string.py
 
-tests/string.pch: a square LFO (about 1 Hz) into Trig, plucking the string; Out on output 1, the
+string.pch: a square LFO (about 1 Hz) into Trig, plucking the string; Out on output 1, the
 LFO on 2. Each case plays 3 s and measures the note's period after the first pluck
 (autocorrelation over 0.2 s, refined between samples):
 - Note at A1..A5 (45, 57, 69, 81): 110, 220, 440, 880 Hz within 2 cents.
@@ -21,7 +21,7 @@ import tempfile
 import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 BASE = "3 56 3 69 110 127 "

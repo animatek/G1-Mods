@@ -1,0 +1,36 @@
+	<module component-id="m126" width="255" height="45">
+		<name>8Counter</name>
+		<label x="5" y="17">Clk</label>
+		<connector x="6" y="28" size="13" class="cLOGIC">
+			<connector component-id="c1" alt="clock" />
+		</connector>
+		<label x="27" y="17">Rst</label>
+		<connector x="28" y="28" size="13" class="cLOGIC">
+			<connector component-id="c2" alt="reset" />
+		</connector>
+		<light component-id="ledStep1-8" type="led-array" steps="8" x="50" y="18" width="200" height="7" />
+		<connector x="56" y="28" size="13" class="cLOGIC">
+			<connector component-id="c3" alt="out 1" />
+		</connector>
+		<connector x="81" y="28" size="13" class="cLOGIC">
+			<connector component-id="c4" alt="out 2" />
+		</connector>
+		<connector x="106" y="28" size="13" class="cLOGIC">
+			<connector component-id="c5" alt="out 3" />
+		</connector>
+		<connector x="131" y="28" size="13" class="cLOGIC">
+			<connector component-id="c6" alt="out 4" />
+		</connector>
+		<connector x="156" y="28" size="13" class="cLOGIC">
+			<connector component-id="c7" alt="out 5" />
+		</connector>
+		<connector x="181" y="28" size="13" class="cLOGIC">
+			<connector component-id="c8" alt="out 6" />
+		</connector>
+		<connector x="206" y="28" size="13" class="cLOGIC">
+			<connector component-id="c9" alt="out 7" />
+		</connector>
+		<connector x="231" y="28" size="13" class="cLOGIC">
+			<connector component-id="c10" alt="out 8" />
+		</connector>
+	</module>

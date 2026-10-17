@@ -119,7 +119,7 @@ output, no parameters, control rate). Its entry is copied with three fields repl
   then `b = D > 0 ? high : 0`, kept as the old Q unless the clock is high now and was not before;
   Q is stored, then the nop slot and the output store.
 
-`tests/check_flipflop.py` plays `tests/flipflop-lfo.pch` (ClkGen 48 Hz into clk, an LFO at
+`modules/flipflop/check_flipflop.py` plays `modules/flipflop/flipflop-lfo.pch` (ClkGen 48 Hz into clk, an LFO at
 ~0.7 Hz into D; Q, D and the clock on outputs 1–3) for 6 s in `g1patchtest` and checks the
 recording: **D crosses zero 8 times, Q changes 8 times, every change on a clock edge, and Q
 equals D at all 283 edges checked.** Q's levels are 0 and the same high as the clock's.
@@ -149,7 +149,7 @@ the entry's counts set to 1 parameter, 2 inputs, 1 output:
   parameters worked, 2 did not; a table of its own (`Level` 127, `Ch 1` 1) fixed it, and the
   G1's display now has the right names. NME's `ParameterEncoder` (used when a module is added
   live) has to say the same: `{7, 1}`.
-- **Checked** (`tests/check_mix1_1a.py`, patch `tests/mix1-1a-chain.pch`): at levels 100, 64
+- **Checked** (`modules/mix1-1a/check_mix1_1a.py`, patch `modules/mix1-1a/mix1-1a-chain.pch`): at levels 100, 64
   and 0 it gives exactly the Mixer (3)'s level (−69.5, −85.1 dBFS, silence), a Mix1-1A chained
   into another gives +6.0 dB, B's button off leaves A alone on B's output, and A's off silences A
   and leaves B alone. Not checked yet: turning the knob or the button live from the editor.
@@ -225,7 +225,7 @@ Before a real G1:
 ## Type 120, complete: D-type and RS-type (2026-10-16)
 
 The FlipFlop is now the G2's: inputs Clk, In and Rst, outputs Q and NotQ, a Type parameter
-(D / RS). Code in `dsp/flipflop.asm` (55 words, with short relative branches), assembled by
+(D / RS). Code in `modules/flipflop/flipflop.asm` (55 words, with short relative branches), assembled by
 `tools/dspasm.py`, which looks every instruction up by its text in an index of all one-word
 opcodes disassembled by G1-Emu's `dspdis` (built once into `out/`).
 
@@ -238,14 +238,14 @@ opcodes disassembled by G1-Emu's `dspdis` (built once into `out/`).
   said 1, so NotQ wrote into the next module's output: with Javier's patch (Q and NotQ into two
   envelopes' triggers, like on the G2 demo) one output alternated and the other gave fast triggers
   unrelated to the clock, and in a test a Constant placed after the FlipFlop changed with NotQ.
-  Fixed (2); `tests/flipflop-neighbour.pch` keeps watch.
+  Fixed (2); `modules/flipflop/flipflop-neighbour.pch` keeps watch.
 - **The connection routine is generated** (`connection_routine` in `patch_rom.py`) from the
   assembler's marks: an input may be patched into several words (In is read at three places) with
   `$124202(part, connection, record, word)`; the outputs, all in the −1 case, with
   `$1243DA(part, connection, output, word)`.
 - **Rules for code with branches**: no branch leaves word 0 (it runs in the previous module's
   nop slot) and none lands on the nop slot or after it (the next module's word 0 goes there).
-- **Checked** (`tests/check_flipflop.py`, 4 cases of 6 s): D-type follows In at every clock
+- **Checked** (`modules/flipflop/check_flipflop.py`, 4 cases of 6 s): D-type follows In at every clock
   edge; RS with In unplugged toggles on all 288 edges (a divider by 2); RS with Rst from an LFO
   holds Q at 0 while Rst is high and toggles 152 times while it is low; RS with Clk unplugged sets
   Q on In and keeps it. NotQ is Q's opposite everywhere after the first 50 ms. Weak spots: in the
@@ -264,7 +264,7 @@ opcodes disassembled by G1-Emu's `dspdis` (built once into `out/`).
   already in it, so a second call for the same module adds nothing. The FlipFlop lights Q (the
   G2's NotQ LED is its opposite anyway).
 - The editor gets them in `Lights` (NMInfo `$39`): a start index, then 2 bits per LED. G1-Emu's
-  `g1patchtest` logs the PC Port with `G1_PCPORT_LOG`; `tests/check_flipflop.py` checks that LED 0
+  `g1patchtest` logs the PC Port with `G1_PCPORT_LOG`; `modules/flipflop/check_flipflop.py` checks that LED 0
   goes on and off with the FlipFlop toggling.
 - NME: `<light ... type="led">` in `modules.xml` and in the theme. The FlipFlop's panel is now
   laid out like the G2's.
@@ -363,8 +363,8 @@ runs every test.
   first version jumped to the first step at the Rst edge, so it ran a step ahead of a CtrlSeq
   reset with it (Javier: the sequencers would not sync). The CtrlSeq's output changes one control
   period (4 samples at 96 kHz) after ours at each clock: a fixed latency, not a step.
-- `tests/check_seq5.py`: the steps in order with the clock, a knob turned live, the step in the
-  Meters messages, and **in step with a CtrlSeq** (`tests/seq5-ctrlseq.pch`, Rst from an LFO, its
+- `modules/step-seq-5/check_step_seq_5.py`: the steps in order with the clock, a knob turned live, the step in the
+  Meters messages, and **in step with a CtrlSeq** (`modules/step-seq-5/seq5-ctrlseq.pch`, Rst from an LFO, its
   edges between clocks); `check_insert.py` plays it too.
 
 ## Type 124: Turing Machine (2026-10-16)
@@ -386,7 +386,7 @@ runs every test.
   (`x:(r3+$n)`, one word each), `lua (r3+$7),r3` at the end: no pointer walking to keep equal
   on both paths.
 - Length is 1–16 (`value+1`, a formatter NME has) rather than the 2–16 planned: no NME change.
-- `tests/check_turing.py`: Prob 127 repeats every Length clocks (8 and 16), Prob 0 comes back
+- `modules/turing-machine/check_turing_machine.py`: Prob 127 repeats every Length clocks (8 and 16), Prob 0 comes back
   inverted after Length, gates 1, 4 and 8 are their bits, Scale 64 halves CV, the Meters
   messages carry the byte, Lock holds it, 64 drifts, CV changes only on clock edges, Gate is bit 0
   and Clk. `check_insert.py` plays it too.
@@ -417,7 +417,7 @@ runs every test.
   (the LFO next to it froze); the address made in b and `move b1,r2` works.
 - NME shows the root, the scale's name and the octave with formatters of its own; their names
   are in NME, so `check_nme_data.py` checks it has as many scale names as `SCALES`.
-- `tests/check_quant.py`: an LFO over the whole range into In, and every sample of Out the note
+- `modules/scale-quantizer/check_scale_quantizer.py`: an LFO over the whole range into In, and every sample of Out the note
   the table gives, for the 16 scales on C and three other roots and octaves; `check_insert.py`
   plays it too.
 
@@ -427,7 +427,7 @@ runs every test.
   starts on the last), the step 0-7 in X[0] for a row of eight step LEDs (`steps=(0, 7)`), and
   eight outputs, each `clr a / cmp #<$k,b / tfr x1,a ifeq / move a,x:$0`: high for the whole
   step. No parameters (NME's encoder has an empty case for it, which `check_nme_data.py` wants).
-- `tests/check_counter8.py`: a model of the counter on the recorded clock and an LFO's Rst, and
+- `modules/counter8/check_counter8.py`: a model of the counter on the recorded clock and an LFO's Rst, and
   every sample of Out 1, 2 and 8 the model's, from the first Rst on. Before it, the counter may
   be a step behind the model: the first clock can come while the patch is still being set up
   (the 5-Step Seq too; nothing to fix). `check_insert.py` plays it too.
@@ -453,7 +453,7 @@ runs every test.
 - The LEDs: the input picked in X[2], a led-array of 8 (`steps=(2, 7)`). The OS sends a meter only
   when it changes, starting from 0: with In 1 picked nothing is sent, and NME lights the first.
 - Control rate: for levels and gates. Audio through it is sampled at the control rate.
-- `tests/check_mux8.py`: eight Constants of known levels, and every Sel and Ctrl tried picks its
+- `modules/mux8/check_mux8.py`: eight Constants of known levels, and every Sel and Ctrl tried picks its
   input; `check_insert.py` plays it too.
 
 ## Type 6: Random (2026-10-17)
@@ -475,7 +475,7 @@ runs every test.
 - **Load**: the first clock after the Seed is written, after a Rst edge (armed, as the
   sequencers), and every Length clocks. A patch takes about 15 clocks (at 48 Hz) to set up before
   a recording starts; the Seed routine sets the load flag, so the values start from the seed.
-- `tests/check_random.py` checks the values against a model in Python, one by one, for two seeds,
+- `modules/random/check_random.py` checks the values against a model in Python, one by one, for two seeds,
   and Length, Rst, Prob, Step and Edge. Poly the bench cannot check (it plays one voice): Javier
   checked it by ear, chords on a Random in Poly give a sequence a voice.
 
@@ -490,8 +490,8 @@ runs every test.
   (y1 = 1): a conditional add, one word.
 - NME's three-way selector is a `button` with `cyclic="false" landscape="true"`: three segments
   in a row.
-- `tests/check_bits.py`: Count a step a clock with its bits and LEDs, A>D against an LFO in
-  every sample, D>A from eight Constants. `tests/bits.pch` starts in D>A: `check_insert.py`
+- `modules/bits/check_bits.py`: Count a step a clock with its bits and LEDs, A>D against an LFO in
+  every sample, D>A from eight Constants. `modules/bits/bits.pch` starts in D>A: `check_insert.py`
   compares the peak of the first and last seconds, which a counter's ramp would not keep.
 
 ## Type 42: Level (2026-10-17)
@@ -501,7 +501,7 @@ runs every test.
   as 0..1 over 0..+64 units, Out 2 the rest of A. MinMax: the lower and the higher. T&H: Out 1
   tracks A while B is high, Out 2 while low. Window: Out 1 is A and Out 2 high while Lo <= B <= Hi.
 - MinMax without branches: `cmp x1,a` then `tfr x1,a ifgt` and `tfr y0,b ifgt`.
-- `tests/check_level.py` checks every sample of each mode against its formula (two LFOs, a
+- `modules/level/check_level.py` checks every sample of each mode against its formula (two LFOs, a
   clock, a Constant); `level.pch` starts on ModAmt with the Constant, steady for
   `check_insert.py`.
 
@@ -523,7 +523,7 @@ runs every test.
 - Stage numbers are kept in X words (an 8-bit immediate move to a data register would land in its
   top byte, not as an integer).
 - The recording of a level at 0 reads about 0.009 units: the output chain leaves a hair of offset.
-- `tests/check_env.py`: the levels (top, Level 1, Sustain), the release's time constant (684
+- `modules/envelope/check_envelope.py`: the levels (top, Level 1, Sustain), the release's time constant (684
   samples against 683 from the factor), Attack 40 against 80, End, Trig mode. `env.pch` has a
   fast enough gate for `check_insert.py`.
 - Not yet: the Mod AHD's inputs that modulate the times.
@@ -593,7 +593,7 @@ runs every test.
   1.89 against 2.03 at Damp 30, 15 cents flat). Damp's routine (`damp_routine`, with a `divu.l`
   of our own) writes that * 4096 too, and the code takes it from L: now within a cent at any Damp.
 - **Decay** is the loop's gain once a round trip: 1 - a time factor / 8.
-- `tests/check_string.py`: A1 to A5 from the knob, A3, A4, E5 from the keyboard, Damp 30 and 10,
+- `modules/osc-string/check_osc_string.py`: A1 to A5 from the knob, A3, A4, E5 from the keyboard, Damp 30 and 10,
   all within 2 cents (they are within 1); Decay 60 against 110.
 - Lowest note 94 Hz (96000 / 1024). Lower: run the line at half or a quarter of the rate.
 

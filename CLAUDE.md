@@ -11,6 +11,15 @@ here as the test bench (`g1boot`, `G1_RAMDUMP`, the module battery, `os =`), nev
 here: anything the emulator needs goes into G1-Emu itself, as an emulator feature. If this ever
 works well, it can be merged.
 
+## Layout
+
+- `modules/<name>/`: one folder a module, everything it needs (`modules/README.md`);
+  `modules/registry.json` gives each its type, for ever.
+- `tools/`: `patch_rom.py` builds the modules into the user's ROM, `make_nme_data.py` adds them
+  to NME's data, `g1rom.py` is what every module's build uses, `dspasm.py` the DSP assembler.
+- `tests/`: the tests across modules (`check_insert.py`, `check_nme_data.py`) and `run_all.py`,
+  which runs every module's test as well. `dsp/`: only the experiments' code (`vca_test.asm`).
+
 ## Rules
 
 - **Nothing of Clavia's goes into Git**: no ROM, no OS image (original or patched), no DSP code

@@ -1,0 +1,57 @@
+	<module component-id="m124" width="255" height="75">
+		<name>Turing Machine</name>
+		<label x="5" y="17">Clk</label>
+		<connector x="6" y="28" size="13" class="cLOGIC">
+			<connector component-id="c1" alt="clock" />
+		</connector>
+		<label x="30" y="17">Prob</label>
+		<knob x="52" y="20" size="21">
+			<parameter component-id="p1" alt="prob" />
+		</knob>
+		<label x="84" y="17">Length</label>
+		<textDisplay x="84" y="28" width="22" height="14">
+			<parameter component-id="p2" alt="length" />
+		</textDisplay>
+		<knob x="110" y="20" size="21">
+			<parameter component-id="p2" alt="length" />
+		</knob>
+		<button x="138" y="24" width="28" height="16" cyclic="true" landscape="false">
+			<parameter component-id="p3" alt="lock" />
+			<btn index="0">Lock</btn>
+			<btn index="1">Lock</btn>
+		</button>
+		<label x="170" y="17">Scale</label>
+		<knob x="194" y="20" size="21">
+			<parameter component-id="p4" alt="scale" />
+		</knob>
+		<label x="222" y="17">CV</label>
+		<connector x="236" y="28" size="13" class="cCONTROL">
+			<connector component-id="c2" alt="cv" />
+		</connector>
+		<label x="5" y="58">Gates</label>
+		<light component-id="ledBits" type="led-array" steps="8" bits="true" x="40" y="47" width="200" height="7" />
+		<connector x="46" y="57" size="13" class="cLOGIC">
+			<connector component-id="c3" alt="gate 1" />
+		</connector>
+		<connector x="71" y="57" size="13" class="cLOGIC">
+			<connector component-id="c4" alt="gate 2" />
+		</connector>
+		<connector x="96" y="57" size="13" class="cLOGIC">
+			<connector component-id="c5" alt="gate 3" />
+		</connector>
+		<connector x="121" y="57" size="13" class="cLOGIC">
+			<connector component-id="c6" alt="gate 4" />
+		</connector>
+		<connector x="146" y="57" size="13" class="cLOGIC">
+			<connector component-id="c7" alt="gate 5" />
+		</connector>
+		<connector x="171" y="57" size="13" class="cLOGIC">
+			<connector component-id="c8" alt="gate 6" />
+		</connector>
+		<connector x="196" y="57" size="13" class="cLOGIC">
+			<connector component-id="c9" alt="gate 7" />
+		</connector>
+		<connector x="221" y="57" size="13" class="cLOGIC">
+			<connector component-id="c10" alt="gate 8" />
+		</connector>
+	</module>

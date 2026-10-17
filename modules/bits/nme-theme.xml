@@ -1,0 +1,76 @@
+	<module component-id="m41" width="255" height="90">
+		<name>Bits</name>
+		<label x="5" y="15">Clk</label>
+		<connector x="6" y="26" size="13" class="cLOGIC">
+			<connector component-id="c1" alt="clock" />
+		</connector>
+		<label x="27" y="15">Rst</label>
+		<connector x="28" y="26" size="13" class="cLOGIC">
+			<connector component-id="c2" alt="reset" />
+		</connector>
+		<label x="50" y="15">In</label>
+		<connector x="50" y="26" size="13" class="cCONTROL">
+			<connector component-id="c3" alt="in" />
+		</connector>
+		<button x="76" y="25" width="90" height="16" cyclic="false" landscape="true">
+			<parameter component-id="p1" alt="mode" />
+			<btn index="0">Count</btn>
+			<btn index="1">A&gt;D</btn>
+			<btn index="2">D&gt;A</btn>
+		</button>
+		<label x="222" y="15">Out</label>
+		<connector x="236" y="26" size="13" class="cCONTROL">
+			<connector component-id="c12" alt="out" />
+		</connector>
+		<label x="5" y="47">B in</label>
+		<connector x="56" y="46" size="13" class="cLOGIC">
+			<connector component-id="c4" alt="b1" />
+		</connector>
+		<connector x="81" y="46" size="13" class="cLOGIC">
+			<connector component-id="c5" alt="b2" />
+		</connector>
+		<connector x="106" y="46" size="13" class="cLOGIC">
+			<connector component-id="c6" alt="b3" />
+		</connector>
+		<connector x="131" y="46" size="13" class="cLOGIC">
+			<connector component-id="c7" alt="b4" />
+		</connector>
+		<connector x="156" y="46" size="13" class="cLOGIC">
+			<connector component-id="c8" alt="b5" />
+		</connector>
+		<connector x="181" y="46" size="13" class="cLOGIC">
+			<connector component-id="c9" alt="b6" />
+		</connector>
+		<connector x="206" y="46" size="13" class="cLOGIC">
+			<connector component-id="c10" alt="b7" />
+		</connector>
+		<connector x="231" y="46" size="13" class="cLOGIC">
+			<connector component-id="c11" alt="b8" />
+		</connector>
+		<label x="5" y="74">Bits</label>
+		<light component-id="ledBits" type="led-array" steps="8" bits="true" x="50" y="64" width="200" height="7" />
+		<connector x="56" y="73" size="13" class="cLOGIC">
+			<connector component-id="c13" alt="bit 1" />
+		</connector>
+		<connector x="81" y="73" size="13" class="cLOGIC">
+			<connector component-id="c14" alt="bit 2" />
+		</connector>
+		<connector x="106" y="73" size="13" class="cLOGIC">
+			<connector component-id="c15" alt="bit 3" />
+		</connector>
+		<connector x="131" y="73" size="13" class="cLOGIC">
+			<connector component-id="c16" alt="bit 4" />
+		</connector>
+		<connector x="156" y="73" size="13" class="cLOGIC">
+			<connector component-id="c17" alt="bit 5" />
+		</connector>
+		<connector x="181" y="73" size="13" class="cLOGIC">
+			<connector component-id="c18" alt="bit 6" />
+		</connector>
+		<connector x="206" y="73" size="13" class="cLOGIC">
+			<connector component-id="c19" alt="bit 7" />
+		</connector>
+		<connector x="231" y="73" size="13" class="cLOGIC">
+			<connector component-id="c20" alt="bit 8" />
+		</connector>
+	</module>

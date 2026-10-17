@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Checks the Level module (type 42) in G1-Emu with the G1-Mods ROM.
 
-    tests/check_level.py
+    modules/level/check_level.py
 
-tests/level.pch (ModAmt with the Constant, a steady output for check_insert.py): an LFO (about
+level.pch (ModAmt with the Constant, a steady output for check_insert.py): an LFO (about
 2 Hz) into A; into B a slower LFO, or a ClkGen (T&H), or a
 Constant at +32 units (ModAmt); Out 1 on output 1, Out 2 on 2, A on 3, B on 4. Each case plays
 3 s, and every sample of the outputs must be the mode's result for A and B a few samples before,
@@ -22,7 +22,7 @@ import tempfile
 import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(HERE))
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 SETTLE = 4800          # 50 ms at 96 kHz: the patch being set up
