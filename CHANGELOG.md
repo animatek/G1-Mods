@@ -5,6 +5,9 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Javier (Claude wrote it down): **the Random's Poly works**, checked by ear in G1-Emu: each voice
+  plays its own sequence.
+
 - Claude: **type 6, Random** (`dsp/random.asm`): the G2's randoms in one clocked module, Clk, Rst,
   Out, Trig, with Seed, Poly (a seed per voice: the Seed routine gets the voice), Step, Edge,
   Prob and Length. NME data in "LFO (mods)" (NME `g1-mods` `5847ad1`). New

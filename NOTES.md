@@ -476,7 +476,8 @@ runs every test.
   sequencers), and every Length clocks. A patch takes about 15 clocks (at 48 Hz) to set up before
   a recording starts; the Seed routine sets the load flag, so the values start from the seed.
 - `tests/check_random.py` checks the values against a model in Python, one by one, for two seeds,
-  and Length, Rst, Prob, Step and Edge. **Poly is not checked** (the bench plays one voice).
+  and Length, Rst, Prob, Step and Edge. Poly the bench cannot check (it plays one voice): Javier
+  checked it by ear, chords on a Random in Poly give a sequence a voice.
 
 ## Trying it by hand
 

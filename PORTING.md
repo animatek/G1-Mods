@@ -69,7 +69,7 @@ outputs of all its variants and each panel shows its own.
 | Scale Quantizer (our own) | 125 | ✅ | In, Out, Root, Scale (16 by name) and Octave, after JW-Modules' Quantizer (`dsp/quant.asm`, `tests/check_quant.py`). Missing: CV inputs for Root and Scale. |
 | 8Counter | 126 | ✅ | Clk, Rst (as the G1's sequencers'), eight outputs, one high a step, and eight step LEDs (`dsp/counter8.asm`, `tests/check_counter8.py`). |
 | Mux8-1 (with the Sw8-1) | 101 | ✅ | In 1–8, Ctrl, Out, a Sel knob that Ctrl adds to (8 units a step), eight LEDs (`dsp/mux8.asm`, `tests/check_mux8.py`). Control rate. |
-| Random (the G2's randoms in one) | 6 | ✅ | Clk, Rst, Out, Trig; Seed, Poly, Step, Edge, Prob, Length (`dsp/random.asm`, `tests/check_random.py`). Poly checked by ear only (the bench plays one voice). |
+| Random (the G2's randoms in one) | 6 | ✅ | Clk, Rst, Out, Trig; Seed, Poly, Step, Edge, Prob, Length (`dsp/random.asm`, `tests/check_random.py`). Poly checked by Javier by ear (2026-10-17: the voices play different sequences). |
 
 ## Modules only the G2 has
 
