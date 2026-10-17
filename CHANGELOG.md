@@ -5,6 +5,9 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: `PORTING.md`, Javier's idea of an OS builder (pick the modules, a bar for the room
+  left, build from the user's own OS), with the rules it needs.
+
 - Claude: `NOTES.md`, starting the String: **only 2.3 KB of room for code are left** (the package
   runs from 14 KB the OS never touches; the eleven types take 12 KB), how the OS writes a
   parameter to a module's audio X (`$10C4B0` and `$10C248`), and the G1 Delay's memory as the

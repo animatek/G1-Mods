@@ -254,6 +254,16 @@ Ideas built from what is known now. Same scale of feasibility.
 
 ## Ideas, not started
 
+- **An OS builder: pick your modules** (Javier, 2026-10-17, as Eurorack firmwares that let you
+  choose which apps fit): a library of every G1-Mods module, a window where the user ticks the
+  ones they want with a bar filling as the room for code (and the types) is spent, and a button
+  that builds their OS from their own OS file. Rules so patches stay portable: each module keeps
+  its type number for ever (the library no larger than the free types), and the build tells NME
+  which modules it has. The patcher already builds from a list (`EXPERIMENTS`), and while a module
+  is being made it is built alone, so the room limit does not stop development. Home: NME (it
+  knows the modules and has a window), or a small tool of its own. Removing Clavia modules to free
+  their code's RAM is possible but breaks old patches: not first.
+
 - **From Javier's first tries (2026-10-17), to check**: the Random into a filter's modulation
   seemed to move it little (its Out is ±64 units, bipolar, as a G1 LFO's; check Step and Edge
   there), and the notes through a Scale Quantizer and a S&H sounded odd at times. A **Uni/Bi
