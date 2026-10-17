@@ -5,6 +5,9 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: `PORTING.md`, open and free for good: nothing of the mods exclusive to Patreon or paid,
+  Gearmulator credited everywhere (Javier).
+
 - Claude: `PORTING.md`, "The builder and the catalogue": a Modwerk-like site building in the
   browser from the user's own OS, one C++ core (WebAssembly and NME), NME showing the mods only
   with a modified OS, and who is responsible for what: tested only on the emulator, each owner

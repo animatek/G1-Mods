@@ -333,6 +333,11 @@ We make the tool. We are not responsible for anyone's G1, nor for the modules ot
   it to be built into a user's OS (GPL-compatible), with its file in its repo; a licences page
   lists each one, as Modwerk's `THIRD_PARTY_NOTICES`. No rights to Clavia's firmware or
   trademarks are given.
+- **Open and free, for good** (Javier, 2026-10-17): everything about the mods is open source and
+  as collaborative as possible. No module, build or early access is ever exclusive to Patreon or
+  paid: Patreon only supports Javier's work, for whoever wants to. It stands on Gearmulator (G1-Emu
+  and its DSP56300 core come from it), so Gearmulator is credited on the site, the README and the
+  licences page.
 
 **The notices** (drafts, for the site, the README and the builder; in English like the rest):
 
