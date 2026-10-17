@@ -44,18 +44,19 @@ than this list has, and they have to be chosen:
   NME): a great deal of reverse engineering and patches nothing else could read. At most, a day
   to see whether the OS keeps the type in a whole byte inside.
 
-**The plan agreed with Javier (2026-10-17): a type per family, not per module.**
+**The plan agreed with Javier (2026-10-17): a type per family, not per module**, with the virtual
+modules of NME. Two families go into types G1-Mods already uses: a type can have the inputs and
+outputs of all its variants and each panel shows its own.
 
 | Type | Family |
 | --- | --- |
-| 1 | Random: Random A/B, Rnd Clock, Rnd Trig (Seed, Poly, Edge) |
-| 2 | Switches: Sw1-2, Sw2-1, Sw1-8, Mux1-8, the momentary ones |
-| 3 | Conversion and logic: DAConv, ADConv, BinCounter |
-| 4 | Level: ModAmt, MinMax, T&H, WindSw |
-| 5 | Envelopes: ADDSR, H, D, Mod AHD |
-| 6 | The G2's mixers with Lin/dB/Exp (the Mix1-1A goes in here) |
-| 7–8 | One big oscillator and one big effect, Javier's pick (FreqShift, Flanger, Osc Dual...) |
-| 9–11 | Kept back for what comes up |
+| 101 (Mux8-1) | Switches: Sw1-2, Sw2-1, Sw1-8, Mux1-8, the momentary ones |
+| 121 (Mix1-1A) | The G2's mixers with Lin/dB/Exp |
+| new | Random: Random A/B, Rnd Clock, Rnd Trig (Seed, Poly, Edge) |
+| new | Conversion and logic: DAConv, ADConv, BinCounter |
+| new | Level: ModAmt, MinMax, T&H, WindSw |
+| new | Envelopes: ADDSR, H, D, Mod AHD |
+| the other 7 | Big modules, one a type (oscillators, effects): Javier's list of 5–6 by preference, and one or two kept back. Two big ones share a type only if they share most of their code (a Flanger and a Phaser): every instance loads the code of all its modes. The DSP's memory per voice limits a patch more than the types do. |
 
 ## Already on the G1-Mods OS
 

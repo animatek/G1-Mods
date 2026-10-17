@@ -5,6 +5,10 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: `PORTING.md`: the plan for the free types, revised with Javier: the switches go into
+  the Mux8-1's type and the G2 mixers into the Mix1-1A's, so four new types cover the small
+  families and seven are left for big modules (oscillators, effects), one a type.
+
 - Claude: **the Mixer Inv (119) and the Noise S&H (122) are out**, to free their types (Javier:
   the first was a test, the second is easy to patch with G1 modules). Their code, notes and tests
   stay in git history; `tests/mixer-demo.pch`, `noise-sh.pch` and `check_noise_sh.py` go.
