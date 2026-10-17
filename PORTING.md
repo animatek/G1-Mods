@@ -265,12 +265,90 @@ mods in an emulator of his own). Before it grows, in this order:
    on any build that has that module. Only six are left (60, 93, 109, 116, 119, 122): the
    registry is where it is decided which modules get one.
 3. **Publish G1-Mods on GitHub**, public, GPLv3 like G1-Emu: README (no ROM or OS given, it builds
-   from yours), CONTRIBUTING (the module folder, the tests, nothing of Clavia's). Before: check
-   the whole history for anything of Clavia's. Ask Javier before publishing.
-4. **The builder in NME** (see "An OS builder" below): pick your OS, tick modules, get the ROM;
-   with it the `g1-mods` branch into `main` and NME telling the modified OS apart.
+   from yours, the notices below), CONTRIBUTING (the module folder in your own repo, the tests,
+   nothing of Clavia's). Before: check the whole history for anything of Clavia's. Ask Javier
+   before publishing.
+4. **The builder** (see "The builder and the catalogue" below): pick your OS, tick modules, get
+   the ROM; with it the `g1-mods` branch into `main` and NME telling the modified OS apart.
 
 Real hardware only after this, once the ROM's MIDI boot mode is known to recover a bad OS.
+
+## The builder and the catalogue (agreed with Javier, 2026-10-17)
+
+The model is Modwerk (modwerk.app, see `../Digitakt-Mods/NOTES.md`): a web catalogue of modules
+and a builder that runs **in the user's browser, from the user's own OS file**. The site never
+holds anything of Clavia's, and a built OS never leaves the user's computer.
+
+**Optional, but in the main programs:**
+
+- **G1-Emu does not change**: a modified OS is just another OS file (`os =`). At most a picker in
+  Settings ("Clavia's OS / an OS with mods..."). Who never touches it has the G1 as it is.
+- **NME, one program**: the mods modules' data in `main`, shown only when the connected OS says it
+  has them. The builder writes a signature and the list of its modules (with their types) into
+  the OS; NME reads it when it connects. With Clavia's OS, NME is exactly today's. A patch that
+  uses a module the OS lacks is not sent: NME says which one is missing.
+
+**One builder, written once:**
+
+- Modules are **data packages**: a folder with a `module.json` (fixed type number, size,
+  parameters, author, licence, repo, version), its assembled DSP and 68k code, NME's data, and a
+  test. Nothing of Clavia's in it.
+- **A small C++ core** does what `patch_rom.py` does: checks the user's OS is a supported version
+  (by hash), places the packages, fixes the checksums, refuses a build over the room for code or
+  the free types. Compiled to WebAssembly for the site, linked into NME for an offline "Mods"
+  window. `patch_rom.py` stays as the reference: both must give the same image, byte for byte.
+- **The site is static** (Vercel or GitHub Pages): a page per module (what it does, an audio
+  example, a capture of its NME panel), ticks with a bar filling as room is spent, and a build
+  button. No server: nothing is uploaded.
+
+**What makes the G1 different from Modwerk's machines:** the limit is the types, not the code
+(about 14 types in all against the Digitakt's 128 KB of room), so the catalogue grows by
+families (one type, several virtual panels in NME), and the type registry (step 2 above) is the
+heart of it: a number given is given for ever. CI cannot hold the OS, so on GitHub only the
+packages' format and their build are checked; booting in G1-Emu and the module battery are run
+locally by a maintainer.
+
+### Who is responsible for what
+
+We make the tool. We are not responsible for anyone's G1, nor for the modules others write.
+
+- **Tested only on the emulator.** Until it says otherwise, every page, the README and the build
+  button say so: nothing has been tried on a real G1, a build may not work on one, and it may
+  leave it unusable (bricked). Recovery is not guaranteed.
+- **Each owner is responsible for their own G1.** The build button stays disabled until the user
+  ticks that they have read the risks. No support for real hardware: issues are for bugs in the
+  tool and the modules, with no promise of an answer or a fix.
+- **Community modules live in their authors' own repos, not in ours.** Each author owns their
+  module, its licence and its support. We link to a module only after trying it in G1-Emu and
+  finding it right (or asking for fixes); a linked module is pinned to a reviewed version (a tag
+  or a commit), so a later change in the author's repo does not reach users until it is reviewed
+  again. Linking it is not a guarantee: the module page names its author and says it is a
+  community module. Our own modules stay in this repo, as the reference.
+- **Type numbers stay ours**: an author asks for one when the module is linked; the registry here
+  is the only place they are given.
+- **Per module, "Works for me" and "Report an issue"** (as Modwerk's page), each report saying the
+  build, the OS version and whether it was G1-Emu or a real G1, so a hardware report is never
+  mistaken for an emulator one.
+- **Licences**: the tool GPLv3, as G1-Emu. A linked module must have an open licence that allows
+  it to be built into a user's OS (GPL-compatible), with its file in its repo; a licences page
+  lists each one, as Modwerk's `THIRD_PARTY_NOTICES`. No rights to Clavia's firmware or
+  trademarks are given.
+
+**The notices** (drafts, for the site, the README and the builder; in English like the rest):
+
+- *Independence:* "An independent, unofficial project. Not affiliated with, endorsed by or
+  supported by Clavia."
+- *Hardware:* "Tested only in the G1-Emu emulator. It has never been tried on a real Nord Modular
+  G1. A modified OS may not work on real hardware, may lose your patches and may leave your synth
+  unusable. Recovery is not guaranteed. You use it entirely at your own risk; you are solely
+  responsible for your instrument."
+- *No support:* "Provided as is, without warranty of any kind (GPLv3, sections 15 and 16). We do
+  not offer support for real hardware."
+- *Community modules:* "Community modules are written and maintained by their authors, in their
+  own repositories. We link to them after a review in the emulator, which is not a guarantee.
+  Report problems to the module's author."
+- *Firmware:* "Do not upload, share or redistribute OS images, original or built: they contain
+  Clavia's copyrighted firmware. Share your list of modules instead."
 
 ## Ideas, not started
 
