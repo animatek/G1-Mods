@@ -5,6 +5,9 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: `PORTING.md`, the Osc String next to the G2's (no pluck of its own, Cent and KBT): add
+  Cent and KBT to ours, keeping Trig and Exc (Javier likes ours).
+
 - Javier (Claude wrote it down): **the Osc String works**, played in G1-Emu.
 
 - Claude: **type 56, Osc String** (`dsp/string.asm`), a plucked string (Karplus-Strong), the

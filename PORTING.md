@@ -255,6 +255,11 @@ Ideas built from what is known now. Same scale of feasibility.
 
 ## Ideas, not started
 
+- **The Osc String, as the G2's** (Javier, 2026-10-17, from a picture of it): the G2's has no
+  pluck of its own (it sounds only from what its audio input brings), a Pitch knob in semitones and
+  cents and a KBT button. Ours was written from the textbook Karplus-Strong, not from the G2's
+  code, and Javier likes it as it is: add a Cent knob and KBT on/off to it, keeping Trig and Exc.
+
 - **An OS builder: pick your modules** (Javier, 2026-10-17, as Eurorack firmwares that let you
   choose which apps fit): a library of every G1-Mods module, a window where the user ticks the
   ones they want with a bar filling as the room for code (and the types) is spent, and a button
