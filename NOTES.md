@@ -494,6 +494,23 @@ runs every test.
   every sample, D>A from eight Constants. `tests/bits.pch` starts in D>A: `check_insert.py`
   compares the peak of the first and last seconds, which a counter's ramp would not keep.
 
+## Type 42: Level (2026-10-17)
+
+- The G2's ModAmt, MinMax, T&H and WindSw in one module with a four-way Mode selector, inputs A
+  and B, Out 1 and Out 2, and Amount, Lo and Hi. ModAmt: Out 1 = A (1 - Amount + Amount B), B
+  as 0..1 over 0..+64 units, Out 2 the rest of A. MinMax: the lower and the higher. T&H: Out 1
+  tracks A while B is high, Out 2 while low. Window: Out 1 is A and Out 2 high while Lo <= B <= Hi.
+- MinMax without branches: `cmp x1,a` then `tfr x1,a ifgt` and `tfr y0,b ifgt`.
+- `tests/check_level.py` checks every sample of each mode against its formula (two LFOs, a
+  clock, a Constant); `level.pch` starts on ModAmt with the Constant, steady for
+  `check_insert.py`.
+
+## The Random's Bi/Uni (2026-10-17)
+
+- A seventh parameter, Uni (Javier: a filter or a resonance wants a positive signal): Out becomes
+  (Out + 64 units) / 2, 0..+64, with an `asr` and an add at the output. A patch saved with the
+  six-parameter Random loads its Out as Bi.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash
@@ -505,7 +522,7 @@ refuses a patch with them. In the maintainer's desktop both have launchers ("G1-
 
 ## Next
 
-- The next families (`PORTING.md`: Level, Envelopes), and NME's virtual modules for the switches in the Mux8-1's type.
+- The Envelopes family (`PORTING.md`), then NME's virtual modules for the switches in the Mux8-1's type and the G2 mixers in the Mix1-1A's.
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.

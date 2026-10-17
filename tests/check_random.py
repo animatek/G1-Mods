@@ -4,7 +4,7 @@
     tests/check_random.py
 
 tests/random.pch: ClkGen (48 Hz) into Clk; Out on output 1, Trig on 2, the clock on 3, an LFO on
-4 (into Rst too in one case). Parameters: Seed, Poly, Step, Edge, Prob, Length. Out is read just
+4 (into Rst too in one case). Parameters: Seed, Poly, Step, Edge, Prob, Length, Uni. Out is read just
 before each clock edge (the value of the clock before). Each case plays 3 s:
 - Seed: the values are a model's of the register (in Python here), for Seed 0 and Seed 5, from
   wherever the recording starts (the patch takes some clocks to set up); they span most of
@@ -14,6 +14,7 @@ before each clock edge (the value of the clock before). Each case plays 3 s:
 - Prob 0: no Trig; 127: a Trig every clock; 64: between a third and two thirds of them. Trig is
   high only while the clock is.
 - Step 20: Out wanders (its steps are a fraction of Step 127's).
+- Uni: Out is (the Bi value + 64) / 2, 0..+64 units.
 - Edge 0: Out holds between clocks; Edge 60: it glides (many values between two clocks, each a
   bit nearer the next).
 Poly needs two voices playing, which the bench cannot do: checked by ear.
@@ -31,7 +32,7 @@ EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 SETTLE = 4800          # 50 ms at 96 kHz: the patch being set up
 UNIT = 428167 / 64     # one control unit in the recording
-BASE = "3 6 6 0 0 127 0 64 0 "
+BASE = "3 6 7 0 0 127 0 64 0 0 "
 
 
 def record(rom, xml, patch, tmp):
@@ -87,8 +88,8 @@ def main():
         ok &= good
 
     with tempfile.TemporaryDirectory() as tmp:
-        def play(seed=0, poly=0, step=127, edge=0, prob=64, length=0, rst=False):
-            patch = base.replace(BASE, f"3 6 6 {seed} {poly} {step} {edge} {prob} {length} ")
+        def play(seed=0, poly=0, step=127, edge=0, prob=64, length=0, rst=False, uni=0):
+            patch = base.replace(BASE, f"3 6 7 {seed} {poly} {step} {edge} {prob} {length} {uni} ")
             if rst:
                 patch = patch.replace("0 2 3 0 4 1 1 \n", "0 2 3 0 4 1 1 \n0 3 1 0 4 1 1 \n")
             out, trig, clk, lfo = record(rom, xml, patch, tmp)
@@ -128,6 +129,11 @@ def main():
                 firsts.append(round(out[nxt[1] - 2] / UNIT, 1))
         report("Rst", len(firsts) > 3 and set(firsts) == {m0[0]},
                f"{len(firsts)} Rst edges, the clock after each gives {sorted(set(firsts))}, the model's first {m0[0]}")
+
+        _, _, _, _, _, u = play(uni=1)
+        mu = [round((v + 64) / 2, 1) for v in m0]
+        report("Uni", within(u[2:60], mu) and min(u) >= -0.1 and max(u) <= 64.1 and max(u) > 50,
+               f"{u[2:6]}... are (Bi + 64) / 2 of the model's: {within(u[2:60], mu)}, from {min(u)} to {max(u)}")
 
         _, _, _, _, _, s = play(step=20)
         d20 = sum(abs(s[i + 1] - s[i]) for i in range(len(s) - 1)) / (len(s) - 1)

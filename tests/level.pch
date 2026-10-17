@@ -1,0 +1,65 @@
+[Header]
+Version=Nord Modular patch 3.0
+0 127 0 127 2 0 0 1 4000 2 0 0 0 0 15 2 1 1 1 1 1 1 1 
+[/Header]
+[ModuleDump]
+1 
+1 24 0 0 
+2 3 4 10 
+3 42 4 0 
+4 24 8 0 
+5 68 8 8 
+6 43 12 0 
+[/ModuleDump]
+[ModuleDump]
+0 
+[/ModuleDump]
+[CurrentNoteDump]
+64 0 0 64 0 0 
+[/CurrentNoteDump]
+[CableDump]
+1 
+0 3 0 0 1 1 1 
+0 3 1 0 6 0 1 
+0 2 0 0 3 0 1 
+0 2 1 0 3 1 1 
+0 2 2 0 1 1 1 
+0 2 3 0 6 0 1 
+[/CableDump]
+[CableDump]
+0 
+[/CableDump]
+[ParameterDump]
+1 
+1 24 8 85 1 0 0 0 0 64 0 
+2 3 1 100 
+3 42 4 0 127 64 96 
+4 24 8 70 1 0 0 0 0 64 0 
+5 68 2 40 1 
+6 43 2 96 0 
+[/ParameterDump]
+[ParameterDump]
+0 
+[/ParameterDump]
+[MorphMapDump]
+0 0 0 0 
+[/MorphMapDump]
+[KeyboardAssignment]
+0 0 0 0 
+[/KeyboardAssignment]
+[KnobMapDump]
+[/KnobMapDump]
+[CtrlMapDump]
+[/CtrlMapDump]
+[NameDump]
+1 
+1 LfoA
+2 4Output
+3 Level
+4 LfoB
+5 ClkGen
+6 Const
+[/NameDump]
+[NameDump]
+0 
+[/NameDump]

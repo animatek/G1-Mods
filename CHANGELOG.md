@@ -5,6 +5,12 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: **type 42, Level** (`dsp/level.asm`): the G2's ModAmt, MinMax, T&H and WindSw in one
+  module with a Mode selector, A, B, Out 1, Out 2, Amount, Lo and Hi. **The Random gets a Bi/Uni
+  button** (Javier), its seventh parameter. NME `g1-mods` `fba49d5`. New `tests/check_level.py`
+  (every sample of each mode) and a Uni case in `check_random.py` pass; all tests pass. Eight
+  free types left.
+
 - Claude: **type 41, Bits** (`dsp/bits.asm`): the G2's BinCounter, ADConv and DAConv in one module
   with a Mode selector (Count, A>D, D>A) and all their connectors, Out, eight bits and eight LEDs.
   NME data in "Logic (mods)" (NME `g1-mods` `3a23de3`). New `tests/check_bits.py` passes;

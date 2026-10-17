@@ -555,12 +555,12 @@ def seed_routine(x_seed, x_voice, x_load):
 
 
 def random(b, new_type=6):
-    """Random: Clk and Rst in; Out and Trig; Seed, Poly, Step, Edge, Prob and Length."""
+    """Random: Clk and Rst in; Out and Trig; Seed, Poly, Step, Edge, Prob, Length and Uni."""
     control_type(b, new_type, "random.asm",
                  # taps, the register, Clk's last, Rst's last, load (yes), count, Length (free),
                  # seed, voice, Poly, Step, target, Out (2), Edge's factor, Prob, gate, high
                  (0xE10000, 0x5A3C96, 0, 0, 1, 0, 0x7FFFFF, 0x9E37, 0, 0, 0x7FFE00, 0, 0, 0,
-                  0x7FFFFF, 0x400000, 0, 0x200000),
+                  0x7FFFFF, 0x400000, 0, 0x200000, 0, 0x100000),   # ..., Uni, 32 units
                  [Param("Seed", 127, 7, routine=lambda b: b.put(seed_routine(7, 8, 4))),
                   # value 1: $FFFFFF, else 0
                   #   moveq #0,d0 / tst.l d2 / beq.s +6 / move.l #$FFFFFF,d0
@@ -579,7 +579,8 @@ def random(b, new_type=6):
                   Param("Prob", 127, 15, "2002 4840 4240 2202 e181 d281 d081 2202 e581 d081"),
                   # Length: v, or $7FFFFF (never) for 0
                   #   move.l d2,d0 / bne.s +6 / move.l #$7FFFFF,d0
-                  Param("Length", 16, 6, "2002 6606 203c 007fffff")])
+                  Param("Length", 16, 6, "2002 6606 203c 007fffff"),
+                  Param("Uni", 1, 18)])
 
 
 def bits(b, new_type=41):
@@ -590,6 +591,21 @@ def bits(b, new_type=41):
                  # (255: the first clock gives 0), unused, 1
                  (0, 0, 0, 0, 0, 0x200000, 255, 255, 0, 1),
                  [Param("Mode", 2, 4)], bits=(0, 0xFF))
+
+
+def level(b, new_type=42):
+    """Level: the G2's ModAmt, MinMax, T&H and WindSw in one, by Mode: A and B in, Out 1 and 2;
+    Amount, Lo and Hi."""
+    # Lo, Hi: value v = 0..127, (v - 64) control units, a unit being $8000
+    bipolar = "2002 0480 00000040 720f e3a0"
+    control_type(b, new_type, "level.asm",
+                 # Mode, Amount, Lo (-64), Hi (+63), held 1, high, 1, unused, held 2
+                 (0, 0, 0xE00000, 0x1F8000, 0, 0x200000, 0x7FFFFF, 0, 0),
+                 [Param("Mode", 3, 0),
+                  # Amount: the fraction (v << 16) + (v << 9), 127 nearly 1
+                  Param("Amount", 127, 1, "2002 4840 4240 2202 e181 d281 d081"),
+                  Param("Lo", 127, 2, bipolar),
+                  Param("Hi", 127, 3, bipolar)])
 
 
 # The Scale Quantizer's scales: (name, the notes in it, as semitones from the root)
@@ -644,8 +660,8 @@ EXPERIMENTS = {
     ),
     "all": (
         "every new type: 120 (FlipFlop), 121 (Mix1-1A), 123 (5-Step Seq), 124 (Turing Machine), "
-        "125 (Scale Quantizer), 126 (8Counter), 101 (Mux8-1), 6 (Random), 41 (Bits)",
-        [flipflop, mix1_1a, seq5, turing, quant, counter8, mux8, random, bits], [],
+        "125 (Scale Quantizer), 126 (8Counter), 101 (Mux8-1), 6 (Random), 41 (Bits), 42 (Level)",
+        [flipflop, mix1_1a, seq5, turing, quant, counter8, mux8, random, bits, level], [],
     ),
 }
 

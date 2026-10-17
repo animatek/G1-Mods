@@ -19,7 +19,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
-PATCHES = ("mix1-1a-chain.pch", "flipflop-lfo.pch", "seq5.pch", "turing.pch", "quant.pch", "counter8.pch", "mux8.pch", "random.pch", "bits.pch")
+PATCHES = ("mix1-1a-chain.pch", "flipflop-lfo.pch", "seq5.pch", "turing.pch", "quant.pch", "counter8.pch", "mux8.pch", "random.pch", "bits.pch", "level.pch")
 RATE = 96000
 
 

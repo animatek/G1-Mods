@@ -25,8 +25,8 @@ a guide to the effort, not code to copy. Our code is written new.
 ## Only eleven types left
 
 **The G1 has room for 128 module types (0–127), and that cannot grow**: the OS's table has 128
-entries and a patch keeps a module's type in 7 bits. Clavia's take 110 of them; G1-Mods uses 6, 41, 101,
-120, 121 and 123–126. **Free now: 42, 55, 56, 60, 93, 109, 116, 119, 122** (0 is left out:
+entries and a patch keeps a module's type in 7 bits. Clavia's take 110 of them; G1-Mods uses 6, 41, 42, 101,
+120, 121 and 123–126. **Free now: 55, 56, 60, 93, 109, 116, 119, 122** (0 is left out:
 it may read as "no module"). Found 2026-10-17, when 127 and 128 were about to be used (127 is the
 PolyAreaIn); the same day the Mixer Inv (119, a first test) and the Noise S&H (122, easy to patch
 from G1 modules) were taken out to free theirs (in git history). So far fewer G2 modules can come
@@ -54,7 +54,7 @@ outputs of all its variants and each panel shows its own.
 | 121 (Mix1-1A) | The G2's mixers with Lin/dB/Exp |
 | 6 (Random) | Random: one clocked module does Random A/B (Out, Step, Edge), Rnd Trig (Prob) and Rnd Pattern (Seed, Length); done 2026-10-17 |
 | 41 (Bits) | Conversion and logic: BinCounter, ADConv, DAConv in one module with a Mode selector and every connector (no virtual modules needed); done 2026-10-17 |
-| new | Level: ModAmt, MinMax, T&H, WindSw |
+| 42 (Level) | Level: ModAmt, MinMax, T&H and WindSw in one module with a Mode selector; done 2026-10-17 |
 | new | Envelopes: ADDSR, H, D, Mod AHD |
 | the other 7 | Big modules, one a type (oscillators, effects): Javier's list of 5–6 by preference, and one or two kept back. Two big ones share a type only if they share most of their code (a Flanger and a Phaser): every instance loads the code of all its modes. The DSP's memory per voice limits a patch more than the types do. |
 
@@ -69,8 +69,9 @@ outputs of all its variants and each panel shows its own.
 | Scale Quantizer (our own) | 125 | ✅ | In, Out, Root, Scale (16 by name) and Octave, after JW-Modules' Quantizer (`dsp/quant.asm`, `tests/check_quant.py`). Missing: CV inputs for Root and Scale. |
 | 8Counter | 126 | ✅ | Clk, Rst (as the G1's sequencers'), eight outputs, one high a step, and eight step LEDs (`dsp/counter8.asm`, `tests/check_counter8.py`). |
 | Mux8-1 (with the Sw8-1) | 101 | ✅ | In 1–8, Ctrl, Out, a Sel knob that Ctrl adds to (8 units a step), eight LEDs (`dsp/mux8.asm`, `tests/check_mux8.py`). Control rate. |
-| Random (the G2's randoms in one) | 6 | ✅ | Clk, Rst, Out, Trig; Seed, Poly, Step, Edge, Prob, Length (`dsp/random.asm`, `tests/check_random.py`). Poly checked by Javier by ear (2026-10-17: the voices play different sequences). |
+| Random (the G2's randoms in one) | 6 | ✅ | Clk, Rst, Out, Trig; Seed, Poly, Step, Edge, Prob, Length, Uni/Bi (`dsp/random.asm`, `tests/check_random.py`). Poly checked by Javier by ear (2026-10-17: the voices play different sequences). |
 | Bits (BinCounter, ADConv, DAConv) | 41 | ✅ | Clk, Rst, In, B1–B8; Out, Bit 1–8; Mode (Count, A>D, D>A); eight LEDs (`dsp/bits.asm`, `tests/check_bits.py`). |
+| Level (ModAmt, MinMax, T&H, WindSw) | 42 | ✅ | A, B; Out 1, Out 2; Mode, Amount, Lo, Hi (`dsp/level.asm`, `tests/check_level.py`). Control rate. |
 
 ## Modules only the G2 has
 
@@ -94,15 +95,15 @@ outputs of all its variants and each panel shows its own.
 | SwOnOffM | 5 | Easy | ⬜ | Momentary on/off. |
 | ValSw1-2, ValSw2-1 | 9–12 | Easy | ⬜ | Switched by a control value. |
 | Mux1-8, Mux8-1, Mux8-1X | 14–57 | Easy | 🟡 | Mux8-1: type 101. Mux1-8 and the crossfading X to do. |
-| WindSw | 11 | Easy | ⬜ | Window switch. |
-| T&H | 7 | Easy | ⬜ | Track and hold. |
+| WindSw | 11 | Easy | ✅ | Window switch. |
+| T&H | 7 | Easy | ✅ | Track and hold. |
 
 ### Level
 
 | Module | DSP words | Feasible | Status | Notes |
 | --- | --- | --- | --- | --- |
-| MinMax | 7 | Easy | ⬜ | |
-| ModAmt | 9 | Easy | ⬜ | The G2's most used modulation helper. |
+| MinMax | 7 | Easy | ✅ | |
+| ModAmt | 9 | Easy | ✅ | The G2's most used modulation helper. |
 | ConstSwT, ConstSwM | ~5 | Easy | ⬜ | Constant with a toggle / momentary switch. |
 | Red2Blue, Blue2Red | 2–9 | Easy | ⬜ | Audio-rate ↔ control-rate converters. |
 
@@ -252,7 +253,7 @@ Ideas built from what is known now. Same scale of feasibility.
 - **From Javier's first tries (2026-10-17), to check**: the Random into a filter's modulation
   seemed to move it little (its Out is ±64 units, bipolar, as a G1 LFO's; check Step and Edge
   there), and the notes through a Scale Quantizer and a S&H sounded odd at times. A **Uni/Bi
-  button** on the Random. Uni↔Bi conversion itself is the G1's InvLevShift, no new type.
+  button** on the Random (done 2026-10-17). Uni↔Bi conversion itself is the G1's InvLevShift, no new type.
 - **One NME, one G1-Emu** (Javier, 2026-10-17): NME asks the synth which OS it runs and shows the
   mods modules only with the modified one (the `g1-mods` branch merged into `main`); G1-Emu is
   already the same emulator, the modified OS is only another ROM, so no fork of it. The patcher

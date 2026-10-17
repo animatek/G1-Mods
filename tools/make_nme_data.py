@@ -23,6 +23,7 @@ NEW_TYPES = {
     101: (126, None, None, None, None),  # written whole: FULL_ENTRIES below
     6: (101, None, None, None, None),    # written whole: FULL_ENTRIES below
     41: (126, None, None, None, None),   # written whole: FULL_ENTRIES below
+    42: (101, None, None, None, None),   # written whole: FULL_ENTRIES below
     121: (19, "Mix1-1A", "1 Input Chain Mixer (G1-Mods)",
           [('name="in1"', 'name="in"'), ('name="in2"', 'name="chain"'),
            ('\n    <connector component-id="c3" index="2" name="in3" type="input" signal="audio" />', ''),
@@ -452,7 +453,7 @@ FULL_ENTRIES = {
 \t\t</connector>
 \t</module>"""),
     6: ("""
-  <module component-id="m6" index="6" name="Random" fullname="Random, clocked, with Seed, Poly, Step, Edge, Prob and Length (G1-Mods)" category="LFO (mods)">
+  <module component-id="m6" index="6" name="Random" fullname="Random, clocked, with Seed, Poly, Step, Edge, Prob, Length and Uni/Bi (G1-Mods)" category="LFO (mods)">
     <image type="screenshot" src="img/modules/module-110.png" width="256" height="30" />
     <image type="icon16x16" src="img/icons/16x16/module-id-110.png" width="16" height="16" />
     <image type="icon32x32" src="img/icons/32x32/module-id-110.png" width="32" height="32" />
@@ -467,12 +468,14 @@ FULL_ENTRIES = {
     <parameter component-id="p4" index="3" name="edge" class="parameter" maxValue="127" defaultValue="0" extension="m4" />
     <parameter component-id="p5" index="4" name="prob" class="parameter" maxValue="127" defaultValue="64" extension="m5" />
     <parameter component-id="p6" index="5" name="length" class="parameter" maxValue="16" defaultValue="0" formatter="fmtLoopLength" extension="m6" />
+    <parameter component-id="p7" index="6" name="unipolar" class="parameter" maxValue="1" defaultValue="0" formatter="fmtOffOn" extension="m7" />
     <parameter component-id="m1" index="0" name="morph:seed" class="morph" role="morph"  minValue="-127" maxValue="127" />
     <parameter component-id="m2" index="1" name="morph:poly" class="morph" role="morph"  minValue="-1" maxValue="1" />
     <parameter component-id="m3" index="2" name="morph:step" class="morph" role="morph"  minValue="-127" maxValue="127" />
     <parameter component-id="m4" index="3" name="morph:edge" class="morph" role="morph"  minValue="-127" maxValue="127" />
     <parameter component-id="m5" index="4" name="morph:prob" class="morph" role="morph"  minValue="-127" maxValue="127" />
     <parameter component-id="m6" index="5" name="morph:length" class="morph" role="morph"  minValue="-16" maxValue="16" />
+    <parameter component-id="m7" index="6" name="morph:unipolar" class="morph" role="morph"  minValue="-1" maxValue="1" />
     <!-- custom attributes -->
     <attribute name="cycles" type="double" value="1.0" />
     <attribute name="x-mem" type="double" value="0.5" />
@@ -501,6 +504,11 @@ FULL_ENTRIES = {
 \t\t\t<parameter component-id="p2" alt="poly" />
 \t\t\t<btn index="0">Mono</btn>
 \t\t\t<btn index="1">Poly</btn>
+\t\t</button>
+\t\t<button x="70" y="47" width="28" height="12" cyclic="true" landscape="false">
+\t\t\t<parameter component-id="p7" alt="unipolar" />
+\t\t\t<btn index="0">Bi</btn>
+\t\t\t<btn index="1">Uni</btn>
 \t\t</button>
 \t\t<label x="102" y="15">Step</label>
 \t\t<knob x="102" y="26" size="21">
@@ -644,6 +652,78 @@ FULL_ENTRIES = {
 \t\t<connector x="231" y="73" size="13" class="cLOGIC">
 \t\t\t<connector component-id="c20" alt="bit 8" />
 \t\t</connector>
+\t</module>"""),
+    42: ("""
+  <module component-id="m42" index="42" name="Level" fullname="Level: ModAmt, MinMax, Track and Hold, Window (G1-Mods)" category="Mixer (mods)">
+    <image type="screenshot" src="img/modules/module-111.png" width="256" height="30" />
+    <image type="icon16x16" src="img/icons/16x16/module-id-111.png" width="16" height="16" />
+    <image type="icon32x32" src="img/icons/32x32/module-id-111.png" width="32" height="32" />
+    <connector component-id="c1" index="0" name="a" type="input" signal="control" />
+    <connector component-id="c2" index="1" name="b" type="input" signal="control" />
+    <connector component-id="c3" index="0" name="out 1" type="output" signal="control" />
+    <connector component-id="c4" index="1" name="out 2" type="output" signal="control" />
+    <!-- parameter(s) -->
+    <parameter component-id="p1" index="0" name="mode" class="parameter" maxValue="3" extension="m1" />
+    <parameter component-id="p2" index="1" name="amount" class="parameter" defaultValue="127" extension="m2" />
+    <parameter component-id="p3" index="2" name="lo" class="parameter" defaultValue="64" formatter="value-64" extension="m3" />
+    <parameter component-id="p4" index="3" name="hi" class="parameter" defaultValue="96" formatter="value-64" extension="m4" />
+    <parameter component-id="m1" index="0" name="morph:mode" class="morph" role="morph"  minValue="-3" maxValue="3" />
+    <parameter component-id="m2" index="1" name="morph:amount" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m3" index="2" name="morph:lo" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m4" index="3" name="morph:hi" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <!-- custom attributes -->
+    <attribute name="cycles" type="double" value="0.4" />
+    <attribute name="x-mem" type="double" value="0.3" />
+    <attribute name="y-mem" type="double" value="0.0" />
+    <attribute name="prog-mem" type="double" value="1.0" />
+    <attribute name="dyn-mem" type="double" value="0.5" />
+    <attribute name="zero-page" type="double" value="0.875" />
+    <attribute name="height" type="integer" value="4" />
+    <attribute name="background" value="#bfcde0" />
+  </module>""", """
+\t<module component-id="m42" width="255" height="60">
+\t\t<name>Level</name>
+\t\t<label x="6" y="15">A</label>
+\t\t<connector x="6" y="26" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c1" alt="a" />
+\t\t</connector>
+\t\t<label x="28" y="15">B</label>
+\t\t<connector x="28" y="26" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c2" alt="b" />
+\t\t</connector>
+\t\t<button x="50" y="25" width="150" height="16" cyclic="false" landscape="true">
+\t\t\t<parameter component-id="p1" alt="mode" />
+\t\t\t<btn index="0">ModAmt</btn>
+\t\t\t<btn index="1">MinMax</btn>
+\t\t\t<btn index="2">T&amp;H</btn>
+\t\t\t<btn index="3">Window</btn>
+\t\t</button>
+\t\t<label x="214" y="15">1</label>
+\t\t<connector x="212" y="26" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c3" alt="out 1" />
+\t\t</connector>
+\t\t<label x="238" y="15">2</label>
+\t\t<connector x="236" y="26" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c4" alt="out 2" />
+\t\t</connector>
+\t\t<label x="5" y="45">Amount</label>
+\t\t<knob x="44" y="38" size="21">
+\t\t\t<parameter component-id="p2" alt="amount" />
+\t\t</knob>
+\t\t<label x="86" y="45">Lo</label>
+\t\t<textDisplay x="100" y="42" width="24" height="14">
+\t\t\t<parameter component-id="p3" alt="lo" />
+\t\t</textDisplay>
+\t\t<knob x="128" y="38" size="21">
+\t\t\t<parameter component-id="p3" alt="lo" />
+\t\t</knob>
+\t\t<label x="164" y="45">Hi</label>
+\t\t<textDisplay x="178" y="42" width="24" height="14">
+\t\t\t<parameter component-id="p4" alt="hi" />
+\t\t</textDisplay>
+\t\t<knob x="206" y="38" size="21">
+\t\t\t<parameter component-id="p4" alt="hi" />
+\t\t</knob>
 \t</module>"""),
 }
 

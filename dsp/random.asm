@@ -1,20 +1,22 @@
 ; Random (G1-Mods type 6): the G2's randoms in one clocked module, with what the G1's lack: a Seed
 ; that repeats, Poly (every voice its own), Edge (gliding between values) and a chance per clock.
 ;   inputs 0 Clk, 1 Rst        outputs 0 Out, 1 Trig
-;   parameters 0 Seed, 1 Poly, 2 Step, 3 Edge, 4 Prob, 5 Length (0 free, 1-16)
+;   parameters 0 Seed, 1 Poly, 2 Step, 3 Edge, 4 Prob, 5 Length (0 free, 1-16), 6 Uni
 ; Control rate. On each rising edge of Clk a new random number is drawn (16 steps of a 24-bit
 ; Galois shift register). Out moves toward it by Step (127 all the way: a new value each clock;
-; low: a wander), gliding there with Edge; it spans -64..+64 units. Trig is high while Clk is,
+; low: a wander), gliding there with Edge; it spans -64..+64 units, or 0..+64 with Uni (Javier:
+; a filter or a resonance wants a positive one). Trig is high while Clk is,
 ; on the clocks a second draw falls under Prob. The register is loaded from Seed (and, with Poly
 ; on, the voice: the Seed routine is called once a voice and writes a value of the voice's) on
 ; the clock after the Seed is written (when the patch is set up, or the knob turned), on the clock
 ; after a Rst edge (as the G1's sequencers), and every Length clocks: the same Seed gives the same
 ; values, Length > 0 loops them.
-; X data (18 words): [0] the register's taps, [1] the register, [2] Clk's last value, [3] Rst's
+; X data (20 words): [0] the register's taps, [1] the register, [2] Clk's last value, [3] Rst's
 ; last value, [4] load (not 0: the next clock loads the seed), [5] clocks since the load,
 ; [6] Length (an integer, $7FFFFF for 0: never), [7] the seed's value, [8] the voice's value,
 ; [9] Poly ($FFFFFF or 0), [10] Step (a fraction), [11] the target, [12-13] Out (48 bits, so a
-; slow glide still moves), [14] Edge's glide factor, [15] Prob << 16, [16] the gate, [17] high.
+; slow glide still moves), [14] Edge's glide factor, [15] Prob << 16, [16] the gate, [17] high,
+; [18] Uni, [19] 32 units ($100000).
 ; r3 stays put; the words are read at offsets from it.
 ; Word 0 runs in the previous module's nop slot (no a or b); no branch lands on the nop slot or
 ; after it.
@@ -124,11 +126,18 @@ noclk:
     mac y1,x1,a             ;       Out glides toward the target
     move a1,x:(r3+$c)
     move a0,x:(r3+$d)
+    move x:(r3+$12),b       ;       b = Uni
+    tst b
+    beq bi
+    asr a                   ;       Uni: (Out + 64 units) / 2, 0..+64
+    move x:(r3+$13),x0      ;       x0 = 32 units
+    add x0,a
+bi:
     move a,x:$0             ; @out0 Out
     move x:(r3+$10),b       ;       b = the gate
     tfr y0,a
     tst a
     clr b ifle              ;       only while Clk is high
-    lua (r3+$12),r3         ;       r3 -> past the data
+    lua (r3+$14),r3         ;       r3 -> past the data
     nop                     ;       the next module's word 0 goes here
     move b,x:$0             ; @out1 Trig
