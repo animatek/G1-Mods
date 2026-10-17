@@ -213,3 +213,8 @@ Ideas built from what is known now. Same scale of feasibility.
   171 module types), but converted, in NME, for a patch whose every module has a counterpart on
   the G1 or in G1-Mods; one with a module never ported, or too big for the G1's DSPs, would not
   convert. Possible only once most of the G2's modules are here, so after the batches above.
+- **A Mutator inside the synth** (Javier, 2026-10-17): interpolating between patch variations on
+  the G1 itself. Most of it needs no OS change: the G1's morph already interpolates in the synth,
+  so NME's Mutator could write a child as morph ranges and a knob or CC sweeps parent to child.
+  Generating variations on the synth (68k code of our own, the front panel's menus) is far more
+  work and risk.

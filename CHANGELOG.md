@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: **a meter carries 14 bits**, read in the OS's meter poll and sender (`NOTES.md`): the
+  value routine's word goes out as two 7-bit values, so the Turing Machine's 8 LEDs fit in one
+  module's meter. `PORTING.md`: a Mutator inside the synth, as an idea (the G1's morph already
+  interpolates).
+
 - Claude: **the Turing Machine's Prob is bipolar**, as the original's big knob (Javier: a 0..127
   knob locked at both ends confused): centre random, right locked, left the pattern inverted each
   pass; NME draws it from the centre (`value-64`, default 64). `tests/check_turing.py` updated

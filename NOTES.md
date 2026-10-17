@@ -175,6 +175,10 @@ Read from the CtrlSeq (type 91), whose step LED is a `led-array` 0–16 in NME:
   = the two records' X bases (word at +8 of each) + the word index (2 for the CtrlSeq). It
   returns the value to send; the CtrlSeq keeps a pointer there and turns it into the step 0–15,
   or 16 for none.
+- **A meter carries 14 bits** (read 2026-10-17 in the poll and the sender, `$10AF2E`): the value
+  routine's word is kept per entry and sent as two 7-bit values, the low 7 bits first (NME's
+  slot B) and the next 7 (slot A); the meter list sends 5 entries a message, the list holds 40.
+  So one module can show a byte (8 LEDs) with no second entry.
 - So **a module of ours can light**: its code keeps the value in an X word, its `+$0C` registers
   a value routine with `$1169BA`, and the routine reads that word with `$10C32E`.
 
