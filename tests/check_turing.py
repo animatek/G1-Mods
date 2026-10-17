@@ -6,12 +6,12 @@
 tests/turing.pch: ClkGen (48 Hz) into Clk; CV on output 1, Gate on 2, the clock on 3. Each case
 plays 6 s with other parameters (Prob, Length, Lock), and reads the register's low byte from CV
 at the end of each clock period:
-- Prob 0, Length 8: CV only changes on a rising clock edge, and the bytes repeat every 8 clocks.
-- Prob 0, Length 16: every 16 clocks, and not every 8.
-- Prob 127, Length 8: nearly every bit flips, so a byte comes back inverted 8 clocks later
+- Prob 127 (right, locked), Length 8: CV only changes on a rising clock edge, and the bytes repeat every 8 clocks.
+- Prob 127, Length 16: every 16 clocks, and not every 8.
+- Prob 0 (left), Length 8: nearly every bit flips, so a byte comes back inverted 8 clocks later
   (255 - it) and repeats every 16.
-- Prob 127 with Lock on: every 8 again, as Prob 0.
-- Prob 64: no repeat, and many different bytes.
+- Prob 0 with Lock on: every 8 again, as Prob 127.
+- Prob 64 (centre): no repeat, and many different bytes.
 - Gate: high only while the clock is, and then just when the byte's bit 0 is 1.
 Exit code 0 when all hold.
 """
@@ -73,14 +73,14 @@ def main():
 
     with tempfile.TemporaryDirectory() as tmp:
         def play(prob, length, lock):
-            cv, gate, clk, _ = record(rom, xml, base.replace("3 124 3 0 7 0 ", f"3 124 3 {prob} {length} {lock} "), tmp)
+            cv, gate, clk, _ = record(rom, xml, base.replace("3 124 3 127 7 0 ", f"3 124 3 {prob} {length} {lock} "), tmp)
             e = edges(clk)
             return cv, gate, clk, e, bytes_per_clock(cv, e)
 
-        cv, gate, clk, e, b = play(0, 7, 0)
+        cv, gate, clk, e, b = play(127, 7, 0)
         es = set(e)
         off = [i for i in range(SETTLE, len(cv)) if cv[i] != cv[i - 1] and not any(j in es for j in range(i - 8, i + 1))]
-        report("Prob 0, Length 8", repeats(b, 8) and len(set(b)) > 1 and not off,
+        report("Prob 127, Length 8", repeats(b, 8) and len(set(b)) > 1 and not off,
                f"{len(b)} clocks, bytes {b[:9]}..., {len(off)} changes off a clock edge")
         top = max(clk) / 2
         bad = [i for i in range(SETTLE, len(gate) - 8)
@@ -89,15 +89,15 @@ def main():
         gates = sum(1 for i in range(SETTLE, len(gate)) if gate[i] > HIGH / 2 >= gate[i - 1])
         report("Gate", not bad and gates > 0, f"{gates} gates, {len(bad)} samples where Gate is not bit 0 and Clk")
 
-        *_, b = play(0, 15, 0)
-        report("Prob 0, Length 16", repeats(b, 16) and not repeats(b, 8), f"bytes {b[:17]}...")
+        *_, b = play(127, 15, 0)
+        report("Prob 127, Length 16", repeats(b, 16) and not repeats(b, 8), f"bytes {b[:17]}...")
 
-        *_, b = play(127, 7, 0)
+        *_, b = play(0, 7, 0)
         inv = sum(1 for i in range(len(b) - 8) if b[i + 8] == 255 - b[i])
-        report("Prob 127, Length 8", inv > 0.8 * (len(b) - 8),
+        report("Prob 0, Length 8", inv > 0.8 * (len(b) - 8),
                f"{inv} of {len(b) - 8} bytes inverted 8 clocks later")
 
-        *_, b = play(127, 7, 1)
+        *_, b = play(0, 7, 1)
         report("Lock", repeats(b, 8), f"bytes {b[:9]}...")
 
         *_, b = play(64, 7, 0)

@@ -2,15 +2,16 @@
 ; random chance rewrites.
 ;   input 0 Clk        outputs 0 CV, 1 Gate        parameters 0 Prob, 1 Length (1-16), 2 Lock
 ; Control rate. The register has 16 bits. On each rising edge of Clk it moves one bit up; the bit
-; that leaves the loop (bit Length-1) comes back in as bit 0, flipped with a chance of Prob/128
-; unless Lock is on. Prob 0 (or Lock) repeats the pattern every Length clocks; Prob near the top
-; flips nearly every bit, which repeats it inverted, every 2*Length clocks; in between it drifts.
+; that leaves the loop (bit Length-1) comes back in as bit 0, flipped at random unless Lock is on.
+; Prob is bipolar, as the original's big knob: right (127) or Lock repeats the pattern every
+; Length clocks, the centre (64) flips half the bits, left (0) nearly every bit, which repeats the
+; pattern inverted, every 2*Length clocks. The chance is (127 - Prob)/128.
 ; CV is the register's low 8 bits as a level, 0 to +64 units (0..255 << 13). Gate is bit 0 while
 ; Clk is high, so two ones in a row give two gates.
 ; The chance comes from a 24-bit Galois shift register (as the Noise S&H's) stepped every sample.
 ; X data (10 words): [0] the noise's taps, [1] the noise, [2] Clk's last value, [3] the register,
 ; [4] the leaving bit's mask, 1 << (Length-1) (written by the Length routine), [5] the threshold,
-; Prob << 16 (written by the Prob routine), [6] Lock, [7] $FFFF, [8] $FF, [9] the logic high.
+; (127 - Prob) << 16 (written by the Prob routine), [6] Lock, [7] $FFFF, [8] $FF, [9] the logic high.
 ; r3 stays on the register from the Clk test to the end; the rest is read at offsets from it.
 ; Word 0 runs in the previous module's nop slot (no a or b); no branch lands on the nop slot or
 ; after it.

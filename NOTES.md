@@ -364,7 +364,10 @@ runs every test.
   comes back with `or #<$1,b`, and `eor #<$1,b` flips it; `and` with $FFFF keeps 16 bits. The
   logic immediates (`or`, `eor`, `and #<$1`) work on b1, as `add #<$1` did in the 5-Step Seq.
 - **The coin toss**: the Noise S&H's Galois register, stepped every sample, shifted once more so
-  the draw is 0..$7FFFFF, against Prob << 16; Prob 0 never flips, 127 flips 127 times in 128.
+  the draw is 0..$7FFFFF, against (127 - Prob) << 16: Prob is bipolar, as the original's big
+  knob (Javier found a one-way 0..127 knob with both ends locked confusing): 127 (right) never
+  flips, 64 (centre) flips half, 0 (left) 127 times in 128, the pattern inverted each pass.
+  NME draws it from the centre (`value-64`, default 64).
   Lock is its own X word, tested on the edge (a second parameter on the same word is not
   possible: each routine writes a whole word).
 - **CV** is the low byte `asl #$d,a,a`: 0..$1FE000, 0 to +64 units, as a G1 logic high. **Gate**
@@ -373,7 +376,7 @@ runs every test.
   (`x:(r3+$n)`, one word each), `lua (r3+$7),r3` at the end: no pointer walking to keep equal
   on both paths.
 - Length is 1–16 (`value+1`, a formatter NME has) rather than the 2–16 planned: no NME change.
-- `tests/check_turing.py`: Prob 0 repeats every Length clocks (8 and 16), the top comes back
+- `tests/check_turing.py`: Prob 127 repeats every Length clocks (8 and 16), Prob 0 comes back
   inverted after Length, Lock holds it, 64 drifts, CV changes only on clock edges, Gate is bit 0
   and Clk. `check_insert.py` plays it too.
 - **Not yet**: the 8 LEDs (the meter list's value is drawn by NME as one lit step; a byte would

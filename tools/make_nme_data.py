@@ -223,7 +223,7 @@ FULL_ENTRIES = {
     <connector component-id="c2" index="0" name="cv" type="output" signal="control" />
     <connector component-id="c3" index="1" name="gate" type="output" signal="logic" />
     <!-- parameter(s) -->
-    <parameter component-id="p1" index="0" name="prob" class="parameter" defaultValue="16" extension="m1" />
+    <parameter component-id="p1" index="0" name="prob" class="parameter" defaultValue="64" formatter="value-64" extension="m1" />
     <parameter component-id="p2" index="1" name="length" class="parameter" maxValue="15" defaultValue="7" formatter="value+1" extension="m2" />
     <parameter component-id="p3" index="2" name="lock" class="parameter" maxValue="1" formatter="fmtOffOn" extension="m3" />
     <parameter component-id="m1" index="0" name="morph:prob" class="morph" role="morph"  minValue="-127" maxValue="127" />

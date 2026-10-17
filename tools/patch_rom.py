@@ -439,9 +439,11 @@ def turing(b, new_type=124):
                  # the noise's taps and seed (as the Noise S&H's), Clk's last, the register, the
                  # mask (Length 16), the threshold, Lock, $FFFF, $FF, high
                  (0xE10000, 0x5A3C96, 0, 0x9D2B, 0x8000, 0, 0, 0xFFFF, 0xFF, 0x200000),
-                 # Prob: value v = 0..127, the threshold v << 16 (a chance of v/128)
-                 #   move.l d2,d0 / swap d0 / clr.w d0
-                 [Param("Prob", 127, 5, "2002 4840 4240"),
+                 # Prob, bipolar as the original's big knob: value v = 0..127, the threshold
+                 # (127 - v) << 16, a chance of (127 - v)/128: 127 (right) locked, 64 (centre)
+                 # random, 0 (left) nearly every bit flipped, the pattern inverted each pass
+                 #   moveq #127,d0 / sub.l d2,d0 / swap d0 / clr.w d0
+                 [Param("Prob", 127, 5, "707f 9082 4840 4240"),
                   # Length: value v = 0..15 for 1..16, the mask 1 << v
                   #   moveq #1,d0 / move.l d2,d1 / asl.l d1,d0
                   Param("Length", 15, 4, "7001 2202 e3a0"),

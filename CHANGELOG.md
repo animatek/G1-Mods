@@ -3,6 +3,13 @@
 Everything that changes in G1-Mods, newest first. Every change that goes into the repo gets its
 line here, in the same commit (see `CLAUDE.md`).
 
+## 2026-10-17
+
+- Claude: **the Turing Machine's Prob is bipolar**, as the original's big knob (Javier: a 0..127
+  knob locked at both ends confused): centre random, right locked, left the pattern inverted each
+  pass; NME draws it from the centre (`value-64`, default 64). `tests/check_turing.py` updated
+  and passing. `PORTING.md`: a bigger Turing Machine with the expander's outputs, as an idea.
+
 ## 2026-10-16
 
 - Claude: **type 124, Turing Machine** (`dsp/turing.asm`), after Music Thing Modular's: Clk in,
