@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: **the Mixer Inv (119) and the Noise S&H (122) are out**, to free their types (Javier:
+  the first was a test, the second is easy to patch with G1 modules). Their code, notes and tests
+  stay in git history; `tests/mixer-demo.pch`, `noise-sh.pch` and `check_noise_sh.py` go.
+  Eleven free types now. `PORTING.md` has the plan agreed with Javier: a type per family (Random,
+  Switches, Conversion, Level, Envelopes, G2 mixers, one big oscillator and one effect, three kept
+  back) and virtual modules in NME (one type, several panels), to do.
+
 - Claude: **type 101, Mux8-1** (`dsp/mux8.asm`): the G2's Mux8-1 and Sw8-1 in one type, In 1–8,
   Ctrl, Out, a Sel knob that Ctrl adds to (8 units a step) and eight LEDs. **Found: the G1 has
   128 types and only nine are left free** (6, 41, 42, 55, 56, 60, 93, 109, 116); 127 is Clavia's

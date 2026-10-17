@@ -58,6 +58,9 @@ Read from a RAM dump after boot (`G1_RAMDUMP=file g1boot ROM 60`, in `../G1-Emu`
 
 ## The first new type: 119 (2026-10-16)
 
+*Taken out on 2026-10-17 to free type 119 (only 128 types: see "Only 128 types"); its code is
+in git history.*
+
 **It works.** `tools/patch_rom.py type119-mixinv` makes a ROM where type 119 is the Mixer (3)
 with input 1 inverted (`mpy -x1,x0,a` instead of `mpy x1,x0,a`), and
 `tools/make_nme_data.py` (then `make_modules_xml.py`) a `modules.xml` with a "Mixer Inv" of type 119 for NME and the test
@@ -268,6 +271,9 @@ opcodes disassembled by G1-Emu's `dspdis` (built once into `out/`).
 
 ## Type 122: Noise S&H (2026-10-16)
 
+*Taken out on 2026-10-17 to free type 122: a G1 Noise into a Sample&Hold does it. Its code and
+test are in git history; its noise lives on in the Turing Machine.*
+
 Our own module (Javier's idea): on Trig's rising edge it holds a noise value; Out gives it and
 Inv its mirror. Parameters: **Range** (1–5 octaves) and **Uni/Bi**. `dsp/noise_sh.asm`, 26 words,
 control rate: a 24-bit Galois shift register (taps `$E10000`, x^24+x^23+x^22+x^17+1) steps once a
@@ -433,6 +439,8 @@ runs every test.
   default routines `$1198FE`...) are 0, 6, 41, 42, 55, 56, 60, 93, 101, 109, 116 and 119-126, the
   same ones modules.xml has no module for. `FREE_TYPES` in `patch_rom.py` lists them (without 0)
   and `add_type` refuses any other: types 127 and 128 were nearly used.
+- The same day, the Mixer Inv (119) and the Noise S&H (122) were taken out to free their types:
+  eleven free now (`PORTING.md` has the plan to spend them, a type per family).
 - NME's `test_mods_categories` took every mods type as 119 or above; it knows the free types now.
 
 ## Type 101: Mux8-1, with the Sw8-1 (2026-10-17)
@@ -453,15 +461,9 @@ runs every test.
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash
 (`out/flash-all.bin`) and with `G1_OS=` so the settings' `os =` does not replace the modified
 OS; close the usual G1-Emu first (same MIDI ports). `./run-nme.sh` starts NME from its `g1-mods`
-branch, whose palette has Mixer Inv and FlipFlop. A stock G1 (or G1-Emu with Clavia's OS)
+branch, whose palette has the new types. A stock G1 (or G1-Emu with Clavia's OS)
 refuses a patch with them. In the maintainer's desktop both have launchers ("G1-Emu (G1-Mods)",
 "Animatek NME (G1-Mods)", in `~/.local/share/applications`, outside the repo).
-
-`tests/mixer-demo.pch` is the one to hear: one OscA into inputs 1 and 2 of a Mixer (3) (output 1)
-and of a Mixer Inv (output 2), levels 100. **The Mixer (3) doubles it and the Mixer Inv cancels
-it**: measured −63.5 dBFS on output 1 and silence on output 2; with the Mixer Inv's input 1
-unplugged, output 2 gives −69.5 dBFS, 6 dB under the sum, so the silence is the cancellation.
-It also shows **the two mixers working in one patch** despite the RAM variables they share.
 
 ## Next
 

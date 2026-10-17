@@ -37,7 +37,9 @@ def ram_to_rom(addr):
 # The types the OS leaves free: its table has 128 (0-127, and a patch keeps a type in 7 bits, so
 # there can be no more), and these are the ones without a module (unregistered entries in a RAM
 # dump after boot, none in NME's modules.xml). 0 is left out, as "no module" may be read into it.
-# 119-126 are taken by G1-Mods already; what is left has to be spent with care (NOTES.md).
+# G1-Mods uses 101, 120, 121 and 123-126; what is left has to be spent with care (PORTING.md).
+# 119 (the Mixer Inv, a first test) and 122 (the Noise S&H, easy to patch from G1 modules) were
+# taken out on 2026-10-17 to free them.
 FREE_TYPES = (6, 41, 42, 55, 56, 60, 93, 101, 109, 116, 119, 120, 121, 122, 123, 124, 125, 126)
 
 
@@ -170,11 +172,6 @@ def mixer3_variant(b, new_type, code=None, code_patch=None, x_words=None, y_word
     io = io or (3, 3, 1)
     b.specs[new_type] = ([m for _, m in params] if params else [127] * io[0], io[1], io[2])
     b.add_type(new_type, 19, fields)
-
-
-def mixer_inv(b, new_type=119):
-    """The Mixer (3) with input 1 inverted: mpy -x1,x0,a instead of mpy x1,x0,a."""
-    mixer3_variant(b, new_type, code_patch={2: (0x44DBA0, 0x44DBA4)})
 
 
 # Mix1-1A, after the G2's Mixer 1-1 A: out = chain + (on ? in × level : 0). Parameter 0, the
@@ -473,21 +470,6 @@ def flipflop(b, new_type=120):
                  [Param("Type", 1, 1)], led=4)
 
 
-def noise_sh(b, new_type=122):
-    """Noise S&H: Trig in; Out and Inv out; Range (1-5 octaves) and Uni/Bi."""
-    control_type(b, new_type, "noise_sh.asm",
-                 # taps (x^24+x^23+x^22+x^17+1), seed, Trig's last, held noise, scale A, Uni
-                 (0xE10000, 0x5A3C96, 0, 0, 0x30000, 0),
-                 [# value v = 0..4 for 1..5 octaves: A = 6(v+1) semitones = (v+1)*3 << 16 (a
-                  # semitone is $8000: 12 control units an octave, 64 units the full $200000)
-                  #   move.l d2,d0 / addq.l #1,d0 / move.l d0,d1 / add.l d0,d0 / add.l d1,d0 /
-                  #   swap d0 / clr.w d0
-                  Param("Range", 4, 4, "2002 5280 2200 d080 d081 4840 4240"),
-                  # value 1 = Uni: U = 1.0, else 0
-                  #   moveq #0,d0 / tst.l d2 / beq.s +6 / move.l #$7FFFFF,d0
-                  Param("Uni", 1, 5, "7000 4a82 6706 203c 007fffff")])
-
-
 def seq5(b, new_type=123):
     """5-Step Seq: Clk and Rst in, Out, five bipolar knobs (-64..+63 units), the step's LEDs."""
     # value v = 0..127: (v - 64) control units, a unit being $8000
@@ -589,14 +571,10 @@ EXPERIMENTS = {
         "Mixer (3): the rounding multiply-accumulate becomes clr a, so the module is mute",
         None, [(0x1493CE + 5 * 4, 0x2000A3, 0x200013)],
     ),
-    "type119-mixinv": (
-        "a new type 119: the Mixer (3) with input 1 inverted",
-        [mixer_inv], [],
-    ),
     "all": (
-        "every new type: 119 (Mixer Inv), 120 (FlipFlop), 121 (Mix1-1A), 122 (Noise S&H), "
-        "123 (5-Step Seq), 124 (Turing Machine), 125 (Scale Quantizer), 126 (8Counter), 101 (Mux8-1)",
-        [mixer_inv, flipflop, mix1_1a, noise_sh, seq5, turing, quant, counter8, mux8], [],
+        "every new type: 120 (FlipFlop), 121 (Mix1-1A), 123 (5-Step Seq), 124 (Turing Machine), "
+        "125 (Scale Quantizer), 126 (8Counter), 101 (Mux8-1)",
+        [flipflop, mix1_1a, seq5, turing, quant, counter8, mux8], [],
     ),
 }
 

@@ -22,19 +22,40 @@ G1 already has when they do more. Updated as modules get ported. How a module is
 **DSP words** is the size of the module's code in the G2 demo (its parts added, approximate):
 a guide to the effort, not code to copy. Our code is written new.
 
-## Only ten types left
+## Only eleven types left
 
 **The G1 has room for 128 module types (0–127), and that cannot grow**: the OS's table has 128
-entries and a patch keeps a module's type in 7 bits. Clavia's take 110 of them; G1-Mods has taken
-119–126 and 101. **Free now: 6, 41, 42, 55, 56, 60, 93, 109, 116** (0 is left out: it may read as
-"no module"). Found 2026-10-17, when 127 and 128 were about to be used (127 is the PolyAreaIn).
-So far fewer G2 modules can come than this list has, and they have to be chosen:
+entries and a patch keeps a module's type in 7 bits. Clavia's take 110 of them; G1-Mods uses 101,
+120, 121 and 123–126. **Free now: 6, 41, 42, 55, 56, 60, 93, 109, 116, 119, 122** (0 is left out:
+it may read as "no module"). Found 2026-10-17, when 127 and 128 were about to be used (127 is the
+PolyAreaIn); the same day the Mixer Inv (119, a first test) and the Noise S&H (122, easy to patch
+from G1 modules) were taken out to free theirs (in git history). So far fewer G2 modules can come
+than this list has, and they have to be chosen:
 
 - **Variants share a type**: a mode button or a knob instead of a module each (the Mux8-1 is the
-  G2's Mux8-1 and Sw8-1 at once; Sw1-2/2-1, the M versions or the Lin/dB/Exp mixers would go the
-  same way).
+  G2's Mux8-1 and Sw8-1 at once). Small modules only: every instance loads the DSP code of all
+  its modes.
+- **Virtual modules in NME** (to do): NME shows each variant as a module of its own, with its
+  panel and name, and writes them all as one type with a hidden parameter that fixes the mode.
+  One type then gives a family of 4–6 small modules.
 - **What a G1 module already does well is not ported again.**
 - `patch_rom.py` refuses a type not in `FREE_TYPES`.
+- Not doing: widening the type to more bits (the OS's loader, connections, patch and SysEx, and
+  NME): a great deal of reverse engineering and patches nothing else could read. At most, a day
+  to see whether the OS keeps the type in a whole byte inside.
+
+**The plan agreed with Javier (2026-10-17): a type per family, not per module.**
+
+| Type | Family |
+| --- | --- |
+| 1 | Random: Random A/B, Rnd Clock, Rnd Trig (Seed, Poly, Edge) |
+| 2 | Switches: Sw1-2, Sw2-1, Sw1-8, Mux1-8, the momentary ones |
+| 3 | Conversion and logic: DAConv, ADConv, BinCounter |
+| 4 | Level: ModAmt, MinMax, T&H, WindSw |
+| 5 | Envelopes: ADDSR, H, D, Mod AHD |
+| 6 | The G2's mixers with Lin/dB/Exp (the Mix1-1A goes in here) |
+| 7–8 | One big oscillator and one big effect, Javier's pick (FreqShift, Flanger, Osc Dual...) |
+| 9–11 | Kept back for what comes up |
 
 ## Already on the G1-Mods OS
 
@@ -42,13 +63,11 @@ So far fewer G2 modules can come than this list has, and they have to be chosen:
 | --- | --- | --- | --- |
 | Mixer 1-1 A (Mix1-1A) | 121 | 🟡 | Level, Ch 1 button and chain work (checked). Missing: the Lin / dB / Exp curves (needs a 68k routine of our own; see `NOTES.md`). |
 | FlipFlop | 120 | ✅ | D-type and RS-type, Clk, In, Rst, Q and NotQ (`dsp/flipflop.asm`; `tests/check_flipflop.py`). |
-| Noise S&H (our own) | 122 | ✅ | Range 1–5 octaves, Bi/Uni, Out and Inv (`dsp/noise_sh.asm`, `tests/check_noise_sh.py`). Every voice starts from the same seed, so in a poly patch they draw the same sequence. |
 | 5-Step Seq (our own) | 123 | ✅ | Clk, Rst, Out, five bipolar knobs and a row of five step LEDs (`dsp/seq5.asm`, `tests/check_seq5.py`). |
 | Turing Machine (our own) | 124 | ✅ | Clk, CV, 8 gates (bits 0–7), Prob (bipolar, as the original's big knob), Length 1–16, Lock, Scale and 8 LEDs (`dsp/turing.asm`, `tests/check_turing.py`). Missing: a Rst, and the expander's mixes (1+2, 2+4, 4+7, 1+2+4+7). |
 | Scale Quantizer (our own) | 125 | ✅ | In, Out, Root, Scale (16 by name) and Octave, after JW-Modules' Quantizer (`dsp/quant.asm`, `tests/check_quant.py`). Missing: CV inputs for Root and Scale. |
 | 8Counter | 126 | ✅ | Clk, Rst (as the G1's sequencers'), eight outputs, one high a step, and eight step LEDs (`dsp/counter8.asm`, `tests/check_counter8.py`). |
 | Mux8-1 (with the Sw8-1) | 101 | ✅ | In 1–8, Ctrl, Out, a Sel knob that Ctrl adds to (8 units a step), eight LEDs (`dsp/mux8.asm`, `tests/check_mux8.py`). Control rate. |
-| Mixer Inv (test only) | 119 | ✅ | Not a G2 module: the first test, the Mixer (3) with input 1 inverted. |
 
 ## Modules only the G2 has
 
@@ -194,7 +213,7 @@ Ideas built from what is known now. Same scale of feasibility.
 
 | Module | What it does | Feasible | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Noise S&H | Sample and hold with its own noise: on Trig's rising edge it holds a random value; outputs **Out** and **Inv** (the same value negated, for mirrored melodies). | Easy | ✅ (type 122) | A shift-register noise in a few DSP words, its state per voice in X, so each voice of a poly patch draws its own. One logic input, two outputs. |
+| Noise S&H | Sample and hold with its own noise: on Trig's rising edge it holds a random value; outputs **Out** and **Inv** (the same value negated, for mirrored melodies). | Easy | ✖ (was type 122, taken out 2026-10-17: easy to patch from G1 modules) | A shift-register noise in a few DSP words, its state per voice in X, so each voice of a poly patch draws its own. One logic input, two outputs. |
 | 5-step sequencer | Clk, Rst, one control output and **five bipolar knobs** (−64…+63), after Buchla's 5-stage sequencers (with knobs instead of sliders). | Easy–Medium | ✅ (type 123) | Five parameters written to X by the type's own `+$04` (the same routine as the FlipFlop's Type, per parameter). Step LEDs: understood now, from the CtrlSeq (`NOTES.md`, "How a module's lights reach the editor"): a value routine registered with `$1169BA` that reads the step from X. Worth checking which extras Buchla's had (a pulse out per step, an input that picks the step), cheap to add. |
 | Turing Machine | After Music Thing Modular's: a looping shift register whose bits may flip at random. Clk (and Rst); outputs **CV** (the low 8 bits as a level) and **Gate** (bit 0); a **probability** knob (locked at one end, random in the middle, locked and inverted, twice as long, at the other), a **Lock** button as a shortcut, and a **length** (2–16 steps); **8 LEDs**, one per bit. | Easy–Medium | 🟡 (type 124) | Cheap for the DSP: the register fits in one word (24 bits) and a clock costs ~20 instructions; the coin toss reuses the Noise S&H's noise. Its 8 LEDs are the hard part: the G1's OS keeps **one plain LED per module** (`NOTES.md`, "Plain LEDs"). Options: the meter list (a `led-array` 0–255 showing the register, drawn by NME as 8 LEDs), which also gives the FlipFlop a NotQ LED. Idea from Javier, 2026-10-16. |
 | Scale Quantizer | After JW-Modules' Quantizer (Javier, 2026-10-17): a pitch to the nearest note of a scale picked by name on a root, easier than the G1's KeyQuant and its twelve buttons. | Easy | ✅ (type 125) | A 12-word table per scale, written by the Scale routine; the mod 12 by a multiply. |

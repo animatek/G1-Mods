@@ -15,9 +15,7 @@ import sys
 
 # new type: (donor type, name, full name, [(old, new) in modules.xml], [(old, new) in the theme])
 NEW_TYPES = {
-    119: (19, "Mixer Inv", "3 Inputs Mixer, input 1 inverted (G1-Mods test)", [], []),
     120: (89, None, None, None, None),   # written whole: FULL_ENTRIES below
-    122: (53, None, None, None, None),   # written whole: FULL_ENTRIES below
     123: (91, None, None, None, None),   # written whole: FULL_ENTRIES below
     124: (123, None, None, None, None),  # written whole: FULL_ENTRIES below
     125: (124, None, None, None, None),  # written whole: FULL_ENTRIES below
@@ -100,55 +98,6 @@ FULL_ENTRIES = {
 \t\t<label x="216" y="17">nQ</label>
 \t\t<connector x="236" y="16" size="13" class="cLOGIC">
 \t\t\t<connector component-id="c5" alt="NotQ" />
-\t\t</connector>
-\t</module>"""),
-    122: ("""
-  <module component-id="m122" index="122" name="NoiseS&amp;H" fullname="Noise Sample and Hold, with an inverted out (G1-Mods)" category="Audio (mods)">
-    <image type="screenshot" src="img/modules/module-53.png" width="256" height="30" />
-    <image type="icon16x16" src="img/icons/16x16/module-id-53.png" width="16" height="16" />
-    <image type="icon32x32" src="img/icons/32x32/module-id-53.png" width="32" height="32" />
-    <connector component-id="c1" index="0" name="trig" type="input" signal="logic" />
-    <connector component-id="c2" index="0" name="out" type="output" signal="control" />
-    <connector component-id="c3" index="1" name="inv" type="output" signal="control" />
-    <!-- parameter(s) -->
-    <parameter component-id="p1" index="0" name="range" class="parameter" maxValue="4" formatter="fmtOctaves1to5" extension="m1" />
-    <parameter component-id="p2" index="1" name="unipolar" class="parameter" maxValue="1" formatter="fmtOffOn" extension="m2" />
-    <parameter component-id="m1" index="0" name="morph:range" class="morph" role="morph"  minValue="-4" maxValue="4" />
-    <parameter component-id="m2" index="1" name="morph:unipolar" class="morph" role="morph"  minValue="-1" maxValue="1" />
-    <!-- custom attributes -->
-    <attribute name="cycles" type="double" value="0.35" />
-    <attribute name="x-mem" type="double" value="0.2" />
-    <attribute name="y-mem" type="double" value="0.0" />
-    <attribute name="prog-mem" type="double" value="0.75" />
-    <attribute name="dyn-mem" type="double" value="0.25" />
-    <attribute name="zero-page" type="double" value="0.875" />
-    <attribute name="height" type="integer" value="2" />
-    <attribute name="background" value="#eda0a4" />
-  </module>""", """
-\t<module component-id="m122" width="255" height="30">
-\t\t<name>Noise S&amp;H</name>
-\t\t<textDisplay x="50" y="8" width="34" height="16">
-\t\t\t<parameter component-id="p1" alt="range" />
-\t\t</textDisplay>
-\t\t<knob x="87" y="4" size="21">
-\t\t\t<parameter component-id="p1" alt="range" />
-\t\t</knob>
-\t\t<button x="112" y="8" width="24" height="16" cyclic="true" landscape="false">
-\t\t\t<parameter component-id="p2" alt="unipolar" />
-\t\t\t<btn index="0">Bi</btn>
-\t\t\t<btn index="1">Uni</btn>
-\t\t</button>
-\t\t<label x="140" y="9">Trig</label>
-\t\t<connector x="160" y="8" size="13" class="cLOGIC">
-\t\t\t<connector component-id="c1" alt="trig" />
-\t\t</connector>
-\t\t<label x="178" y="9">Inv</label>
-\t\t<connector x="196" y="8" size="13" class="cCONTROL">
-\t\t\t<connector component-id="c3" alt="inv" />
-\t\t</connector>
-\t\t<label x="214" y="9">Out</label>
-\t\t<connector x="236" y="8" size="13" class="cCONTROL">
-\t\t\t<connector component-id="c2" alt="out" />
 \t\t</connector>
 \t</module>"""),
     123: ("""
