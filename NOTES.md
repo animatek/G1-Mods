@@ -550,6 +550,31 @@ runs every test.
   A string's buffer at the full rate reaches down to 96000 / words Hz: 512 words 187 Hz, 1,024
   (about 70 % of X or of Y) 94 Hz; at half or a quarter rate it reaches 47 or 23 Hz.
 
+## Type 56: Osc String, the first audio-rate type (2026-10-17)
+
+- **`audio_type`** (as `control_type`, for a type's audio part): the Mixer (3)'s descriptor with
+  our counts (audio cycles `+$02`, X `+$0E`, Y `+$12`, code `+$14`), the connection routine with
+  part 0, `+$24` with the nop slots `$FE`/`$FF`, and the parameters written to the audio X with
+  `write_audio_x_routine` (`$10C4B0` then `$10C248`). Checked first with a VCA (`vca_test`, the
+  `audiotest` experiment): Level 127, 64, 0 gave 1.000, 0.504, 0.
+- **X memory**: a module with 1,400 X words still loads in a patch with an oscillator; 2,048 does
+  not (the patch is refused). The string takes 26 + 1,024.
+- **The line is never initialised by the loader**: it copies the descriptor's X count from the X
+  data, so past our 26 words it copies whatever follows; the code clears one word a sample from
+  the start. No 4 KB of zeros in the package.
+- **The period**: n = Note + Pitch (as an oscillator's: 0 units is note 64), L = L(135) *
+  2^((135 - n) / 12). The octaves split into k and f; 2^f by a cubic (1 + 0.6951786 f +
+  0.2261745 f^2 + 0.0786469 f^3, halved); then `rep y1` / `asl a` k + 1 times (rep never gets 0).
+  L is kept * 4096 and read between two samples linearly. A first version was an octave high:
+  the constant and the cubic were both halved.
+- **The lowpass detunes**: y += k (x - y) delays the loop by about (1 - k) / k samples (measured
+  1.89 against 2.03 at Damp 30, 15 cents flat). Damp's routine (`damp_routine`, with a `divu.l`
+  of our own) writes that * 4096 too, and the code takes it from L: now within a cent at any Damp.
+- **Decay** is the loop's gain once a round trip: 1 - a time factor / 8.
+- `tests/check_string.py`: A1 to A5 from the knob, A3, A4, E5 from the keyboard, Damp 30 and 10,
+  all within 2 cents (they are within 1); Decay 60 against 110.
+- Lowest note 94 Hz (96000 / 1024). Lower: run the line at half or a quarter of the rate.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash
@@ -561,7 +586,8 @@ refuses a patch with them. In the maintainer's desktop both have launchers ("G1-
 
 ## Next
 
-- NME's virtual modules for the switches in the Mux8-1's type, the G2 mixers in the Mix1-1A's, then the big modules (`PORTING.md`).
+- More room for code (or the builder), then the next big modules (`PORTING.md`); NME's virtual
+  modules for the switches and the G2 mixers.
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.

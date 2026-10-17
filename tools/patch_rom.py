@@ -341,6 +341,29 @@ def write_x_routine(x_word, transform=""):
                 "4e75")               # rts
 
 
+def write_audio_x_routine(x_word, transform=""):
+    """A parameter's value routine for $10C49E, for a type's audio part: as write_x_routine, but
+    through the OS's own audio writer: $10C4B0(module, request, word) fills a 12-byte request
+    (the DSP, the address: the voice's audio X base at +2 of its entry + the module's at +6 + the
+    word, and $B5) and $10C248(request, value) writes it (NOTES.md, "Room for code")."""
+    return m68k("48e7 2030",          # movem.l d2/a2-a3,-(sp)
+                "242f 0014",          # move.l (20,sp),d2     the value
+                "246f 0010",          # movea.l (16,sp),a2    the module
+                transform or "2002",  # ... d0 (move.l d2,d0)
+                "2400",               # move.l d0,d2          keep it
+                "4fef fff4",          # lea (-12,sp),sp       the request
+                "264f",               # movea.l sp,a3
+                "3f3c", f"{x_word:04x}",  # move.w #x_word,-(sp)
+                "2f0b 2f0a",          # move.l a3,-(sp) / move.l a2,-(sp)
+                "4eb9 0010c4b0",      # jsr $10C4B0
+                "4fef 000a",          # lea (10,sp),sp
+                "2f02 2f0b",          # move.l d2,-(sp) / move.l a3,-(sp)
+                "4eb9 0010c248",      # jsr $10C248
+                "4fef 0014",          # lea (20,sp),sp        its arguments and the request
+                "4cdf 0c04",          # movem.l (sp)+,d2/a2-a3
+                "4e75")               # rts
+
+
 def param_routines(b, callbacks):
     """A type's +$00 and +$04 for parameters handled by routines of ours: +$00 hands every
     parameter's value over unchanged; +$04 calls $10C49E with the routine of that parameter
@@ -463,6 +486,53 @@ def control_type(b, new_type, asm, x_init, params=(), led=None, steps=None, bits
     fields[0x18] = (len(params) << 24) | (len(inputs) << 16) | (len(outputs) << 8)
     b.specs[new_type] = ([p.maximum for p in params], len(inputs), len(outputs))
     b.add_type(new_type, 69, fields)
+
+
+def audio_type(b, new_type, asm, x_init, params=(), x_words=None):
+    """An audio-rate type, as control_type is a control-rate one: its DSP code runs every sample
+    (the type's audio part; no control part). The descriptor is the Mixer (3)'s (audio only) with
+    our counts; the parameters go to the audio X words (write_audio_x_routine). x_words, when
+    larger than x_init, reserves more X (a buffer the code clears itself): the loader copies that
+    many words from the X data, so past x_init it copies whatever follows, never used."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import dspasm
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "dsp", asm)
+    code, marks, _ = dspasm.assemble(path)
+    inputs = {int(k[2:]): v for k, v in marks.items() if re.fullmatch(r"in\d+", k)}
+    outputs = {int(k[3:]): v for k, v in marks.items() if re.fullmatch(r"out\d+", k)}
+    assert sorted(inputs) == list(range(len(inputs))) and sorted(outputs) == list(range(len(outputs)))
+    assert all(len(v) == 1 for v in outputs.values()), "an output is written at one word"
+    x_words = x_words or len(x_init)
+    for p in params:
+        assert p.x_word < len(x_init) and p.table is None
+    fields = {}
+    if params:
+        fields[0x00], fields[0x04] = param_routines(
+            b, [p.custom(b) if p.custom else b.put(write_audio_x_routine(p.x_word, p.transform))
+                for p in params])
+        fields[0x1C] = b.put(param_table([(p.name, p.maximum) for p in params]))
+    fields[0x0C] = b.put(connection_routine(inputs, [(o, w[0]) for o, w in sorted(outputs.items())],
+                                            part=0))
+    x_at = b.put(words(*x_init))
+    p_at = b.put(words(*code))
+    desc = bytearray(b.rom_bytes(0x149382, 0x30))         # the Mixer (3)'s: audio only
+    known = {0x02, 0x08, 0x0E, 0x12, 0x14, 0x16, 0x24}
+    assert all(desc[o:o + 2] == b"\0\0" for o in range(0, 0x30, 2) if o not in known)
+    branches = len(BRANCH.findall(open(path).read()))
+    desc[0x02:0x04] = (len(code) + 4 * branches).to_bytes(2, "big")   # audio cycles, worst case
+    desc[0x08:0x0A] = len(outputs).to_bytes(2, "big")
+    desc[0x0E:0x10] = x_words.to_bytes(2, "big")                      # audio X words
+    desc[0x12:0x14] = (0).to_bytes(2, "big")                          # audio Y words
+    desc[0x14:0x18] = len(code).to_bytes(4, "big")                    # audio P words
+    desc[0x24:0x26] = record_words(len(params)).to_bytes(2, "big")
+    fields[0x28] = b.put(desc)
+    # audio X, Y, P; the control part's (empty) the same; the nop slots: audio 2 words before the
+    # end, control none (as the Mixer (3)'s)
+    fields[0x24] = b.put(words(x_at, x_at, p_at, x_at, x_at, p_at) + bytes.fromhex("feff"))
+    fields[0x08] = 0x136EFE
+    fields[0x18] = (len(params) << 24) | (len(inputs) << 16) | (len(outputs) << 8)
+    b.specs[new_type] = ([p.maximum for p in params], len(inputs), len(outputs))
+    b.add_type(new_type, 19, fields)
 
 
 def flipflop(b, new_type=120):
@@ -670,16 +740,84 @@ def quant(b, new_type=125):
                   Param("Octave", 8, 2, "2002 5980 c1fc 000c")])
 
 
+def vca_test(b, new_type=56):
+    """An audio-rate test type: Out = In * Level (the fraction (v << 16) + (v << 9))."""
+    audio_type(b, new_type, "vca_test.asm", (0x7FFE00,),
+               [Param("Level", 127, 0, "2002 4840 4240 2202 e181 d281 d081")])
+
+
+def audio_write(x_word):
+    """68k that writes d0 to the module's audio X word x_word (a2 the module), through the OS's
+    $10C4B0 and $10C248 (write_audio_x_routine); d2 and d0 are lost, d3 and a2 kept."""
+    return ("2400 4fef fff4 264f 3f3c" f"{x_word:04x}" " 2f0b 2f0a 4eb9 0010c4b0 4fef 000a"
+            " 2f02 2f0b 4eb9 0010c248 4fef 0014")
+
+
+def damp_routine(x_k, x_comp):
+    """The Osc String's Damp routine: the lowpass's factor k = $100000 + v * $E000 to x_k, and
+    the delay the lowpass adds at low notes, (1 - k) / k samples, times 4096, to x_comp, which the
+    code takes from the period so Damp does not detune the string."""
+    return m68k("48e7 3030",          # movem.l d2-d3/a2-a3,-(sp)
+                "242f 0018",          # move.l (24,sp),d2     the value
+                "246f 0014",          # movea.l (20,sp),a2    the module
+                "2002 c0fc e000 0680 00100000",   # d0 = $100000 + v * $E000
+                "2600",               # move.l d0,d3          k
+                audio_write(x_k),
+                "203c 00800000 9083", # move.l #$800000,d0 / sub.l d3,d0     1 - k
+                "e188",               # lsl.l #8,d0
+                "2203 e889",          # move.l d3,d1 / lsr.l #4,d1
+                "4c41 0000",          # divu.l d1,d0          (1 - k) / k * 4096
+                audio_write(x_comp),
+                "4cdf 0c0c",          # movem.l (sp)+,d2-d3/a2-a3
+                "4e75")
+
+
+STRING_N = 1024          # the Osc String's line: 96000 / 1024 = 94 Hz its lowest note
+
+
+def string(b, new_type=56):
+    """Osc String: a plucked string (Karplus-Strong). Trig, Pitch and Exc in, Out; Note, Decay,
+    Damp. Its line is STRING_N words of X, which its code clears."""
+    n = STRING_N
+    fr = lambda v: round(v * 2 ** 23)
+    l135 = 96000 / (440 * 2 ** ((135 - 69) / 12))
+    # 2^f ~ 1 + 0.6951786 f + 0.2261745 f^2 + 0.0786469 f^3 on 0..1, halved
+    c0, c1, c2, c3 = 0.5, 0.6951786 / 2, 0.2261745 / 2, 0.0786469 / 2
+    # Decay: the loss is a time knob's factor (the Random's Edge) / 8, the gain 1 less it:
+    # 0.875 for 0, 1 - 2^-19 for 127
+    decay = ("2202 0281 00000007 7013 e1a9 203c 00800000 9081 2202 e689 e2a8 5380"
+             " e688 223c 007fffff 9280 2001")    # lsr.l #3,d0 / move.l #$7FFFFF,d1 / sub.l d0,d1 / move.l d1,d0
+    audio_type(b, new_type, "string.asm",
+               (64 << 15, 0x7FF000, 0x600000, 0, 0, 0, 0, 0x5A3C96, 0xE10000, round(l135 * 4096),
+                135 << 15, 0x0AAAAB, fr(c3), fr(c2), fr(c1), fr(c0), (n - 2) * 4096, n, 0x7FFF,
+                0xFFF, 0x200000, 0, 1, 100, 0, 26 + n),
+               [Param("Note", 127, 0, "2002 720f e3a0"),   # v << 15
+                Param("Decay", 127, 1, decay),
+                # Damp: $100000 + v * $E000: dark at 0, all through at 127
+                #   move.l d2,d0 / mulu.w #$E000,d0 / addi.l #$100000,d0
+                Param("Damp", 127, 2, routine=lambda b: b.put(damp_routine(2, 24)))],
+               x_words=26 + n)
+
+
 # name: (what it shows, the new types, or the DSP words to change in place)
 EXPERIMENTS = {
     "mixer3-silent": (
         "Mixer (3): the rounding multiply-accumulate becomes clr a, so the module is mute",
         None, [(0x1493CE + 5 * 4, 0x2000A3, 0x200013)],
     ),
+    "stringtest": (
+        "type 56 alone, the Osc String (as it was made, before it was known to fit with the rest)",
+        [string], [],
+    ),
+    "audiotest": (
+        "an audio-rate test type 56, a VCA: Out = In * Level",
+        [vca_test], [],
+    ),
     "all": (
         "every new type: 120 (FlipFlop), 121 (Mix1-1A), 123 (5-Step Seq), 124 (Turing Machine), "
-        "125 (Scale Quantizer), 126 (8Counter), 101 (Mux8-1), 6 (Random), 41 (Bits), 42 (Level), 55 (Envelope)",
-        [flipflop, mix1_1a, seq5, turing, quant, counter8, mux8, random, bits, level, envelope], [],
+        "125 (Scale Quantizer), 126 (8Counter), 101 (Mux8-1), 6 (Random), 41 (Bits), 42 (Level), 55 (Envelope), 56 (Osc String)",
+        [flipflop, mix1_1a, seq5, turing, quant, counter8, mux8, random, bits, level, envelope,
+         string], [],
     ),
 }
 

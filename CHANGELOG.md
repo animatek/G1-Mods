@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-17
 
+- Claude: **type 56, Osc String** (`dsp/string.asm`), a plucked string (Karplus-Strong), the
+  first audio-rate type: `audio_type` and `write_audio_x_routine` (checked first on a VCA, the
+  `audiotest` experiment), a 1,024-word line the code clears itself, the period from Note and
+  Pitch by a cubic and shifts, Damp's delay taken from it (`damp_routine`). NME `g1-mods`
+  `93d31ca`. New `tests/check_string.py`: in tune within a cent from A1 to A5, from the keyboard,
+  at any Damp; all tests pass. Under 900 bytes of room left; six free types.
+
 - Claude: `PORTING.md`, the builder picks among the new modules only (Javier); swapping all the
   G1's modules for the G2's noted as not recommended, and why.
 

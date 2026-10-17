@@ -25,6 +25,7 @@ NEW_TYPES = {
     41: (126, None, None, None, None),   # written whole: FULL_ENTRIES below
     42: (101, None, None, None, None),   # written whole: FULL_ENTRIES below
     55: (42, None, None, None, None),    # written whole: FULL_ENTRIES below
+    56: (55, None, None, None, None),    # written whole: FULL_ENTRIES below
     121: (19, "Mix1-1A", "1 Input Chain Mixer (G1-Mods)",
           [('name="in1"', 'name="in"'), ('name="in2"', 'name="chain"'),
            ('\n    <connector component-id="c3" index="2" name="in3" type="input" signal="audio" />', ''),
@@ -801,6 +802,66 @@ FULL_ENTRIES = {
 \t\t<label x="236" y="16">End</label>
 \t\t<connector x="238" y="27" size="13" class="cLOGIC">
 \t\t\t<connector component-id="c3" alt="end" />
+\t\t</connector>
+\t</module>"""),
+    56: ("""
+  <module component-id="m56" index="56" name="OscString" fullname="Osc String, a plucked string (Karplus-Strong) (G1-Mods)" category="Oscillator (mods)">
+    <image type="screenshot" src="img/modules/module-97.png" width="256" height="30" />
+    <image type="icon16x16" src="img/icons/16x16/module-id-97.png" width="16" height="16" />
+    <image type="icon32x32" src="img/icons/32x32/module-id-97.png" width="32" height="32" />
+    <connector component-id="c1" index="0" name="trig" type="input" signal="logic" />
+    <connector component-id="c2" index="1" name="pitch" type="input" signal="control" />
+    <connector component-id="c3" index="2" name="exc" type="input" signal="audio" />
+    <connector component-id="c4" index="0" name="out" type="output" signal="audio" />
+    <!-- parameter(s) -->
+    <parameter component-id="p1" index="0" name="note" class="parameter" defaultValue="64" formatter="fmtNote" extension="m1" />
+    <parameter component-id="p2" index="1" name="decay" class="parameter" defaultValue="100" extension="m2" />
+    <parameter component-id="p3" index="2" name="damp" class="parameter" defaultValue="90" extension="m3" />
+    <parameter component-id="m1" index="0" name="morph:note" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m2" index="1" name="morph:decay" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m3" index="2" name="morph:damp" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <!-- custom attributes -->
+    <attribute name="cycles" type="double" value="16.0" />
+    <attribute name="x-mem" type="double" value="73.0" />
+    <attribute name="y-mem" type="double" value="0.0" />
+    <attribute name="prog-mem" type="double" value="4.5" />
+    <attribute name="dyn-mem" type="double" value="0.5" />
+    <attribute name="zero-page" type="double" value="1.75" />
+    <attribute name="height" type="integer" value="3" />
+    <attribute name="background" value="#d9c3a0" />
+  </module>""", """
+\t<module component-id="m56" width="255" height="45">
+\t\t<name>Osc String</name>
+\t\t<label x="5" y="16">Trig</label>
+\t\t<connector x="6" y="27" size="13" class="cLOGIC">
+\t\t\t<connector component-id="c1" alt="trig" />
+\t\t</connector>
+\t\t<label x="28" y="16">Pitch</label>
+\t\t<connector x="30" y="27" size="13" class="cCONTROL">
+\t\t\t<connector component-id="c2" alt="pitch" />
+\t\t</connector>
+\t\t<label x="54" y="16">Exc</label>
+\t\t<connector x="54" y="27" size="13" class="cAUDIO">
+\t\t\t<connector component-id="c3" alt="exc" />
+\t\t</connector>
+\t\t<label x="78" y="16">Note</label>
+\t\t<textDisplay x="78" y="27" width="28" height="14">
+\t\t\t<parameter component-id="p1" alt="note" />
+\t\t</textDisplay>
+\t\t<knob x="110" y="20" size="21">
+\t\t\t<parameter component-id="p1" alt="note" />
+\t\t</knob>
+\t\t<label x="140" y="16">Decay</label>
+\t\t<knob x="144" y="24" size="21">
+\t\t\t<parameter component-id="p2" alt="decay" />
+\t\t</knob>
+\t\t<label x="176" y="16">Damp</label>
+\t\t<knob x="178" y="24" size="21">
+\t\t\t<parameter component-id="p3" alt="damp" />
+\t\t</knob>
+\t\t<label x="230" y="16">Out</label>
+\t\t<connector x="236" y="27" size="13" class="cAUDIO">
+\t\t\t<connector component-id="c4" alt="out" />
 \t\t</connector>
 \t</module>"""),
 }

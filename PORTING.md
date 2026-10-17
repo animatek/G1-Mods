@@ -25,8 +25,8 @@ a guide to the effort, not code to copy. Our code is written new.
 ## Only eleven types left
 
 **The G1 has room for 128 module types (0–127), and that cannot grow**: the OS's table has 128
-entries and a patch keeps a module's type in 7 bits. Clavia's take 110 of them; G1-Mods uses 6, 41, 42, 55, 101,
-120, 121 and 123–126. **Free now: 56, 60, 93, 109, 116, 119, 122** (0 is left out:
+entries and a patch keeps a module's type in 7 bits. Clavia's take 110 of them; G1-Mods uses 6, 41, 42, 55, 56, 101,
+120, 121 and 123–126. **Free now: 60, 93, 109, 116, 119, 122** (0 is left out:
 it may read as "no module"). Found 2026-10-17, when 127 and 128 were about to be used (127 is the
 PolyAreaIn); the same day the Mixer Inv (119, a first test) and the Noise S&H (122, easy to patch
 from G1 modules) were taken out to free theirs (in git history). So far fewer G2 modules can come
@@ -41,8 +41,8 @@ than this list has, and they have to be chosen:
 - **What a G1 module already does well is not ported again.**
 - `patch_rom.py` refuses a type not in `FREE_TYPES`.
 - **Room for code is the other limit (2026-10-17)**: the package runs from 14 KB of RAM the OS
-  never touches, and the eleven types take 12 KB of it. The big modules wait until more room is
-  found (`NOTES.md`, "Room for code").
+  never touches; with the Osc String the twelve types take 13,460 bytes, under 900 left. The
+  next big module needs more room found first (`NOTES.md`, "Room for code"), or the builder.
 - Not doing: widening the type to more bits (the OS's loader, connections, patch and SysEx, and
   NME): a great deal of reverse engineering and patches nothing else could read. At most, a day
   to see whether the OS keeps the type in a whole byte inside.
@@ -76,6 +76,7 @@ outputs of all its variants and each panel shows its own.
 | Bits (BinCounter, ADConv, DAConv) | 41 | ✅ | Clk, Rst, In, B1–B8; Out, Bit 1–8; Mode (Count, A>D, D>A); eight LEDs (`dsp/bits.asm`, `tests/check_bits.py`). |
 | Level (ModAmt, MinMax, T&H, WindSw) | 42 | ✅ | A, B; Out 1, Out 2; Mode, Amount, Lo, Hi (`dsp/level.asm`, `tests/check_level.py`). Control rate. |
 | Envelope (ADDSR, H, D, AHD) | 55 | ✅ | Gate; Env, End; Gate/Trig, Attack, Decay 1, Level 1, Decay 2, Sustain, Release (`dsp/env.asm`, `tests/check_env.py`). Control rate; no time modulation inputs (the Mod AHD's) yet. |
+| Osc String | 56 | ✅ | Trig, Pitch, Exc; Out; Note, Decay, Damp (`dsp/string.asm`, `tests/check_string.py`). Audio rate. Lowest note about 94 Hz (a 1,024-word line); lower would need the line run at half or a quarter of the rate. |
 
 ## Modules only the G2 has
 
@@ -141,7 +142,7 @@ outputs of all its variants and each panel shows its own.
 | Noise Osc | ~60 | Medium | ⬜ | Tuned noise. |
 | Metallic Noise | 60 | Medium | ⬜ | |
 | Driver, Resonator | ~60 | Medium | ⬜ | Physical-model parts. |
-| Osc String | 221 + delay | Hard | ⬜ | Karplus-Strong: the string is a delay line; 2K words reach down to ~47 Hz, so it fits, but it is the biggest code here. |
+| Osc String | 221 + delay | Hard | ✅ | Karplus-Strong: the string is a delay line; 2K words reach down to ~47 Hz, so it fits, but it is the biggest code here. |
 | FM Operator, DX Router | 50–130 | Hard | ⬜ | The demo blocks and leaves them out: no reference until the G2 firmware is read. |
 
 ### Filters and EQ
