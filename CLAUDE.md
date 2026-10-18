@@ -30,8 +30,11 @@ works well, it can be merged.
 - **The emulator first.** A real G1 is only flashed when it all works in G1-Emu, and the ROM's
   MIDI boot mode is known to recover a bad OS. Before touching a real synth, check which device
   NME is connected to.
-- NME support for a new module (its entry in `modules.xml`) goes in a branch of `../Nomad2026`,
-  not in `main`, until this works.
+- NME support for a new module is its folder's `nme-modules.xml` and `nme-theme.xml`;
+  `tools/make_nme_data.py --layer ../Nomad2026/data` writes them into NME's layer files
+  (`data/mods-modules.xml`, `data/mods-theme.xml`), which NME offers only with "Show G1-Mods
+  modules" on. That lives in NME's `mods-layer` branch, local, until Javier decides to publish
+  G1-Mods: NME is public.
 - Everything in this repo is in **English** (code, notes, changelog, commits), like G1-Emu, so
   a merge stays easy. Local git, no remote.
 

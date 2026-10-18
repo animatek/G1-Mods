@@ -3,18 +3,19 @@
 
     tests/check_nme_data.py
 
-For each new type the ROM is built with, modules.xml (as tools/make_nme_data.py writes it) must
-have the same parameters, each with the same maximum (NME packs a patch's parameters by it, the
-OS unpacks them by the ROM's: a mismatch shifts every parameter after it), and the same number of
-inputs and outputs. And NME's ParameterEncoder (in its g1-mods branch, read with git show, so
-whatever branch is checked out) must give each parameter the width of its maximum, and its
-fmtScaleName as many names as the Scale Quantizer has scales (it shows them by their order). No
-emulator is needed.
+For each new type the ROM is built with, NME's layer (../Nomad2026/data/mods-modules.xml, as
+it is on disk) must have the same parameters, each with the same maximum (NME packs a patch's
+parameters by it, the OS unpacks them by the ROM's: a mismatch shifts every parameter after it),
+and the same number of inputs and outputs. The layer must be what tools/make_nme_data.py --layer
+writes now (not stale); NME's ParameterEncoder must have no case of its own for the type, so the
+width comes from that maximum (setWidthsFromData); and its fmtScaleName as many names as the
+Scale Quantizer has scales (it shows them by their order). No emulator is needed.
 """
 import os
 import re
 import subprocess
 import sys
+import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -22,29 +23,29 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 import patch_rom  # noqa: E402
 
 
-def encoder_widths():
-    """{type: [bits]} from the ParameterEncoder's switch: each run of case labels and its return."""
-    src = subprocess.run(["git", "-C", os.path.join(ROOT, "..", "Nomad2026"), "show",
-                          "g1-mods:source/protocol/ParameterEncoder.cpp"],
-                         check=True, capture_output=True, text=True).stdout
-    widths = {}
-    for cases, ret in re.findall(r"((?:\s*case \d+:)+)(?:\s*//[^\n]*)*\s*return \{([\d, ]*)\};", src):
-        for t in re.findall(r"\d+", cases):
-            widths[int(t)] = [int(w) for w in ret.split(",") if w.strip()]
-    return widths
+NME = os.path.join(ROOT, "..", "Nomad2026")
+
+
+def encoder_cases():
+    """The types NME's ParameterEncoder switch has a case for."""
+    src = open(os.path.join(NME, "source", "protocol", "ParameterEncoder.cpp"), encoding="utf-8").read()
+    return {int(t) for t in re.findall(r"\bcase (\d+):", src)}
 
 
 def main():
     rom = open(os.path.join(ROOT, "..", "G1-Emu", "Roms", "NORD-MODULAR-RACK-VER-3.03.BIN"), "rb").read()
-    xml_dir = os.path.join(ROOT, "out", "nme-data")
-    subprocess.run([sys.executable, "-I", os.path.join(ROOT, "tools", "make_nme_data.py"),
-                    os.path.join(ROOT, "..", "Nomad2026", "data"), xml_dir], check=True)
-    xml = open(os.path.join(xml_dir, "modules.xml"), encoding="utf-8").read()
+    layer = os.path.join(NME, "data", "mods-modules.xml")
+    xml = open(layer, encoding="utf-8").read()
+    with tempfile.TemporaryDirectory() as tmp:
+        subprocess.run([sys.executable, "-I", os.path.join(ROOT, "tools", "make_nme_data.py"),
+                        "--layer", tmp], check=True, capture_output=True)
+        fresh = open(os.path.join(tmp, "mods-modules.xml"), encoding="utf-8").read()
+    ok = xml == fresh
+    print(f"NME's layer as make_nme_data.py --layer writes it now -> {'ok' if ok else 'STALE'}")
     b = patch_rom.Build(rom)
     for add in patch_rom.EXPERIMENTS["all"][1]:
         add(b)
-    widths = encoder_widths()
-    ok = True
+    cases = encoder_cases()
     for t, (maxima, inputs, outputs) in sorted(b.specs.items()):
         m = re.search(r'\n  <module component-id="m%d" .*?\n  </module>' % t, xml, re.S)
         if not m:
@@ -56,15 +57,12 @@ def main():
                    for p in re.findall(r'<parameter [^>]*class="parameter"[^>]*/>', entry)]
         nme_in = len(re.findall(r'type="input"', entry))
         nme_out = len(re.findall(r'type="output"', entry))
-        bits = [m.bit_length() for m in maxima]
-        good = (nme_max, nme_in, nme_out) == (maxima, inputs, outputs) and widths.get(t) == bits
+        good = (nme_max, nme_in, nme_out) == (maxima, inputs, outputs) and t not in cases
         print(f"type {t}: OS {maxima} {inputs} in {outputs} out, NME {nme_max} {nme_in} in {nme_out} out,"
-              f" encoder {widths.get(t)} bits for {bits}"
+              f" encoder {'its own case' if t in cases else 'from data'}"
               f" -> {'ok' if good else 'WRONG'}")
         ok &= good
-    fmt = subprocess.run(["git", "-C", os.path.join(ROOT, "..", "Nomad2026"), "show",
-                          "g1-mods:source/format/ValueFormatters.cpp"],
-                         check=True, capture_output=True, text=True).stdout
+    fmt = open(os.path.join(NME, "source", "format", "ValueFormatters.cpp"), encoding="utf-8").read()
     m = re.search(r"fmtScaleName \(int value\)\s*\{\s*static const char\* names\[\] = \{([^}]*)\}", fmt)
     names = re.findall(r'"([^"]*)"', m.group(1)) if m else []
     scales = patch_rom.Module("scale-quantizer").code.SCALES

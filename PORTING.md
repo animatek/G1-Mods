@@ -271,7 +271,10 @@ mods in an emulator of his own). Before it grows, in this order:
    nothing of Clavia's). Before: check the whole history for anything of Clavia's. Ask Javier
    before publishing.
 4. **The builder** (see "The builder and the catalogue" below): pick your OS, tick modules, get
-   the ROM; with it the `g1-mods` branch into `main` and NME telling the modified OS apart.
+   the ROM; with it NME telling the modified OS apart. NME's side is ready (2026-10-18, branch
+   `mods-layer`, local): the modules in a layer of their own (`data/mods-modules.xml`), offered
+   only with "Show G1-Mods modules" on, their widths from data. It replaces the old `g1-mods`
+   branch and goes into `main` when G1-Mods is published (NME is public).
 
 Real hardware only after this, once the ROM's MIDI boot mode is known to recover a bad OS.
 
