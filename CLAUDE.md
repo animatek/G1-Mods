@@ -36,7 +36,7 @@ works well, it can be merged.
   OS says it has them (its IAm says 3.09: `VERSION_MARK` in `tools/g1rom.py`). That lives in NME's `mods-layer` branch, local,
   until Javier decides to publish G1-Mods: NME is public.
 - Everything in this repo is in **English** (code, notes, changelog, commits), like G1-Emu, so
-  a merge stays easy. Local git, no remote.
+  a merge stays easy. On GitHub as `animatek/G1-Mods`, private for now (2026-10-18).
 
 ## Changelog
 

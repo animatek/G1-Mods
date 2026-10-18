@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-18
 
+- Claude: **a README**: what G1-Mods is and how it works, the twelve modules, the layout, how to
+  try it, who is responsible for what, firmware and rights, licence (GPLv3, the `LICENSE` file
+  added, as G1-Emu's) and credits (Gearmulator), from PORTING's notices agreed with Javier on
+  2026-10-17. On GitHub as `animatek/G1-Mods`, private for now.
+
 - Claude: **the mark**: every build with modules says version 3.09 in its IAm instead of 3.03
   (`VERSION_MARK`, one `move.b` at `$10B288`), so NME tells it apart synth by synth on
   connecting (after Javier: with several synths, a Clavia OS sits next to a modified one).
