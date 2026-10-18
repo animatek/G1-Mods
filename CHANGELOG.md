@@ -7,7 +7,8 @@ line here, in the same commit (see `CLAUDE.md`).
 
 - Claude: **NME's layer**: `tools/make_nme_data.py --layer <NME's data>` writes
   `mods-modules.xml` and `mods-theme.xml`, the modules alone, which NME's `mods-layer` branch
-  loads on top of Clavia's files and offers only with "Show G1-Mods modules" on.
+  loads on top of Clavia's files and offers only to a synth ticked "OS with G1-Mods modules" in
+  MIDI Setup (per synth, after Javier: with several synths, a Clavia OS sits next to a modified one).
   `tests/check_nme_data.py` now checks that layer as it is on disk (and that it is not stale),
   and that NME's ParameterEncoder has no case of its own for the types (their widths come from
   data). `run-nme.sh` builds from `mods-layer`. Checked: `check_nme_data.py` passes, 12 types.
