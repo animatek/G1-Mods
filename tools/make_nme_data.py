@@ -11,9 +11,8 @@ the fresh entry, so running it twice changes nothing and a changed definition re
 That merged copy is what G1-Emu's g1patchtest reads in the tests (G1_MODULES_XML).
 
 --layer writes NME's own files instead, mods-modules.xml and mods-theme.xml: the modules alone,
-which NME loads on top of Clavia's and offers only to a synth ticked "OS with
-G1-Mods modules" in MIDI Setup. Clavia's
-files are left untouched.
+which NME loads on top of Clavia's and offers only to a synth whose OS has them (its IAm says
+3.09). Clavia's files are left untouched.
 """
 import os
 import re

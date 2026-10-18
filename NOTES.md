@@ -597,6 +597,27 @@ runs every test.
   all within 2 cents (they are within 1); Decay 60 against 110.
 - Lowest note 94 Hz (96000 / 1024). Lower: run the line at half or a quarter of the rate.
 
+## The mark: an OS with modules says 3.09 (2026-10-18)
+
+An editor has to tell an OS with modules from Clavia's, synth by synth: with several synths, a
+Clavia OS can sit next to a modified one, and a module of ours sent to Clavia's would land on a
+type it does not have. The IAm reply is where the synth says what it is, so the mark goes there.
+
+- **The IAm is built by `$10B252`**, not kept as bytes: it waits for the send buffer
+  (`$1A5BBC`), writes `F0 33 00 06`, sender 1 (`(6,a2)`), version 3 (`(7,a2)`) and 3
+  (`(8,a2)`, a `move.b #$03` at `$10B288`), then the serial number from `$1258D2` in three
+  7-bit bytes (bits 14-19, 7-13, 0-6) and the model from `$1C3AAC`, and sends 12 bytes. The
+  byte NME's PDL calls "reserved" is the serial's top: G1-Emu's flash has no serial, so it
+  reads `3F 7F 7F`; a real G1 sends its own. Not free, then.
+- **The version's minor is**: Clavia's editor 3.03 sets what it expects at startup from its own
+  version (`0x004273e0`: major 3, the minor's tens 0) and takes a synth whose major is 3 and
+  whose minor / 10 is 0 (`0x00426890`, `../G1originaleditor`), so 3.00 to 3.09; a `7F` there
+  is the update mode. NME takes any. Clavia never released a 3.09.
+- So the builder changes that one `move.b` to `#$09` (`VERSION_MARK`, `tools/g1rom.py`) in
+  every build with modules, and NME takes a synth that says 3.09 as one with them
+  (`ConnectionManager::isModsVersion`), until it disconnects. `tests/check_mark.py` boots both
+  ROMs in G1-Emu: Clavia's says 3.03, ours 3.09, and NME looks for the same number.
+
 ## Trying it by hand
 
 `./run-g1emu.sh` starts G1-Emu's window with the ROM of every new type, on its own flash

@@ -20,8 +20,8 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from g1rom import (ROM_SHA256, ROM_SIZE, RUN, STAGE, Build, Param, audio_type,  # noqa: E402,F401
-                   ram_to_rom)
+from g1rom import (ROM_SHA256, ROM_SIZE, RUN, STAGE, VERSION_MARK, Build, Param,  # noqa: E402,F401
+                   audio_type, ram_to_rom)
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 MODULES = os.path.join(ROOT, "modules")
@@ -108,6 +108,8 @@ def main():
     if len(rom) != ROM_SIZE or not hashlib.sha256(rom).hexdigest().startswith(ROM_SHA256):
         sys.exit("not the rack OS 3.03 ROM")
     _, types, in_place = EXPERIMENTS[name]
+    if types:
+        in_place = list(in_place) + [VERSION_MARK]   # an OS with modules says so (3.09)
     for addr, old, new in in_place:
         o = ram_to_rom(addr)
         if rom[o:o + 4] != old.to_bytes(4, "big"):

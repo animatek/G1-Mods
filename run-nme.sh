@@ -1,6 +1,6 @@
 #!/bin/sh
-# NME from its mods-layer branch (built in ../Nomad2026/build-g1mods). In MIDI Setup, tick
-# "OS with G1-Mods modules" on G1-Emu's port, so its slots take the new types.
+# NME from its mods-layer branch (built in ../Nomad2026/build-g1mods), which offers the new types
+# to a synth whose OS says 3.09 on connecting (run-g1emu.sh's).
 # Build it with:
 #   cd ../Nomad2026 && git switch mods-layer && cmake -B build-g1mods -DCMAKE_BUILD_TYPE=Release \
 #     && cmake --build build-g1mods -j$(nproc) && git switch -

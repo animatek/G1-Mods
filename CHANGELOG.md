@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-18
 
+- Claude: **the mark**: every build with modules says version 3.09 in its IAm instead of 3.03
+  (`VERSION_MARK`, one `move.b` at `$10B288`), so NME tells it apart synth by synth on
+  connecting (after Javier: with several synths, a Clavia OS sits next to a modified one).
+  Clavia's editor 3.03 still connects to it (it takes 3.00-3.09). NOTES.md, "The mark". Checked:
+  `tests/check_mark.py` boots both in G1-Emu (3.03 and 3.09, NME looking for 9); the `all` ROM
+  differs from before in that byte only.
+
 - Claude: **NME's layer**: `tools/make_nme_data.py --layer <NME's data>` writes
   `mods-modules.xml` and `mods-theme.xml`, the modules alone, which NME's `mods-layer` branch
   loads on top of Clavia's files and offers only to a synth ticked "OS with G1-Mods modules" in

@@ -25,6 +25,14 @@ LIST_LAST_JSR = 0x10DF1E  # the registration list's last jsr (type 17's, $143350
 LIST_LAST_TARGET = 0x143350
 
 
+# The mark an OS with modules carries, for an editor to tell it apart: its IAm says version 3.09
+# instead of 3.03. The IAm is built by $10B252 (move.b #$03 for the minor at (8,a2)); a version
+# Clavia never released, which Clavia's editor 3.03 still takes (it checks the major and the
+# minor's tens only: 3.00 to 3.09). NME reads it as "this synth has G1-Mods" (NOTES.md, "The mark").
+MODS_VERSION_LOW = 9
+VERSION_MARK = (0x10B288, 0x157C0003, 0x157C0000 | MODS_VERSION_LOW)   # move.b #9,(8,a2)
+
+
 def ram_to_rom(addr):
     return addr - 0x100000 + 0xC800
 
