@@ -8,6 +8,8 @@ modules/<name>/
   module.json       its type, names, author, licence, version, and where NME lists it
   build.py          build(b, type): how its type is put into the OS (tools/g1rom.py has the parts)
   *.asm             its DSP56300 code, ours (tools/dspasm.py assembles it)
+  *.s, *.m68k       68k code of its own, when it needs some (note-out): the source, and the bytes
+                    tools/m68kasm.sh assembles from it, kept so a build needs no toolchain
   nme-modules.xml   its entry in NME's modules.xml, whole
   nme-theme.xml     its panel in NME's classic theme, whole
   check_*.py        its test in G1-Emu, with the patches it plays (*.pch)

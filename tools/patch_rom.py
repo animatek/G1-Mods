@@ -129,6 +129,11 @@ def main():
         if rom[o:o + 4] != old:
             sys.exit(f"unexpected hook at ${addr:06X}: {rom[o:o + 4].hex()}")
         rom[o:o + 4] = new
+        for addr, old, new in b.patches():      # the OS's calls a module takes over
+            o = ram_to_rom(addr)
+            if rom[o - 2:o] != b"\x4e\xb9" or rom[o:o + 4] != old:
+                sys.exit(f"unexpected call at ${addr - 2:06X}: {rom[o - 2:o + 4].hex()}")
+            rom[o:o + 4] = new
         print(f"new types {b.types}, {b.at - RUN} bytes, stored at ${STAGE:06X}, run at ${RUN:06X}")
     os.makedirs(os.path.dirname(os.path.abspath(dst)), exist_ok=True)
     open(dst + ".tmp", "wb").write(rom)

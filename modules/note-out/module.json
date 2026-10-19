@@ -1,0 +1,13 @@
+{
+  "type": 60,
+  "name": "NoteOut",
+  "fullname": "Note Out, a gate and a note to the MIDI OUT",
+  "kind": "control",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 56,
+  "tests": [
+    "check_note_out.py"
+  ]
+}

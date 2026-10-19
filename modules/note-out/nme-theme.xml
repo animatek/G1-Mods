@@ -1,0 +1,25 @@
+	<module component-id="m60" width="255" height="30">
+		<name>Note Out</name>
+		<label x="62" y="2">Note</label>
+		<connector x="66" y="13" size="13" class="cCONTROL">
+			<connector component-id="c1" alt="note" />
+		</connector>
+		<label x="92" y="2">Gate</label>
+		<connector x="96" y="13" size="13" class="cLOGIC">
+			<connector component-id="c2" alt="gate" />
+		</connector>
+		<label x="130" y="2">Chan</label>
+		<textDisplay x="130" y="13" width="22" height="14">
+			<parameter component-id="p1" alt="chan" />
+		</textDisplay>
+		<knob x="156" y="9" size="18">
+			<parameter component-id="p1" alt="chan" />
+		</knob>
+		<label x="190" y="2">Vel</label>
+		<textDisplay x="190" y="13" width="22" height="14">
+			<parameter component-id="p2" alt="vel" />
+		</textDisplay>
+		<knob x="216" y="9" size="18">
+			<parameter component-id="p2" alt="vel" />
+		</knob>
+	</module>

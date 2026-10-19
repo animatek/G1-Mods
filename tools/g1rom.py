@@ -64,6 +64,7 @@ class Build:
         self.register = []      # 68k code run at boot, after the list
         self.types = []
         self.specs = {}         # type: (parameter maximums, inputs, outputs), what NME must say
+        self.calls = {}         # a jsr's address: (the OS's target, ours), see redirect_call
 
     def rom_bytes(self, addr, n):
         return self.rom[ram_to_rom(addr):ram_to_rom(addr) + n]
@@ -92,6 +93,17 @@ class Build:
             code += "23fc" f"{val:08x}{e + off:08x}"   # move.l #val,entry+off
         self.register.append(bytes.fromhex(code.replace(" ", "")))
         self.types.append(new_type)
+
+    def redirect_call(self, at, old_target, new_target):
+        """Points the OS's `jsr old_target.l` at `at` to new_target, a routine in the package that
+        calls old_target itself. One module a call: two would need to chain."""
+        assert at not in self.calls, f"the call at ${at:06X} is taken already"
+        self.calls[at] = (old_target, new_target)
+
+    def patches(self):
+        """The redirected calls, as (address, old bytes, new bytes) of each jsr's target."""
+        return [(at + 2, old.to_bytes(4, "big"), new.to_bytes(4, "big"))
+                for at, (old, new) in sorted(self.calls.items())]
 
     def finish(self):
         """Returns ([(RAM address in the image, bytes)], hook): the package with its registration

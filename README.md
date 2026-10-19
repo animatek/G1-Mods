@@ -15,7 +15,7 @@ folder of its own.
 > unusable. Recovery is not guaranteed. You use it entirely at your own risk; you are solely
 > responsible for your instrument.
 
-**Status: a work in progress, private for now.** Twelve module types play in G1-Emu. There is no
+**Status: a work in progress, private for now.** Thirteen module types play in G1-Emu. There is no
 builder for users yet, nor a way to send the OS to a real G1.
 
 ## How it works
@@ -47,9 +47,10 @@ connects to a 3.09.
 | 42 | Level | ModAmt, MinMax, Track and Hold, Window. |
 | 55 | Envelope | ADDSR, or one shot (D, H, AHD). |
 | 56 | Osc String | A plucked string (Karplus-Strong), the first audio-rate module. |
+| 60 | Note Out | A gate and a note out of the G1's MIDI OUT, as the G2's NoteSend: Chan and Vel. |
 
 Each has a test that plays it in G1-Emu. What is left of each, and the G2's modules still to port,
-are in [`PORTING.md`](PORTING.md). Six types are still free (60, 93, 109, 116, 119, 122), so the
+are in [`PORTING.md`](PORTING.md). Five types are still free (93, 109, 116, 119, 122), so the
 catalogue grows by families: one type, several panels in NME.
 
 ## Layout

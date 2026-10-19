@@ -637,7 +637,7 @@ refuses a patch with them. In the maintainer's desktop both have launchers ("G1-
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.
 
-## A MIDI Out module, as the G2's (idea, 2026-10-19)
+## A MIDI Out module, as the G2's (2026-10-19)
 
 Asked for by users: the G1's sequencers playing notes out of its MIDI Out. The G1 already sends
 CC there (knob moves), so the port is wired and the OS can write to it: the 68331's SCI
@@ -674,9 +674,17 @@ pending word with a host command. The DSP never touches MIDI: it is a mailbox th
 `$116A3E` only for the active slot (`$1C3ABE`), 5 entries at a time, and only while the PC port
 is free (`$1177A2`, `$1A5BBC`): they exist to feed the editor. A MIDI Out module needs its own
 poll: a list of our own (slot, DSP, X address, channel), filled by the module's `+$0C` like the
-light registration, and walked from the OS's main loop (`$104DC6` runs ~3 000 times a second,
-see G1-Emu's dial notes), reading each mailbox with `$10C32E` and writing the note into the
-byte queue. Not from the timer interrupt: the host port reads would race the main loop's.
+light registration, and walked from the OS's main loop, reading each mailbox with `$10C32E` and
+writing the note into the byte queue. Not from the timer interrupt: the host port reads would
+race the main loop's. (The dial's decoder, `$104DAA`, is not the main loop: the timer interrupt
+calls it, at `$1009B0`.)
+
+**The main loop** is the end of `$100ACA`, the last call of the OS's start (`$109754` →
+`$1097FC`): from `$100E6E` it calls `$1156BE` and `$1133EC`, takes the next event with
+`$100208` (a word: `$04xx` a panel button, `$01xx`...), handles it, and branches back to
+`$100E6E` (`$101122`); with no event it goes to `$101126` (the editor's lights among other
+things). So the hook is the `jsr $1156BE` at `$100E6E`: pointed at a routine of ours that calls
+`$1156BE` and then polls, it runs once a turn of the loop, events or not.
 
 Still open: the hook into the main loop, what the DSP side keeps (gate, note, velocity, a
 pending flag cleared by the 68k, as the G2), notes left hanging when a patch changes (send note
@@ -684,3 +692,41 @@ offs), and the same addresses in the 3.03b update. **Testing is ready (2026-10-1
 standalone already sent the MIDI OUT to its `MIDI` port, and its plugin now has it as its MIDI
 output (G1-Emu branch `midi-out-plugin`; Javier saw a knob's CC reach another track in Bitwig).
 `g1patchtest --knob-at S:knob` prints what came out of the MIDI OUT.
+
+## Type 60: Note Out (2026-10-19)
+
+The plan above, made: `modules/note-out/`. Note and Gate in, Chan and Vel; a note on at Gate's
+rising edge with the note Note had then, its note off at the falling edge.
+
+- **The DSP side** (`noteout.asm`, 35 words) sends no MIDI. It counts Gate's edges and latches
+  the note on each rising one, and keeps one X word: the count (a step of `$100`), the gate (bit
+  7) and the note (0-127: 64 + Note in semitones, rounded). One host-port read tells the 68k
+  whether anything happened and what. Chan and Vel go to X words of their own, for the 68k.
+- **The 68k side** (`noteout_poll.s`) is the first of ours written in assembly, not hand-made
+  hex: GNU as for the CPU32 in Digitakt-Mods' Docker image (`tools/m68kasm.sh`), position
+  independent, the bytes kept next to it (`noteout_poll.m68k`; `build.py` checks they are for its
+  type). The build points the main loop's first call (`jsr $1156BE` at `$100E6E`) at it
+  (`Build.redirect_call`, applied by `patch_rom.py`). Each turn it calls `$1156BE`, then:
+  - **finds the modules without a list**: 8 module pointers a turn, a cursor over the four slots'
+    common and poly pointers (1024 in all), the type at `+$0E`. Up to 16 followed at once, each
+    checked again every turn (its pointer still there, still our type) before it is read, so a
+    patch changed or a module deleted drops it, with a note off for a note it left on.
+  - reads each one's word with `$10C32E`, at the voice record's X base (`+$228` of the section's
+    pointers, voice 0) plus the module's: on a change, the note left on goes off and, with the
+    gate high, the new one goes on, the channel and velocity read then. A velocity of 0 is sent
+    as 1.
+  - queues the three bytes into the byte queue at `$15E2D2` as the OS's own note senders do; the
+    timer interrupt sends them.
+- **Found on the way:** the whole scan at once (some 1 000 pointers every 256 turns) held the main
+  loop up long enough for the OS to miss a patch upload (no ACK; G1-Emu's boot display showed
+  dropped characters too). The OS does timed things in its main loop: the poll must stay short.
+- **What is not there yet:** only voice 0 of a poly section is read (a Note Out is one voice's
+  anyway: in the common section, or a mono patch); edges closer together than one turn of the
+  loop are merged (a note shorter than that is lost, a retrigger is an off and an on); a patch
+  uploaded with another Note Out at the very same record keeps the entry, and its note goes off
+  only at the next change of its word; no SysEx, no CC.
+- **Checked:** `check_note_out.py` in G1-Emu (its g1patchtest prints the MIDI OUT since PR #79;
+  `G1_PATCHTEST` names that build until it is in main): an LFO into Gate gives `90 40 64` /
+  `80 40 40` in turn; a Constant of +12 into Note with Chan 3 and Vel 90, `92 4C 5A` / `82 4C 40`;
+  Chan changed live to 5, the note on goes off on channel 1 and the next ones are on 5; a patch
+  without it sends nothing.

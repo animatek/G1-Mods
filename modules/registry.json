@@ -1,7 +1,6 @@
 {
   "_": "Type numbers, given for ever: a patch keeps a module's type, so a number once given is never given to another module. 'build' is the order the builder lays them out in (changing it changes the image, not what it does); 'nme' the order NME's data is written in.",
   "free": [
-    60,
     93,
     109,
     116,
@@ -20,7 +19,8 @@
     "41": "bits",
     "42": "level",
     "55": "envelope",
-    "56": "osc-string"
+    "56": "osc-string",
+    "60": "note-out"
   },
   "build": [
     "flipflop",
@@ -34,7 +34,8 @@
     "bits",
     "level",
     "envelope",
-    "osc-string"
+    "osc-string",
+    "note-out"
   ],
   "nme": [
     "flipflop",
@@ -48,6 +49,7 @@
     "level",
     "envelope",
     "osc-string",
+    "note-out",
     "mix1-1a"
   ]
 }

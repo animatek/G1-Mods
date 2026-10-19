@@ -5,6 +5,17 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-19
 
+- Claude: **type 60, Note Out**, after the G2's NoteSend: Note and Gate in, Chan and Vel; a note
+  on at Gate's rising edge, its note off at the falling one, out of the G1's MIDI OUT. The DSP
+  packs the gate's edges and the note into one X word (`noteout.asm`); a 68k routine of ours,
+  the first in real assembly (`noteout_poll.s`, GNU as for the CPU32 in Digitakt-Mods' Docker
+  image: `tools/m68kasm.sh`), takes the OS's main loop's first call (`Build.redirect_call`),
+  finds the modules by their type a few pointers a turn, reads each word and queues the notes
+  where the OS's own note senders do. NOTES.md, "Type 60: Note Out". Checked:
+  `check_note_out.py` in G1-Emu (an LFO into Gate gives `90 40 64` / `80 40 40`; a Constant of
+  +12, Chan 3, Vel 90 gives `92 4C 5A`; Chan changed live; nothing without the module), and
+  every module's test and `check_insert.py` pass with it built in (`check_mark.py` and
+  `check_nme_data.py` read NME's `mods-layer` branch, not checked out).
 - Claude: NOTES, flashing a real G1: **Shift + Store at power-on enters the MIDI update mode**,
   confirmed by Javier on his G1, so a bad OS of ours has a way back; and Shift + Patch/Load
   boots the ROM's factory OS (tried too): two ways back from a bad OS.
