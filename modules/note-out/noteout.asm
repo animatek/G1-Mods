@@ -1,5 +1,5 @@
 ; Note Out (G1-Mods type 60), after the G2's NoteSend: control rate.
-;   inputs  0 Note, 1 Gate        no outputs        parameters 0 Chan, 1 Vel (68k only)
+;   inputs  0 Note, 1 Gate        output 0 Gate thru        parameters 0 Chan, 1 Vel (68k only)
 ; The DSP sends no MIDI: it leaves one word for the 68k, which reads it from the OS's main loop
 ; and queues the note on the MIDI OUT (noteout_poll.s). That word packs the gate's edge count
 ; (a step of $100 an edge), the gate (bit 7) and the note latched on the last rising edge
@@ -9,8 +9,8 @@
 ; X data (11 words): [0] the packed word, [1] the gate as last seen (0 or $80), [2] the edge
 ; count, [3] half a semitone ($4000), [4] 64, [5] $100, [6] $80, [7] 127, [8] the note latched,
 ; [9] Chan and [10] Vel (written by their routines, read by the 68k).
-; r3 stays put, the words read at offsets from it. Word 0 runs in the previous module's nop slot
-; (no a or b); no branch lands on the nop or after it.
+; The words are read at offsets from r3, which is moved past them at the end. Word 0 runs in the
+; previous module's nop slot (no a or b); no branch lands on the nop or after it.
 
     move x:$0,y0            ; @in1  y0 = Gate
     move x:(r3+$1),b        ;       b = the gate as last seen
@@ -46,5 +46,9 @@ pack:
     add x0,b                ;       + the note
     move x:(r3+$1),x0
     add x0,b                ;       + the gate
+    move b,x:(r3)           ;       the packed word
+    lua (r3+$b),r3          ;       r3 -> past the data: r3 walks through every module's X
+                            ;       data, and the next one reads its own from here (left at
+                            ;       our start, the module after this one ran on our words)
     nop                     ;       the next module's word 0 goes here
-    move b,x:(r3)
+    move y0,x:$0            ; @out0 Gate thru (y0 = Gate since word 0)

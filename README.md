@@ -47,7 +47,7 @@ connects to a 3.09.
 | 42 | Level | ModAmt, MinMax, Track and Hold, Window. |
 | 55 | Envelope | ADDSR, or one shot (D, H, AHD). |
 | 56 | Osc String | A plucked string (Karplus-Strong), the first audio-rate module. |
-| 60 | Note Out | A gate and a note out of the G1's MIDI OUT, as the G2's NoteSend: Chan and Vel. |
+| 60 | Note Out | A gate and a note out of the G1's MIDI OUT, as the G2's NoteSend: Chan, Vel, Gate thru. |
 
 Each has a test that plays it in G1-Emu. What is left of each, and the G2's modules still to port,
 are in [`PORTING.md`](PORTING.md). Five types are still free (93, 109, 116, 119, 122), so the

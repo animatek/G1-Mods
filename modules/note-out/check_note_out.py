@@ -13,6 +13,9 @@ of the G1's MIDI OUT (G1-Emu 2026-10-19, PR #79; G1_PATCHTEST names another buil
 - live: Chan changed to 5 at 2 s as NME does (--param-at): the notes move to channel 5, and the
   one left on is turned off on its own channel.
 - a patch with no Note Out: nothing comes out.
+- an LFO after it (in the patch's order) into Note: the notes follow it, so the module after
+  the Note Out runs on its own data (the Note Out once left r3 at its own words, and the module
+  after it ran on them: a second NoteSeq stood still, and a module added live silenced the MIDI).
 Exit code 0 when all hold.
 """
 import os
@@ -84,6 +87,14 @@ def main():
                 and all(m == ((0x90, 64, 100), (0x80, 64, 64))[i % 2] for i, m in enumerate(on1))
                 and len(on1) % 2 == 0 and pairs_ok(on5, 4, 64, 100, least=2))
         report("live: Chan to 5 at 2 s", good, msgs)
+
+        after = (base.replace("2 60 2 8 \n", "2 60 2 8 \n3 24 2 12 \n")
+                 .replace(LFO_TO_GATE, LFO_TO_GATE + "1 2 0 0 3 1 1 \n")
+                 .replace("2 60 2 0 100 \n", "2 60 2 0 100 \n3 24 8 40 1 0 0 0 0 64 0 \n")
+                 .replace("2 NoteOut\n", "2 NoteOut\n3 LFOB\n"))
+        msgs = midi_out(rom, xml, after, tmp, "after")
+        notes = {m[1] for m in msgs if m[0] == 0x90}
+        report("an LFO after it into Note", len(notes) > 1 and all(m[0] in (0x90, 0x80) for m in msgs), msgs)
 
         msgs = midi_out(rom, xml, base.replace("2 60 2 8 \n", "").replace("2 60 2 0 100 \n", "")
                         .replace(LFO_TO_GATE, "").replace("2 NoteOut\n", ""), tmp, "none")

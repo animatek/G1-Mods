@@ -695,8 +695,9 @@ output (G1-Emu branch `midi-out-plugin`; Javier saw a knob's CC reach another tr
 
 ## Type 60: Note Out (2026-10-19)
 
-The plan above, made: `modules/note-out/`. Note and Gate in, Chan and Vel; a note on at Gate's
-rising edge with the note Note had then, its note off at the falling edge.
+The plan above, made: `modules/note-out/`. Note and Gate in, Chan and Vel, and Gate again out
+(Thru); a note on at Gate's rising edge with the note Note had then, its note off at the falling
+edge.
 
 - **The DSP side** (`noteout.asm`, 35 words) sends no MIDI. It counts Gate's edges and latches
   the note on each rising one, and keeps one X word: the count (a step of `$100`), the gate (bit
@@ -720,6 +721,13 @@ rising edge with the note Note had then, its note off at the falling edge.
 - **Found on the way:** the whole scan at once (some 1 000 pointers every 256 turns) held the main
   loop up long enough for the OS to miss a patch upload (no ACK; G1-Emu's boot display showed
   dropped characters too). The OS does timed things in its main loop: the poll must stay short.
+- **Found later the same day (Javier): the module after it stopped.** A second NoteSeq in the
+  patch stood still, and a ClkDivFix added live silenced the MIDI. The DSP code read its words
+  at offsets from r3 and left r3 there, but **r3 walks through every module's X data**: each
+  module must leave it past its own (`lua (r3+$n),r3` before the nop, as the others do), or the
+  next module runs on its words, and writes over them. With nothing after it (the first tests)
+  it did not show. Now it moves r3 on, and `check_note_out.py` has an LFO after it in the
+  patch's order. It also got its output then (Gate thru): first suspected, not the cause.
 - **What is not there yet:** only voice 0 of a poly section is read (a Note Out is one voice's
   anyway: in the common section, or a mono patch); edges closer together than one turn of the
   loop are merged (a note shorter than that is lost, a retrigger is an off and an on); a patch

@@ -8,18 +8,22 @@
 		<connector x="96" y="13" size="13" class="cLOGIC">
 			<connector component-id="c2" alt="gate" />
 		</connector>
-		<label x="130" y="2">Chan</label>
-		<textDisplay x="130" y="13" width="22" height="14">
+		<label x="122" y="2">Chan</label>
+		<textDisplay x="122" y="13" width="22" height="14">
 			<parameter component-id="p1" alt="chan" />
 		</textDisplay>
-		<knob x="156" y="9" size="18">
+		<knob x="146" y="9" size="18">
 			<parameter component-id="p1" alt="chan" />
 		</knob>
-		<label x="190" y="2">Vel</label>
-		<textDisplay x="190" y="13" width="22" height="14">
+		<label x="172" y="2">Vel</label>
+		<textDisplay x="172" y="13" width="22" height="14">
 			<parameter component-id="p2" alt="vel" />
 		</textDisplay>
-		<knob x="216" y="9" size="18">
+		<knob x="196" y="9" size="18">
 			<parameter component-id="p2" alt="vel" />
 		</knob>
+		<label x="232" y="2">Thru</label>
+		<connector x="236" y="13" size="13" class="cLOGIC">
+			<connector component-id="c3" alt="thru" />
+		</connector>
 	</module>

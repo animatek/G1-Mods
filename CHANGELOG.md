@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-19
 
+- Claude: **Note Out: the module after it ran on its data** (found by Javier: a second NoteSeq
+  stood still, a ClkDivFix added live silenced the MIDI). Its DSP code left r3 at its own X
+  words; it now moves it past them, as every module must. And a Gate thru output. Checked:
+  `check_note_out.py` with a new case (an LFO after it into Note: the notes follow it), a patch
+  with two NoteSeqs (the second steps), a ClkDivFix added live (the MIDI goes on).
 - Claude: **type 60, Note Out**, after the G2's NoteSend: Note and Gate in, Chan and Vel; a note
   on at Gate's rising edge, its note off at the falling one, out of the G1's MIDI OUT. The DSP
   packs the gate's edges and the note into one X word (`noteout.asm`); a 68k routine of ours,
