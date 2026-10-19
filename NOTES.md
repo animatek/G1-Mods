@@ -733,8 +733,8 @@ edge.
   loop are merged (a note shorter than that is lost, a retrigger is an off and an on); a patch
   uploaded with another Note Out at the very same record keeps the entry, and its note goes off
   only at the next change of its word; no SysEx, no CC.
-- **Checked:** `check_note_out.py` in G1-Emu (its g1patchtest prints the MIDI OUT since PR #79;
-  `G1_PATCHTEST` names that build until it is in main): an LFO into Gate gives `90 40 64` /
+- **Checked:** `check_note_out.py` in G1-Emu (its g1patchtest prints the MIDI OUT since PR #79,
+  in main since 2026-10-19): an LFO into Gate gives `90 40 64` /
   `80 40 40` in turn; a Constant of +12 into Note with Chan 3 and Vel 90, `92 4C 5A` / `82 4C 40`;
   Chan changed live to 5, the note on goes off on channel 1 and the next ones are on 5; a patch
   without it sends nothing.

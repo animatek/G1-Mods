@@ -5,7 +5,8 @@
 
 noteout-lfo.pch: an LFO's square into Gate, Note unplugged, Chan 1 and Vel 100. Each case is
 that patch with something changed, played in G1-Emu's g1patchtest, which prints what came out
-of the G1's MIDI OUT (G1-Emu 2026-10-19, PR #79; G1_PATCHTEST names another build):
+of the G1's MIDI OUT (G1-Emu since 2026-10-19, PR #79: build it from main; G1_PATCHTEST names
+another build):
 
 - the LFO alone: notes on and off in turn, all E4 (64) on channel 1 with velocity 100, each off
   for the note just turned on.
