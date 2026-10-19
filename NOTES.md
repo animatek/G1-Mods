@@ -730,3 +730,8 @@ rising edge with the note Note had then, its note off at the falling edge.
   `80 40 40` in turn; a Constant of +12 into Note with Chan 3 and Vel 90, `92 4C 5A` / `82 4C 40`;
   Chan changed live to 5, the note on goes off on channel 1 and the next ones are on 5; a patch
   without it sends nothing.
+- **Played by Javier (2026-10-19):** a G1 sequencer into Note and Gate in G1-Emu's window, the
+  notes on another track in Bitwig. Bitwig on Linux reads raw MIDI cards only: it hears G1-Emu
+  through the `G1` gadget card (`G1 MIDI 1`), which the emulator links by itself only when its
+  `rawMidiCard` setting names that card (it said `G1Emu` here, and nothing arrived until
+  `aconnect` linked the ports by hand).
