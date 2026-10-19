@@ -3,6 +3,23 @@
 Everything that changes in G1-Mods, newest first. Every change that goes into the repo gets its
 line here, in the same commit (see `CLAUDE.md`).
 
+## 2026-10-19
+
+- Claude: NOTES, flashing a real G1: **Shift + Store at power-on enters the MIDI update mode**,
+  confirmed by Javier on his G1, so a bad OS of ours has a way back; and Shift + Patch/Load
+  boots the ROM's factory OS (tried too): two ways back from a bad OS.
+- Claude: NOTES, **an OS update keeps the patch banks** in G1-Emu: Clavia's 3.03b updater over a
+  flash with the factory OS, then a plain restart; the banks' bytes compared with a copy taken
+  before, unchanged.
+- Claude: NOTES, **Clavia's 3.03b flashed over itself on Javier's real G1**: the whole procedure
+  (Shift + Store, Safe (Slower), the G1's own Store to confirm), as the rehearsal before an OS of
+  ours.
+- Claude: NOTES, **a MIDI Out module as the G2's** (idea): how the G2's NoteSend works (a DSP
+  mailbox the CPU polls). Then read in the G1's OS: the MIDI-out sender and its queues, the
+  keyboard model's unused note senders, and why the lights' poll does not do for notes (active
+  slot only, with an editor); the plan, a poll of our own from the main loop. Testing is ready:
+  G1-Emu's plugin now has the MIDI OUT as its MIDI output (G1-Emu PR #79).
+
 ## 2026-10-18
 
 - Claude: **a README**: what G1-Mods is and how it works, the twelve modules, the layout, how to

@@ -192,11 +192,13 @@ MIDI update utility and the factory OS are in the **512 KB ROM, which cannot be 
 installed OS and the patch banks are in the 1 MB flash. At power-on the loader copies the flash's
 OS to RAM, or enters the MIDI update mode if the flash is empty or a key combination is held, or
 boots the ROM's own factory OS with another combination. So an OS of ours that hangs, or a power
-cut halfway through, is recovered by sending Clavia's 3.03b update again. Which physical buttons
-make those combinations (the loader reads raw panel rows: D1/D2/D3) is still to be checked in
-the emulator.
+cut halfway through, is recovered by sending Clavia's 3.03b update again. **Holding Shift + Store
+at power-on enters the MIDI update mode** (Javier, on his real G1, 2026-10-19); and **Shift +
+Patch/Load boots the ROM's factory OS**, which does not use the flash's OS at all (tried by Javier
+too: slots "Empty patch", and the next plain power-on is back to normal). So even an OS of ours
+that hangs leaves two ways back (`../G1-Emu/NOTES.md`, "Boot and memory map").
 
-Risks: whether an OS update keeps the patch banks is not known (back them all up first); a
+Risks: an OS update keeps the patch banks, at least in G1-Emu (2026-10-19: Clavia's updater in Wine over a flash with the factory OS, then a plain restart: every byte from `$70000` on unchanged, patches there; still back them all up before a real G1); and **on Javier's real G1** (2026-10-19) Clavia's 3.03b went over its 3.03b the same way: Shift + Store at power-on, the updater with Safe (Slower) through the UM-ONE, the G1 asks "Update flash? Store = yes" (any other key keeps the old OS), Store, `Update completed`, restart; a
 patch with new types stored in a bank may trip Clavia's OS later (while testing, upload such
 patches to a slot, never store them); and the real hardware against the emulator.
 
@@ -634,3 +636,51 @@ refuses a patch with them. In the maintainer's desktop both have launchers ("G1-
 
 There is no 68k assembler installed; the routines are short enough to hand-assemble and check
 with `g1boot ... dis`, or `vasm` can be built.
+
+## A MIDI Out module, as the G2's (idea, 2026-10-19)
+
+Asked for by users: the G1's sequencers playing notes out of its MIDI Out. The G1 already sends
+CC there (knob moves), so the port is wired and the OS can write to it: the 68331's SCI
+(`../G1-Emu/NOTES.md`, "two independent serial ports").
+
+**How the G2 does it** (`../G2-Emu`, Ghidra on the demo's Mac binary, read only, 2026-10-19):
+the DSP part of NoteSend only watches the gate and leaves a "pending" word in its Y memory with
+the note and velocity next to it; the CPU polls every MIDI module's memory over the host port
+(`CPatchMIDIOut::PollQue`), builds the note on or off from those words, sends it, and clears the
+pending word with a host command. The DSP never touches MIDI: it is a mailbox the CPU reads.
+
+**The G1's MIDI out, read 2026-10-19 (factory OS, linear disassembly of ROM `$C800`):**
+
+- **The sender** is `$103556`, called from the timer interrupt (`$1009BC`), one byte per call
+  when the SCI can take it (`SCSR $FFFC0C` bit 8, data to `SCDR $FFFC0E`). In order of priority:
+  a MIDI clock `$F8` when `$1C5354` is set; the **byte queue at `$15E2D2`**; the 3-byte queue at
+  `$15E5E0` (sent as whole messages); the 2-byte queue at `$15E8EE`; the SysEx buffer at
+  `$1A5724` (length word, data from +2).
+- **Each queue** is a ring of `$300` bytes: data from its base, read pointer at `+$300`, write
+  pointer at `+$304`, last address at `+$308`, count (word) at `+$30C`. Writing: store, bump `+$304`,
+  wrap to the base past `+$308`, then `addq` the count (one instruction, so safe against the
+  interrupt that drains it).
+- **The OS already has note senders**: `$103790(note, velocity)` queues `$9n note vel` and
+  `$1037FC(note, velocity)` `$8n note vel` into the byte queue, once for each channel in the list
+  at `$15EBFD` (count at `$15EBFC`, built at `$103A54` from the slots' channels). Their only
+  callers are the keyboard scan (`$117A6E`, `$117AF8`, `$11795C`, `$117B2C`): it is the keyboard
+  model's key-to-MIDI path, alive but unused in the rack. The CC sender is `$1038D2(channel,
+  controller, value)` (3-byte queue, a pending message for the same controller is updated in
+  place); `$103868` sends CC 64, `$10395A` bank (CC 32) and program change.
+- So a module of ours **sends a note by writing three bytes into the byte queue** with its own
+  channel (the senders above use the keyboard's channel list, not ours), the same way they do.
+
+**The lights' path does not do for notes.** The value routines (`$1169BA`) are polled from
+`$116A3E` only for the active slot (`$1C3ABE`), 5 entries at a time, and only while the PC port
+is free (`$1177A2`, `$1A5BBC`): they exist to feed the editor. A MIDI Out module needs its own
+poll: a list of our own (slot, DSP, X address, channel), filled by the module's `+$0C` like the
+light registration, and walked from the OS's main loop (`$104DC6` runs ~3 000 times a second,
+see G1-Emu's dial notes), reading each mailbox with `$10C32E` and writing the note into the
+byte queue. Not from the timer interrupt: the host port reads would race the main loop's.
+
+Still open: the hook into the main loop, what the DSP side keeps (gate, note, velocity, a
+pending flag cleared by the 68k, as the G2), notes left hanging when a patch changes (send note
+offs), and the same addresses in the 3.03b update. **Testing is ready (2026-10-19):** G1-Emu's
+standalone already sent the MIDI OUT to its `MIDI` port, and its plugin now has it as its MIDI
+output (G1-Emu branch `midi-out-plugin`; Javier saw a knob's CC reach another track in Bitwig).
+`g1patchtest --knob-at S:knob` prints what came out of the MIDI OUT.
