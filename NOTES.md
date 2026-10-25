@@ -224,6 +224,42 @@ Before a real G1:
 4. **On the G1**: back up the banks, flash Clavia's once (the procedure works), then ours, test,
    and back to Clavia's.
 
+## The update protocol (2026-10-25)
+
+Step 2's format, solved: `tools/g1update.py` builds the stream, and `unpack` turns a recorded one
+back into its OS image. How it was found: G1-Emu in update mode (`G1_UPDATE=1`, a copy of the
+flash, `G1_MIDI_LOG=1`) took Clavia's 3.03b updater in Wine with Safe (Slower), and logged all it
+received (`pcport-in.bin`, kept in `out/update-capture/`, ignored: it carries Clavia's OS). The
+boot ROM's update utility (code from ROM `$0800`, run with RAM = ROM + `$FF800`) was then read
+where it handles each message: the dispatcher at ROM `$40BE`, 70 at `$41BE`, 71 at `$42B4`, 73 at
+`$435E`, the 5-byte unpacker at `$43E4` and the descrambler at `$46FE`.
+
+- Every message is `F0 33 7F 06 <cmd> ... F7`. `00 00 00` is the greeting: the G1 answers
+  `F0 33 00 06 01 03 03 7F 01 08 01 F7`, its `7F` the "Update mode" state Clavia's editor knows.
+- **70**, the header: address (5 bytes), length (5 bytes), OS version (2 bytes, `03 03`), and the
+  sum of those 12 bytes `& 7F`. Address `$300020` (the flash, past its 32-byte header), length
+  `$5E000`, which the utility only takes inside `$300000`-`$400000` (the flash; the data wait in
+  RAM at `$17F000`) or `$100000`-`$200000`.
+- **71**, data: 128 packed bytes = 112 bytes, 3,438 messages for the 3.03b. **No answer per
+  message**: Safe (Slower) only paces them.
+- **73**: the 32-bit sum of every data byte as sent. Right, the G1 answers `F0 33 00 06 7F F7` and
+  shows "Update flash?"; Store erases, writes and verifies the flash, any other key keeps the old OS.
+- **Packing** (the 5-byte fields and the data alike): groups of 8, the first byte carrying the low
+  bit of each of the next 7, LSB first; each byte is `(b << 1) | bit`. Not the bitstream of the
+  editor's patch packets.
+- **Scrambling**: before packing, each byte has its odd and even bits swapped and is XORed with a
+  key that starts at 17 and grows by 17 (mod 256); the utility undoes it before writing the flash.
+  The checksum is over the scrambled bytes.
+
+Checked: the capture unpacks and descrambles into `rack-os-3.03b.bin` byte for byte, its checksum
+matches, and `g1update.py build` on that image gives the updater's 3,440 messages after its two
+greetings identical byte for byte except the last data message's padding (the updater pads with
+leftovers of its buffer past the 80 bytes the length asks for; the G1 ignores them, and so does
+the checksum).
+
+This is how NME can install an OS, Clavia's or a G1-Mods build, into G1-Emu or a real G1; the
+user's image comes from their own copy of the updater or from G1-Emu (`os/received-...bin`).
+
 ## Type 120, complete: D-type and RS-type (2026-10-16)
 
 The FlipFlop is now the G2's: inputs Clk, In and Rst, outputs Q and NotQ, a Type parameter

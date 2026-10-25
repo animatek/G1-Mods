@@ -3,6 +3,17 @@
 Everything that changes in G1-Mods, newest first. Every change that goes into the repo gets its
 line here, in the same commit (see `CLAUDE.md`).
 
+## 2026-10-25
+
+- Claude: **the OS update protocol, solved, and `tools/g1update.py`**, which builds the MIDI
+  stream that installs an OS into a G1's flash (`build`) and turns a recorded one back into its
+  image (`unpack`): messages 00/70/71/73, the update utility's 8-to-7 packing and its byte
+  scrambling, read from the boot ROM and from a capture of Clavia's 3.03b updater in G1-Emu.
+  NOTES.md, "The update protocol". Checked: the capture unpacks into the 3.03b image byte for byte
+  with its checksum; `build` on that image gives the updater's messages byte for byte but the
+  last one's padding; and our stream, sent with `aseqsend -i 60` (3 min 27 s), was taken by G1-Emu
+  in update mode, which answered the checksum as right (`F0 33 00 06 7F F7`).
+
 ## 2026-10-19
 
 - Claude: **Note Out: the module after it ran on its data** (found by Javier: a second NoteSeq
