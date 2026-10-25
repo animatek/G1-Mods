@@ -3,6 +3,7 @@
 
     tools/g1update.py build OS.bin out.syx [--version 3.03]
     tools/g1update.py unpack capture.syx OS.bin       (a recorded update back into its OS image)
+    tools/g1update.py fromrom out/rom-all.bin OS.bin  (the OS inside a ROM patch_rom.py built)
 
 OS.bin is the image that runs from RAM at $100000 (385,024 bytes for the rack's 3.03b), as G1-Emu
 keeps it (`os/received-...bin`) and as tools/patch_rom.py works on. Nothing of Clavia's is in this
@@ -32,6 +33,8 @@ import sys
 HEADER = bytes([0xF0, 0x33, 0x7F, 0x06])
 FLASH_OS = 0x300020     # where the OS goes in the flash, after its 32-byte header
 BLOCK = 112
+ROM_OS = 0xC800             # the factory OS in the boot ROM, run from RAM at $100000
+MAX_IMAGE = 0x70000 - 0x20 - 4  # the flash keeps the OS only up to $70000; the loader copies a long more
 
 
 def pack(data):
@@ -124,6 +127,22 @@ def from_capture(stream):
     return unscramble(bytes(data))
 
 
+def from_rom(rom):
+    """The factory OS a ROM carries, as an update image: patch_rom.py's modules included.
+
+    G1-Emu boots the ROM's OS as the whole rest of the ROM (0x73800 bytes), more than a flash
+    holds; past MAX_IMAGE it is all $FF in the rack's 3.03 ROM and in every build of ours, so it
+    is cut there and the loader sees the same $FF it would in a flash."""
+    if len(rom) != 0x80000:
+        sys.exit("not a 512 KB G1 ROM")
+    image = rom[ROM_OS:ROM_OS + MAX_IMAGE]
+    if any(b != 0xFF for b in rom[ROM_OS + MAX_IMAGE:]):
+        sys.exit("this ROM's OS goes past what a flash holds ($16FFE0): it cannot be installed")
+    if image[:4] != bytes([0x46, 0xFC, 0x27, 0x00]):
+        sys.exit("no G1 OS at $C800")
+    return image
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -134,12 +153,19 @@ def main():
     u = sub.add_parser("unpack")
     u.add_argument("capture")
     u.add_argument("os")
+    r = sub.add_parser("fromrom")
+    r.add_argument("rom")
+    r.add_argument("os")
     a = ap.parse_args()
     if a.cmd == "build":
         major, minor = a.version.split(".")
         msgs = build(open(a.os, "rb").read(), (int(major), int(minor)))
         open(a.out, "wb").write(b"".join(msgs))
         print(f"{a.out}: {len(msgs)} messages")
+    elif a.cmd == "fromrom":
+        image = from_rom(open(a.rom, "rb").read())
+        open(a.os, "wb").write(image)
+        print(f"{a.os}: {len(image)} bytes")
     else:
         image = from_capture(open(a.capture, "rb").read())
         open(a.os, "wb").write(image)

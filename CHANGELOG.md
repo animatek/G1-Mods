@@ -5,6 +5,14 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-25
 
+- Claude: **`g1update.py fromrom`**: the OS a ROM built by `patch_rom.py` carries, as an update
+  image, so a G1-Mods build goes into a flash like any OS (NME's Device > Update Synth OS, or
+  `g1update.py build`). The ROM's OS runs to its end, 0x73800 bytes, more than a flash holds;
+  past `$16FFE0` it is all $FF in the rack's 3.03 ROM and in our builds (they end at `$169FD7`),
+  so it is cut there, and a build that went past would be refused. Checked: `out/rom-all.bin` (13
+  types) gives a 458,716-byte image that differs from the factory OS in the modules' 14,763 bytes;
+  NME (branch `mods-layer-2`) installed it into G1-Emu in update mode, the OS kept was that image
+  byte for byte, and after the restart G1-Emu said 3.09 and NME offered the modules (Javier).
 - Claude: **the OS update protocol, solved, and `tools/g1update.py`**, which builds the MIDI
   stream that installs an OS into a G1's flash (`build`) and turns a recorded one back into its
   image (`unpack`): messages 00/70/71/73, the update utility's 8-to-7 packing and its byte
