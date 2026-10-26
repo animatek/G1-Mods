@@ -76,10 +76,36 @@ its `Roms/`, and NME built from its `mods-layer` branch (`run-nme.sh` says how).
 ./run-g1emu.sh             # G1-Emu with every new module, on a flash of its own
 ./run-nme.sh               # NME, which offers them to that synth
 python3 tests/run_all.py   # every module's test in G1-Emu
-tools/patch_rom.py flipflop,mux8 <your 3.03 ROM> out/rom-mine.bin   # only some modules
+tools/patch_rom.py flipflop,mux8 <your 3.03 ROM> Roms/rom-mine.bin   # only some modules
 ```
 
 Close your usual G1-Emu first: both take the same MIDI ports. Your usual flash is not touched.
+
+## Where the builds are
+
+Everything built goes into **`Roms/`**, next to this README. Git ignores the whole folder (it
+holds Clavia's code), so it is never uploaded: it lives only on your computer.
+
+| File | What it is | What it is for |
+| --- | --- | --- |
+| `Roms/rom-all.bin` | The G1's whole ROM (512 KB) with **every** new module (all the types in the table above). | Booting G1-Emu with the modules: `./run-g1emu.sh` does it. |
+| `Roms/os-all.bin` | The same OS alone, as an update image (about 450 KB). | Putting it into a G1's flash like an OS update: NME's *Device > Update Synth OS*, or `tools/g1update.py build` for the MIDI stream. **G1-Emu only for now.** |
+| `Roms/flash-all.bin` | The flash G1-Emu uses with that ROM: the patches you save there. | Kept apart from your usual G1-Emu flash, which is never touched. |
+| `Roms/clavia-original/` | Clavia's 3.03b OS update, recorded from G1-Emu on 2026-10-25. | The way back: an untouched OS to install if a build goes wrong. |
+| `Roms/old/` | Earlier experiments (Note Out's tries, the first FlipFlop, audio tests...) and flashes kept aside. | Nothing; kept only to look back. It can be deleted. |
+
+`./run-g1emu.sh` **rebuilds `rom-all.bin` and `os-all.bin` every time it starts**, from G1-Emu's
+own ROM and the modules as they are now, so the two are always the current ones and always in
+step. Another selection gets its own names: `./run-g1emu.sh flipflop` writes `rom-flipflop.bin`,
+`os-flipflop.bin` and `flash-flipflop.bin`. By hand:
+
+```sh
+tools/patch_rom.py all ../G1-Emu/Roms/NORD-MODULAR-RACK-VER-3.03.BIN Roms/rom-all.bin
+tools/g1update.py fromrom Roms/rom-all.bin Roms/os-all.bin
+```
+
+`out/` is something else: the tools' working files (the DSP assembler's index, NME data copies).
+No ROM goes there.
 
 ## Who is responsible for what
 

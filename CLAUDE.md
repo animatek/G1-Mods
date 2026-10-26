@@ -24,7 +24,8 @@ works well, it can be merged.
 
 - **Nothing of Clavia's goes into Git**: no ROM, no OS image (original or patched), no DSP code
   copied from the ROM or from the G2 demo. Tools take the user's own ROM and write the result
-  outside the repo (`out/`, ignored, or the scratchpad).
+  into `Roms/` (ignored; README, "Where the builds are"), or the scratchpad. `out/` is only
+  the tools' working files.
 - **Clavia's code is studied, not copied.** The G2 demo (`../G2-Emu`) shows how Clavia wrote a
   module; ours is written new. Notes describe it in words.
 - **The emulator first.** A real G1 is only flashed when it all works in G1-Emu, and the ROM's

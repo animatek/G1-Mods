@@ -3,6 +3,15 @@
 Everything that changes in G1-Mods, newest first. Every change that goes into the repo gets its
 line here, in the same commit (see `CLAUDE.md`).
 
+## 2026-10-26
+
+- Claude: **the builds, in one place: `Roms/`** (ignored, as before). `rom-all.bin` (G1-Emu),
+  `os-all.bin` (the same OS as an update image), `flash-all.bin`, Clavia's 3.03b update kept as
+  the way back in `clavia-original/`, and the earlier experiments in `old/`; they were all mixed
+  in `out/`. `run-g1emu.sh` now builds into `Roms/` and rebuilds the OS image with the ROM, so
+  both stay in step. README, "Where the builds are". Checked: rebuilding both from G1-Emu's ROM
+  gives the moved files byte for byte (13 types).
+
 ## 2026-10-25
 
 - Claude: **`g1update.py fromrom`**: the OS a ROM built by `patch_rom.py` carries, as an update

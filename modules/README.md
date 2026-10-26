@@ -34,4 +34,4 @@ Nothing of Clavia's goes into a module folder: no ROM bytes, no DSP code copied 
 from the G2 demo. `build.py` may read the user's ROM through `g1rom` (a donor type's routines),
 never carry it.
 
-Building only some modules: `tools/patch_rom.py flipflop,mux8 <your 3.03 ROM> out/rom-mine.bin`.
+Building only some modules: `tools/patch_rom.py flipflop,mux8 <your 3.03 ROM> Roms/rom-mine.bin`.

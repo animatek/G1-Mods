@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Builds the new module types into a copy of the user's G1 ROM (rack OS 3.03).
 
-    tools/patch_rom.py all ../G1-Emu/Roms/NORD-MODULAR-RACK-VER-3.03.BIN out/rom-all.bin
-    tools/patch_rom.py flipflop,mux8 <rom> out/rom-mine.bin     # just these modules
+    tools/patch_rom.py all ../G1-Emu/Roms/NORD-MODULAR-RACK-VER-3.03.BIN Roms/rom-all.bin
+    tools/patch_rom.py flipflop,mux8 <rom> Roms/rom-mine.bin     # just these modules
     tools/patch_rom.py --list
 
 Each module is a folder in modules/ (its module.json, its build.py, its DSP code and its tests);

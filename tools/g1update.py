@@ -3,7 +3,7 @@
 
     tools/g1update.py build OS.bin out.syx [--version 3.03]
     tools/g1update.py unpack capture.syx OS.bin       (a recorded update back into its OS image)
-    tools/g1update.py fromrom out/rom-all.bin OS.bin  (the OS inside a ROM patch_rom.py built)
+    tools/g1update.py fromrom Roms/rom-all.bin OS.bin  (the OS inside a ROM patch_rom.py built)
 
 OS.bin is the image that runs from RAM at $100000 (385,024 bytes for the rack's 3.03b), as G1-Emu
 keeps it (`os/received-...bin`) and as tools/patch_rom.py works on. Nothing of Clavia's is in this
