@@ -2,6 +2,7 @@
   "type": 123,
   "name": "5-StepSeq",
   "fullname": "5-Step Sequencer, one knob a step",
+  "summary": "Five bipolar knobs, one a step, with step LEDs.",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",

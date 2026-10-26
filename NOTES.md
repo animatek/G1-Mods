@@ -779,3 +779,66 @@ edge.
   through the `G1` gadget card (`G1 MIDI 1`), which the emulator links by itself only when its
   `rawMidiCard` setting names that card (it said `G1Emu` here, and nothing arrived until
   `aconnect` linked the ports by hand).
+
+## The first real G1 (2026-10-26)
+
+**It does not boot.** `Roms/os-all.bin` (the 3.03 ROM's factory OS with the 13 types, built by
+`g1update.py fromrom`) went into Javier's rack G1 through NME's *Device > Update Synth OS*
+(branch `mods-layer-2`, Safe, about 12 minutes): the G1 took it, asked "Update flash?", wrote it.
+At power-on it shows its name and `V3.03` and stays there: the OS runs, then hangs. The same image
+boots and plays in G1-Emu (2026-10-25).
+
+**The way back worked**, the first time with NME: Shift + Store at power-on, *Update Synth OS*
+with `Roms/clavia-original/clavia-3.03b-os.bin` (the 25/10 capture through `g1update.py unpack`),
+Safe, Store; the G1 is back on Clavia's 3.03b.
+
+Open: why the real one hangs. To look at, in this order:
+- **The RAM the package runs from**, `$1C6000`-`$1E8000`: "never touched" was measured in G1-Emu
+  (a filled pattern after an NME session); on the real board something else may use it (the DSP
+  host port, the stacks of another state) or it may not be what the emulator says.
+- **Clavia's factory OS from the flash.** Never tried on a real G1 without mods: the 3.03 ROM's OS
+  installed as an update (not booted from the ROM with Shift + Patch/Load). If that hangs too, the
+  cause is the image or its length (458,716 bytes against the 3.03b's 385,024), not the modules.
+- **The stages inside the OS image** (`$166574` and `$16B07A`): untouched until the types are
+  registered in G1-Emu; on the real G1 the boot may write them sooner.
+- **Note Out's hook** in the main loop (`$100E6E`): a build without `note-out` tells it apart.
+
+Cheapest test first: the factory OS alone, then one module (`flipflop`), then all.
+
+**Second try, the same day: the length, not the modules.** Clavia's factory OS alone, as
+`g1update.py fromrom` gives it (`Roms/tests/factory-3.03-os.bin`, 458,716 bytes: the OS ends at
+$5DFDF and the rest is $FF up to what a flash holds), got **"Writing to flash / Write Error"** on
+the real G1. Nothing of ours in it; what it shares with `os-all.bin` is the length, against the
+3.03b's 385,024 ($5E000) that writes fine. After it, a plain power-on showed **"Update utility /
+Curr ver 255.255"**: the failed write had left the flash's OS erased and the loader went into
+update mode on its own (the safety net works without Shift + Store). Clavia's 3.03b brought it back.
+
+**Why (read in the boot ROM the same day): the update utility erases six sectors, no more.**
+After "Update flash? / Store", ROM `$4498` erases (`$104DC4`, ROM `$55C4`), writes (`$10489A`, ROM
+`$509A`, a byte at a time, each polled) and verifies. The erase takes one argument: 1, as the
+update calls it, erases sectors 0-5 (`$300000`-`$35FFFF`, the loop at ROM `$5894`: `moveq #6,d3`,
+from `$310000` a sector at a time, sector 0 first with its header kept); 0 would erase all 16.
+So **an OS image can be at most `$60000 - $20` = 393,184 bytes**. Clavia's 3.03b is 385,024;
+`fromrom`'s images are 458,716 and our package lies in sector 6 (image `$66574`-`$69FD7`).
+Sector 6 is never erased by an update: a write there only works on bytes still `$FF`.
+
+What happened on the real G1, then: sector 6 was blank the first time, so `os-all.bin` was
+written whole, the header too (else the loader would have gone to update mode, as the second time
+did): **the hang at `V3.03` is real, not a half-written OS**, and still unexplained. Our package
+then stayed in sector 6 (Clavia's 3.03b, sent back after, neither erases nor uses it), so the
+factory image, whose sector-6 part is all `$FF`, could not be "programmed" over it (a flash only
+clears bits; the polled byte never reads `$FF`): Write Error, nothing in sector 6 changed. G1-Emu
+runs the same ROM code but its flash had sector 6 blank both times, so it never showed it.
+
+Consequences:
+- The builder must keep the image within 393,184 bytes: `fromrom` cuts at the last byte in use
+  or refuses past `$5FFE0`. Clavia's OS uses up to `$5DFDF`: **8,192 bytes free** inside the
+  erased sectors, against our 14,896. The package has to shrink (compressed, unpacked at boot)
+  or live somewhere the update writes, or be written by something of ours.
+- The real G1's sector 6 still holds our old package. Harmless to Clavia's OS; it blocks any image
+  that reaches into it. Only an erase with argument 0 (all 16 sectors, the patch banks too)
+  clears it from the boot ROM.
+- G1-Emu should model it: an update should fail as the real one does when sector 6 is not blank
+  (a feature for G1-Emu itself, there).
+- Still open: why `os-all.bin` hangs on the real G1. `factory-3.03-os-short.bin` (Clavia's
+  factory OS, 385,024 bytes) tells whether the factory OS boots from a real flash at all.

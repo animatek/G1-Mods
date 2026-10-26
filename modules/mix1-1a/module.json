@@ -2,6 +2,7 @@
   "type": 121,
   "name": "Mix1-1A",
   "fullname": "1 Input Chain Mixer",
+  "summary": "One-input chain mixer, as the G2's (its Lin/dB/Exp curves still missing).",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",

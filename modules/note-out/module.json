@@ -2,6 +2,7 @@
   "type": 60,
   "name": "NoteOut",
   "fullname": "Note Out, a gate and a note to the MIDI OUT",
+  "summary": "A gate and a note out of the G1's MIDI OUT, as the G2's NoteSend: Chan, Vel, Gate thru.",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",

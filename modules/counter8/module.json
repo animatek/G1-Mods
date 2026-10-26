@@ -2,6 +2,7 @@
   "type": 126,
   "name": "8Counter",
   "fullname": "8 Counter, one output a step",
+  "summary": "Eight outputs, one high a step, with Rst and LEDs.",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",

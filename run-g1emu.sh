@@ -15,7 +15,10 @@ emu=../G1-Emu
 rom=Roms/rom-$exp.bin
 mkdir -p Roms
 python3 -I tools/patch_rom.py "$exp" "$emu/Roms/NORD-MODULAR-RACK-VER-3.03.BIN" "$rom" || exit 1
-python3 -I tools/g1update.py fromrom "$rom" "Roms/os-$exp.bin" >/dev/null || exit 1
+# the OS image only when it fits what an update erases (g1update.py says why not); the emulator
+# runs either way
+rm -f "Roms/os-$exp.bin"
+python3 -I tools/g1update.py fromrom "$rom" "Roms/os-$exp.bin" >/dev/null
 bin=$emu/build/app/gui/g1gui_artefacts/Release/G1-Emu
 [ -x "$bin" ] || { echo "build G1-Emu first ($bin)"; exit 1; }
 G1_OS= exec "$bin" "$rom" "$PWD/Roms/flash-$exp.bin" 2>/dev/null

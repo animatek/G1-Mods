@@ -91,6 +91,46 @@ def _all():
 _all()
 
 
+class BuildError(Exception):
+    """A ROM the build cannot go into: not the 3.03, or not as expected where it writes."""
+
+
+def patch(src, types, in_place=()):
+    """The user's ROM (bytes) with these types (callables given the Build) and in-place words;
+    the new ROM, as bytes. What the command line and the web builder (web/) both call."""
+    rom = bytearray(src)
+    if len(rom) != ROM_SIZE or not hashlib.sha256(rom).hexdigest().startswith(ROM_SHA256):
+        raise BuildError("not the rack OS 3.03 ROM")
+    if types:
+        in_place = list(in_place) + [VERSION_MARK]   # an OS with modules says so (3.09)
+    for addr, old, new in in_place:
+        o = ram_to_rom(addr)
+        if rom[o:o + 4] != old.to_bytes(4, "big"):
+            raise BuildError(f"unexpected word at ${addr:06X}: {rom[o:o + 4].hex()}")
+        rom[o:o + 4] = new.to_bytes(4, "big")
+    if types:
+        b = Build(bytes(rom))
+        for add in types:
+            add(b)
+        blocks, (addr, old, new) = b.finish()
+        for at, data in blocks:
+            o = ram_to_rom(at)
+            if rom[o:o + len(data)] != b"\xff" * len(data):
+                raise BuildError(f"${at:06X} is not free in this ROM")
+            rom[o:o + len(data)] = data
+        o = ram_to_rom(addr)
+        if rom[o:o + 4] != old:
+            raise BuildError(f"unexpected hook at ${addr:06X}: {rom[o:o + 4].hex()}")
+        rom[o:o + 4] = new
+        for addr, old, new in b.patches():      # the OS's calls a module takes over
+            o = ram_to_rom(addr)
+            if rom[o - 2:o] != b"\x4e\xb9" or rom[o:o + 4] != old:
+                raise BuildError(f"unexpected call at ${addr - 2:06X}: {rom[o - 2:o + 4].hex()}")
+            rom[o:o + 4] = new
+        print(f"new types {b.types}, {b.at - RUN} bytes, stored at ${STAGE:06X}, run at ${RUN:06X}")
+    return bytes(rom)
+
+
 def main():
     if sys.argv[1:] == ["--list"]:
         for name, (what, _, _) in EXPERIMENTS.items():
@@ -104,37 +144,10 @@ def main():
         if any(n not in mods for n in name.split(",")):
             sys.exit(f"no experiment or module '{name}' (--list)")
         EXPERIMENTS[name] = (name, [mods[n].add for n in name.split(",")], [])
-    rom = bytearray(open(src, "rb").read())
-    if len(rom) != ROM_SIZE or not hashlib.sha256(rom).hexdigest().startswith(ROM_SHA256):
-        sys.exit("not the rack OS 3.03 ROM")
-    _, types, in_place = EXPERIMENTS[name]
-    if types:
-        in_place = list(in_place) + [VERSION_MARK]   # an OS with modules says so (3.09)
-    for addr, old, new in in_place:
-        o = ram_to_rom(addr)
-        if rom[o:o + 4] != old.to_bytes(4, "big"):
-            sys.exit(f"unexpected word at ${addr:06X}: {rom[o:o + 4].hex()}")
-        rom[o:o + 4] = new.to_bytes(4, "big")
-    if types:
-        b = Build(bytes(rom))
-        for add in types:
-            add(b)
-        blocks, (addr, old, new) = b.finish()
-        for at, data in blocks:
-            o = ram_to_rom(at)
-            if rom[o:o + len(data)] != b"\xff" * len(data):
-                sys.exit(f"${at:06X} is not free in this ROM")
-            rom[o:o + len(data)] = data
-        o = ram_to_rom(addr)
-        if rom[o:o + 4] != old:
-            sys.exit(f"unexpected hook at ${addr:06X}: {rom[o:o + 4].hex()}")
-        rom[o:o + 4] = new
-        for addr, old, new in b.patches():      # the OS's calls a module takes over
-            o = ram_to_rom(addr)
-            if rom[o - 2:o] != b"\x4e\xb9" or rom[o:o + 4] != old:
-                sys.exit(f"unexpected call at ${addr - 2:06X}: {rom[o - 2:o + 4].hex()}")
-            rom[o:o + 4] = new
-        print(f"new types {b.types}, {b.at - RUN} bytes, stored at ${STAGE:06X}, run at ${RUN:06X}")
+    try:
+        rom = patch(open(src, "rb").read(), *EXPERIMENTS[name][1:])
+    except BuildError as e:
+        sys.exit(str(e))
     os.makedirs(os.path.dirname(os.path.abspath(dst)), exist_ok=True)
     open(dst + ".tmp", "wb").write(rom)
     os.replace(dst + ".tmp", dst)   # never a half-written ROM for an emulator starting meanwhile

@@ -2,6 +2,7 @@
   "type": 6,
   "name": "Random",
   "fullname": "Random, clocked, with Seed, Poly, Step, Edge, Prob, Length and Uni/Bi",
+  "summary": "The G2's randoms in one: Seed, Poly, Step, Edge, Prob, Length, Uni/Bi.",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",

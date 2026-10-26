@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G1-Mods Builder</title>
+<style>
+:root {
+  --bg: #f6f4ef; --card: #ffffff; --ink: #1d1c1a; --muted: #5d5a53; --line: #dcd7cc;
+  --accent: #c2410c; --accent-ink: #ffffff; --ok: #15803d; --warn: #b45309; --bad: #b91c1c;
+  --tick: #fff4ec;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161514; --card: #201f1d; --ink: #f1eee8; --muted: #aaa498; --line: #38352f;
+    --accent: #fb923c; --accent-ink: #1d1c1a; --ok: #4ade80; --warn: #fbbf24; --bad: #f87171;
+    --tick: #2c2118;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 19px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { position: sticky; top: 0; z-index: 2; background: var(--card); border-bottom: 1px solid var(--line); }
+header .bar { max-width: 980px; margin: 0 auto; padding: 14px 16px; display: flex; gap: 20px;
+  align-items: center; flex-wrap: wrap; }
+header strong { font-size: 22px; margin-right: auto; }
+header a { color: var(--ink); text-decoration: none; font-weight: 600; }
+header a:hover { color: var(--accent); }
+main { max-width: 980px; margin: 0 auto; padding: 8px 16px 64px; }
+h2 { font-size: 26px; margin: 40px 0 6px; }
+h2 .n { display: inline-block; width: 38px; height: 38px; line-height: 38px; text-align: center;
+  border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 20px; margin-right: 10px; }
+p.lead { color: var(--muted); margin: 0 0 16px; }
+.notice { border: 2px solid var(--warn); border-radius: 12px; padding: 14px 18px; background: var(--card); margin-top: 24px; }
+.notice strong { color: var(--warn); }
+.drop { display: block; border: 2px dashed var(--line); border-radius: 14px; padding: 28px; text-align: center;
+  background: var(--card); cursor: pointer; }
+.drop:hover, .drop.over { border-color: var(--accent); }
+.drop input { display: none; }
+.status { margin-top: 12px; font-weight: 600; }
+.status.ok { color: var(--ok); } .status.bad { color: var(--bad); } .status.wait { color: var(--muted); }
+.tools { display: flex; gap: 12px; margin: 0 0 12px; flex-wrap: wrap; }
+button { font: inherit; font-weight: 600; border-radius: 10px; border: 1px solid var(--line); background: var(--card);
+  color: var(--ink); padding: 8px 16px; cursor: pointer; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); padding: 14px 26px; font-size: 21px; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.mod { display: flex; gap: 12px; align-items: flex-start; background: var(--card); border: 1px solid var(--line);
+  border-radius: 12px; padding: 14px; cursor: pointer; }
+.mod:has(input:checked) { border-color: var(--accent); background: var(--tick); }
+.mod input { width: 22px; height: 22px; margin-top: 4px; accent-color: var(--accent); flex: none; }
+.mod .name { font-weight: 700; font-size: 20px; }
+.mod .meta { color: var(--muted); font-size: 15px; }
+.mod .sum { font-size: 17px; margin-top: 4px; }
+.room { margin-top: 16px; }
+.meter { height: 14px; border-radius: 7px; background: var(--line); overflow: hidden; }
+.meter div { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+.risk { display: flex; gap: 12px; align-items: flex-start; background: var(--card); border: 1px solid var(--line);
+  border-radius: 12px; padding: 14px; margin: 16px 0; cursor: pointer; }
+.risk input { width: 22px; height: 22px; margin-top: 4px; accent-color: var(--accent); flex: none; }
+.downloads { display: none; margin-top: 18px; gap: 12px; }
+.downloads.show { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.dl { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.dl a { display: inline-block; margin-top: 8px; font-weight: 700; color: var(--accent); font-size: 20px; }
+ol li { margin-bottom: 8px; }
+code { font-size: .9em; background: var(--card); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; }
+footer { color: var(--muted); font-size: 16px; border-top: 1px solid var(--line); margin-top: 48px; padding-top: 16px; }
+footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <strong>G1-Mods Builder</strong>
+  <a href="#rom">1 · Your ROM</a>
+  <a href="#modules">2 · Modules</a>
+  <a href="#build">3 · Build</a>
+  <a href="#install">4 · Install</a>
+</div></header>
+
+<main>
+<p class="lead" style="margin-top:24px">New module types for the Nord Modular G1, built into <b>your own</b> copy of
+its OS, here in your browser. Nothing is uploaded: your ROM and the result never leave this computer.</p>
+
+<div class="notice"><strong>Works in the G1-Emu emulator only: a real G1 does not boot it yet.</strong> Tried
+once on a real Nord Modular G1, it hung at its version screen until Clavia's OS was sent again. Do not install it
+on a real synth. A modified OS may lose your patches and may leave your synth unusable. Recovery is not guaranteed. You use it
+entirely at your own risk. An independent, unofficial project, not affiliated with Clavia.</div>
+
+<h2 id="rom"><span class="n">1</span>Your ROM</h2>
+<p class="lead">The rack's 3.03 ROM, the one G1-Emu boots (<code>NORD-MODULAR-RACK-VER-3.03.BIN</code>, 512 KB).
+We do not give it: it is Clavia's.</p>
+<label class="drop" id="drop">
+  <input type="file" id="file">
+  <span>Drop the ROM here, or click to pick it</span>
+</label>
+<div class="status wait" id="romStatus">No ROM yet.</div>
+
+<h2 id="modules"><span class="n">2</span>Modules</h2>
+<p class="lead">Tick the ones you want. Each keeps its type number for ever, so a patch that uses it opens on
+any build that has it.</p>
+<div class="tools">
+  <button id="all">Tick all</button><button id="none">Untick all</button>
+</div>
+<div class="grid" id="grid"></div>
+<div class="room">
+  <div class="meter"><div id="meter"></div></div>
+  <div class="status wait" id="roomText"></div>
+</div>
+
+<h2 id="build"><span class="n">3</span>Build</h2>
+<label class="risk"><input type="checkbox" id="agree">
+  <span>I have read it: this was tested only in the emulator, it may leave a real G1 unusable, and I am
+  responsible for my own instrument.</span></label>
+<button class="primary" id="go" disabled>Build my OS</button>
+<div class="status wait" id="buildStatus">Loading the builder…</div>
+<div class="downloads" id="downloads">
+  <div class="dl"><b>For G1-Emu</b><br>The whole ROM, with the modules.<br>
+    <a id="dlRom" download>⬇ ROM</a></div>
+  <div class="dl"><b>For a G1's flash</b><br>The OS alone, as an update image.<br>
+    <a id="dlOs" download>⬇ OS update</a><div class="status bad" id="noOs"></div></div>
+</div>
+
+<h2 id="install"><span class="n">4</span>Install</h2>
+<p class="lead"><b>In G1-Emu</b> (the safe way):</p>
+<ol>
+  <li>Close G1-Emu.</li>
+  <li>Point it at the ROM you built (Settings, or <code>G1-Emu rom.bin flash.bin</code>) with a flash of its own,
+    so your usual patches are not touched. If its settings name an OS file (<code>os =</code>), leave that empty:
+    that OS would boot instead of the one in the ROM.</li>
+  <li>Start it and connect Animatek NME: it sees version <b>3.09</b> and offers the new modules.</li>
+</ol>
+<p class="lead"><b>In a real G1</b>: <b>not yet</b>, it does not boot there. When it does, the steps will be these (back up your patch banks first):</p>
+<ol>
+  <li>Hold <b>Shift + Store</b> while switching the G1 on: it waits in MIDI update mode.</li>
+  <li>In Animatek NME: <i>Device › Update Synth OS</i>, pick the <b>OS update</b> file, speed <b>Safe</b>
+    (about 12 minutes). Do not touch the cable or the synth meanwhile.</li>
+  <li>When the G1 asks <b>“Update flash?”</b>, press <b>Store</b> (any other key keeps the old OS) and wait for
+    <i>Update completed</i>.</li>
+  <li>Switch it off and on. While trying the new modules, send patches to a slot; do not store them in a bank.</li>
+</ol>
+<p class="lead"><b>The way back:</b> Shift + Store at power-on and Clavia's 3.03b update (its own updater, or
+NME with its file). <b>Shift + Patch/Load</b> at power-on boots the ROM's factory OS, never the one in the flash.</p>
+
+<footer>
+GPLv3. Built on <a href="https://github.com/dsp56300/gearmulator">Gearmulator</a> through G1-Emu.
+Do not share built ROMs or OS files: they contain Clavia's firmware. Share your list of modules instead.
+“Nord” and “Nord Modular” are Clavia's trademarks, named only to say which instrument this is for.
+</footer>
+</main>
+
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

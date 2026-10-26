@@ -2,6 +2,7 @@
   "type": 120,
   "name": "FlipFlop",
   "fullname": "Flip-Flop D/RS",
+  "summary": "D-type and RS-type flip-flop: Clk, In, Rst, Q and NotQ.",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",

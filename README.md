@@ -10,13 +10,15 @@ folder of its own.
 > Clavia. "Nord" and "Nord Modular" are Clavia's trademarks, named here only to say which
 > instrument this is for.
 
-> **Tested only in the G1-Emu emulator.** It has never been tried on a real Nord Modular G1. A
-> modified OS may not work on real hardware, may lose your patches and may leave your synth
+> **Works in the G1-Emu emulator only. On a real G1 it does not boot yet.** Tried once on a real
+> Nord Modular G1 (2026-10-26): it showed its version and hung there, and Clavia's OS had to be
+> sent again (that worked). Do not install it on a real synth. A modified OS may lose your patches and may leave your synth
 > unusable. Recovery is not guaranteed. You use it entirely at your own risk; you are solely
 > responsible for your instrument.
 
-**Status: a work in progress, private for now.** Thirteen module types play in G1-Emu. There is no
-builder for users yet, nor a way to send the OS to a real G1.
+**Status: a work in progress, private for now.** Thirteen module types play in G1-Emu. A real
+G1 does not boot it yet (`NOTES.md`, "The first real G1"). NME installs an OS into a G1 (its
+*Device > Update Synth OS*), and a web builder is on its way (`web/`).
 
 ## How it works
 
@@ -81,6 +83,20 @@ tools/patch_rom.py flipflop,mux8 <your 3.03 ROM> Roms/rom-mine.bin   # only some
 
 Close your usual G1-Emu first: both take the same MIDI ports. Your usual flash is not touched.
 
+## The web builder (in progress)
+
+`web/` is the builder as a web page: you pick your ROM, tick the modules, and it gives you the
+ROM for G1-Emu and the OS update for a G1's flash. It runs **in your browser** (the same Python
+as `tools/patch_rom.py`, through Pyodide), so nothing is uploaded and the result is byte for byte
+the command line's. For now it runs on your own computer:
+
+```sh
+web/serve.sh               # then open http://localhost:8090
+```
+
+It needs the internet once, to load Pyodide. `web/make_bundle.py` packs the modules into
+`web/bundle.json` (ignored; `serve.sh` makes it each time).
+
 ## Where the builds are
 
 Everything built goes into **`Roms/`**, next to this README. Git ignores the whole folder (it
@@ -89,9 +105,9 @@ holds Clavia's code), so it is never uploaded: it lives only on your computer.
 | File | What it is | What it is for |
 | --- | --- | --- |
 | `Roms/rom-all.bin` | The G1's whole ROM (512 KB) with **every** new module (all the types in the table above). | Booting G1-Emu with the modules: `./run-g1emu.sh` does it. |
-| `Roms/os-all.bin` | The same OS alone, as an update image (about 450 KB). | Putting it into a G1's flash like an OS update: NME's *Device > Update Synth OS*, or `tools/g1update.py build` for the MIDI stream. **G1-Emu only for now.** |
+| `Roms/os-all.bin` | The same OS alone, as an update image. **Not made for now**: an update has room for 393,184 bytes and today's builds need more (`NOTES.md`, "The first real G1"). | Putting it into a G1's flash like an OS update: NME's *Device > Update Synth OS*. |
 | `Roms/flash-all.bin` | The flash G1-Emu uses with that ROM: the patches you save there. | Kept apart from your usual G1-Emu flash, which is never touched. |
-| `Roms/clavia-original/` | Clavia's 3.03b OS update, recorded from G1-Emu on 2026-10-25. | The way back: an untouched OS to install if a build goes wrong. |
+| `Roms/clavia-original/` | Clavia's 3.03b OS: `clavia-3.03b-os.bin`, the image (`g1update.py unpack` of the `.syx` beside it, recorded from G1-Emu on 2026-10-25). | The way back: Shift + Store at power-on, then NME's *Update Synth OS* with `clavia-3.03b-os.bin`, Safe. It brought a real G1 back on 2026-10-26. |
 | `Roms/old/` | Earlier experiments (Note Out's tries, the first FlipFlop, audio tests...) and flashes kept aside. | Nothing; kept only to look back. It can be deleted. |
 
 `./run-g1emu.sh` **rebuilds `rom-all.bin` and `os-all.bin` every time it starts**, from G1-Emu's
@@ -111,8 +127,9 @@ No ROM goes there.
 
 We make the tool. We are not responsible for anyone's G1, nor for the modules others write.
 
-- **Tested only in the emulator.** Until this says otherwise, nothing has been tried on a real G1:
-  a build may not work on one, and it may leave it unusable. Recovery is not guaranteed.
+- **Works in the emulator only.** Tried once on a real G1, it did not boot (2026-10-26). Until this
+  says otherwise, a build may not work on a real G1 and may leave it unusable. Recovery is not
+  guaranteed.
 - **Each owner is responsible for their own G1.** When there is a builder, its button stays off
   until you tick that you have read the risks.
 - **No support for real hardware.** Provided as is, without warranty of any kind (GPLv3, sections

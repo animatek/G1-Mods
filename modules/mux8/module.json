@@ -2,6 +2,7 @@
   "type": 101,
   "name": "Mux8-1",
   "fullname": "8 to 1 selector, by a knob and a level",
+  "summary": "Eight to one selector, by a knob and a level (the G2's Sw8-1 inside).",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",

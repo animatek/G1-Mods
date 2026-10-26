@@ -34,7 +34,7 @@ HEADER = bytes([0xF0, 0x33, 0x7F, 0x06])
 FLASH_OS = 0x300020     # where the OS goes in the flash, after its 32-byte header
 BLOCK = 112
 ROM_OS = 0xC800             # the factory OS in the boot ROM, run from RAM at $100000
-MAX_IMAGE = 0x70000 - 0x20 - 4  # the flash keeps the OS only up to $70000; the loader copies a long more
+MAX_IMAGE = 0x60000 - 0x20      # the update erases sectors 0-5 only: the OS ends before $360000
 
 
 def pack(data):
@@ -131,15 +131,20 @@ def from_rom(rom):
     """The factory OS a ROM carries, as an update image: patch_rom.py's modules included.
 
     G1-Emu boots the ROM's OS as the whole rest of the ROM (0x73800 bytes), more than a flash
-    holds; past MAX_IMAGE it is all $FF in the rack's 3.03 ROM and in every build of ours, so it
-    is cut there and the loader sees the same $FF it would in a flash."""
+    holds. The image ends at its last byte in use (in whole long words), and must fit what the
+    update erases: the boot ROM's utility erases only sectors 0-5, so a longer image is written
+    over sector 6 unerased, which works only while that sector is blank (NOTES.md, "The first
+    real G1"). Clavia's factory OS gives 385,024 bytes, as its 3.03b."""
     if len(rom) != 0x80000:
         sys.exit("not a 512 KB G1 ROM")
-    image = rom[ROM_OS:ROM_OS + MAX_IMAGE]
-    if any(b != 0xFF for b in rom[ROM_OS + MAX_IMAGE:]):
-        sys.exit("this ROM's OS goes past what a flash holds ($16FFE0): it cannot be installed")
+    image = rom[ROM_OS:]
     if image[:4] != bytes([0x46, 0xFC, 0x27, 0x00]):
         sys.exit("no G1 OS at $C800")
+    used = len(image.rstrip(b"\xff"))
+    image = image[:(used + 3) & ~3]
+    if len(image) > MAX_IMAGE:
+        sys.exit(f"this OS takes {len(image)} bytes; an update erases room for {MAX_IMAGE}: "
+                 "it cannot be installed")
     return image
 
 

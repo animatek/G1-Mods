@@ -9,3 +9,6 @@
 
 # Python caches
 __pycache__/
+
+# The web builder's bundle, made by web/make_bundle.py
+/web/bundle.json

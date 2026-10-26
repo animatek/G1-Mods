@@ -5,6 +5,27 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-26
 
+- Claude: **the first real G1: our OS does not boot there.** `Roms/os-all.bin` went into Javier's
+  G1 with NME's *Update Synth OS*; it shows its version and hangs. Clavia's 3.03b went back the
+  same way (`Roms/clavia-original/clavia-3.03b-os.bin`, the capture unpacked) and the G1 is fine.
+  README and the web page now say a real G1 does not boot it; NOTES.md, "The first real G1",
+  lists what to look at.
+- Claude: **why an update failed: the boot ROM's utility erases sectors 0-5 only** (ROM `$55C4`,
+  the loop at `$5894`), so an OS image holds at most 393,184 bytes; ours were 458,716, written over
+  sector 6 unerased (fine while it was blank, a Write Error once our package was there).
+  `g1update.py fromrom` now cuts the image at its last byte in use and refuses one over that;
+  `run-g1emu.sh` and the web builder still give the ROM for G1-Emu and say why there is no OS
+  image. The package (at `$166574`, past the limit) has to move before any build can go into a
+  real G1. NOTES.md, "The first real G1". Checked: Clavia's factory OS gives 384,992 bytes; every
+  build is refused with its size; the web builder (Pyodide) returns the ROM and the reason.
+- Claude: **a web builder, on this computer** (`web/`, `web/serve.sh`): pick your 3.03 ROM, tick
+  modules, get the ROM for G1-Emu and the OS update image, all in the browser. It runs the same
+  Python through Pyodide 0.26.4: `patch_rom.py`'s work is now a function, `patch()`, that both
+  call, and `web/builder.py` wraps it with `g1update.from_rom`. `web/make_bundle.py` packs the
+  tools, the modules and their assembled DSP code into `web/bundle.json` (ignored). Each
+  `module.json` gains a `summary`, the README's line. Checked: under Pyodide (Node), every module
+  gives `Roms/rom-all.bin` and `Roms/os-all.bin` byte for byte, flipflop+mux8 gives the command
+  line's ROM, no module is refused; the page loads the builder in headless Chromium.
 - Claude: **the builds, in one place: `Roms/`** (ignored, as before). `rom-all.bin` (G1-Emu),
   `os-all.bin` (the same OS as an update image), `flash-all.bin`, Clavia's 3.03b update kept as
   the way back in `clavia-original/`, and the earlier experiments in `old/`; they were all mixed

@@ -2,6 +2,7 @@
   "type": 56,
   "name": "OscString",
   "fullname": "Osc String, a plucked string (Karplus-Strong)",
+  "summary": "A plucked string (Karplus-Strong), the first audio-rate module.",
   "kind": "audio",
   "author": "Animatek",
   "licence": "GPL-3.0-only",

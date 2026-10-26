@@ -2,6 +2,7 @@
   "type": 41,
   "name": "Bits",
   "fullname": "Bits: a binary counter, A to D and D to A",
+  "summary": "Binary counter, analogue to digital and digital to analogue.",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",

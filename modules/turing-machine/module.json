@@ -2,6 +2,7 @@
   "type": 124,
   "name": "TuringMachine",
   "fullname": "Turing Machine, a looping random shift register with eight gates",
+  "summary": "A looping random shift register: CV, eight gates, Prob, Length 1–16, Lock, Scale, LEDs.",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",

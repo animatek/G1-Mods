@@ -2,6 +2,7 @@
   "type": 125,
   "name": "ScaleQuant",
   "fullname": "Scale Quantizer, a pitch to the nearest note of a scale",
+  "summary": "A pitch to the nearest note of one of 16 scales, with Root and Octave.",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",

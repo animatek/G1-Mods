@@ -2,6 +2,7 @@
   "type": 55,
   "name": "Envelope",
   "fullname": "Envelope: ADDSR, or one shot (D, H, AHD)",
+  "summary": "ADDSR, or one shot (D, H, AHD).",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",
