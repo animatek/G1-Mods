@@ -98,6 +98,11 @@ web/serve.sh               # then open http://localhost:8090
 It needs the internet once, to load Pyodide. `web/make_bundle.py` packs the modules into
 `web/bundle.json` (ignored; `serve.sh` makes it each time).
 
+## Installing
+
+[`docs/INSTALL.md`](docs/INSTALL.md): building your OS, trying it in G1-Emu, installing it on a
+real G1 with NME, and going back to Clavia's OS, step by step.
+
 ## Where the builds are
 
 Everything built goes into **`Roms/`**, next to this README. Git ignores the whole folder (it

@@ -280,6 +280,26 @@ mods in an emulator of his own). Before it grows, in this order:
 
 Real hardware only after this, once the ROM's MIDI boot mode is known to recover a bad OS.
 
+## Before publishing (agreed with Javier, 2026-10-26)
+
+All 13 modules play on one real G1. What is left before G1-Mods goes public, in order:
+
+1. **G1-Emu starts with noise in its RAM** (an option, in G1-Emu itself): Note Out's hang came
+   from power-on garbage G1-Emu never had. Then every module's test runs with it.
+2. **NME's OS update refuses images over 393,184 bytes** (`OsUpdate::kMaxImageBytes` is still
+   `$70000 - $24`): an update erases sectors 0-5 only, and a longer image fails with a Write
+   Error once sector 6 holds anything. Then the mods layer (`mods-layer-2`) into NME's main.
+3. **The install guide** (`docs/INSTALL.md`, done) and a `CONTRIBUTING.md` (a module in its
+   author's repo, its tests, nothing of Clavia's).
+4. **A private beta**: two or three owners of a real G1 install a build and go back.
+5. **Publish together**: this repo public (a last look through the history for Clavia's code),
+   NME's release with the layer, and the builder page on GitHub Pages under a subdomain of
+   animatek.net. Patreon's post first, then NME's tag (it tells every user).
+6. A video; then **Modwerk** (`repeat98/modwerk`): propose the G1 as a machine, with all this
+   working. Any message goes to Javier as a draft first.
+7. **The 3.03b**: an owner without the 3.03 ROM has Clavia's 3.03b updater; the modules on the
+   3.03b's addresses, and the builder reading the OS out of that updater.
+
 ## The builder and the catalogue (agreed with Javier, 2026-10-17)
 
 The model is Modwerk (modwerk.app, see `../Digitakt-Mods/NOTES.md`): a web catalogue of modules

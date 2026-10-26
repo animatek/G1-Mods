@@ -5,6 +5,10 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-26
 
+- Claude: **`docs/INSTALL.md`**, the install guide: build, G1-Emu, a real G1 with NME's update,
+  the way back with Clavia's 3.03b updater, and what each failure looks like. **PORTING.md,
+  "Before publishing"**: what is left, in order (G1-Emu's RAM noise, NME's image limit, the
+  guide, a beta, publishing together, Modwerk, the 3.03b). Linked from the README and the page.
 - Javier and Claude: **all 13 modules in one build play on the real G1**: `os-all.bin` (packed,
   Note Out guarded) booted and everything worked. Kept in `Roms/works-on-real-g1/all-os.bin`.
 - Javier and Claude: **Note Out works on the real G1** with the guarded scan: Note Out alone
