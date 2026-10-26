@@ -5,6 +5,17 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-26
 
+- Javier and Claude: **the FlipFlop plays on a real G1**, the first module of ours on the
+  hardware: `flipflop-os.bin` (new layout) installed with NME's update, booted, NME offered the
+  module and a patch of Javier's played with its LED. Before it, Clavia's factory OS alone
+  (385,024 bytes) booted the same way. README and the web page now say "experimental on a real
+  G1" instead of "does not boot".
+- Claude: **the package now fits an OS update** when it is up to 8,140 bytes: stored right after
+  Clavia's OS (`$15DFE0`), the bootstrap at `$15FFAC` copying it from the flash's copy of the
+  image. Bigger builds (all 13 modules, 14,896 bytes) keep the old layout, G1-Emu only. The
+  module tests take `G1MODS_BUILD` to build a chosen set. NOTES.md, "The first real G1". Checked:
+  the `all` ROM unchanged byte for byte; every module's test passes on new-layout builds, in
+  three groups; the 8 KB measured untouched at boot in `g1boot` first.
 - Claude: **the first real G1: our OS does not boot there.** `Roms/os-all.bin` went into Javier's
   G1 with NME's *Update Synth OS*; it shows its version and hangs. Clavia's 3.03b went back the
   same way (`Roms/clavia-original/clavia-3.03b-os.bin`, the capture unpacked) and the G1 is fine.

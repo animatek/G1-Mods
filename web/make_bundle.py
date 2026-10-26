@@ -17,7 +17,7 @@ WEB = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(WEB)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import dspasm  # noqa: E402
-from g1rom import BOOT_LEN, STAGES  # noqa: E402
+from g1rom import ROOM  # noqa: E402
 
 TOOLS = ("g1rom.py", "dspasm.py", "patch_rom.py", "g1update.py")
 MODULE_FILES = ("module.json", "build.py", "*.asm", "*.m68k")
@@ -41,10 +41,9 @@ def main():
         meta = json.load(open(os.path.join(d, "module.json")))
         modules.append({k: meta.get(k) for k in ("type", "name", "fullname", "summary", "kind",
                                                  "author", "licence", "version")} | {"folder": folder})
-    (s1, e1), (s2, e2) = STAGES
     bundle = {
         "modules": modules,
-        "room": (e1 - s1 - BOOT_LEN) + (e2 - s2),
+        "room": ROOM,
         "files": {k: base64.b64encode(open(v, "rb").read()).decode() for k, v in sorted(files.items())},
     }
     out = os.path.join(WEB, "bundle.json")

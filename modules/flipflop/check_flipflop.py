@@ -34,6 +34,7 @@ import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
+BUILD = os.environ.get("G1MODS_BUILD", "all")   # which modules the ROM has (patch_rom.py)
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 CLK_TO_CLK, LFO_TO_IN = "0 6 0 0 4 0 1 \n", "0 6 1 0 3 1 1 \n"
@@ -69,9 +70,9 @@ def changes(q):
 
 
 def main():
-    rom = os.path.join(ROOT, "out", "rom-all.bin")
+    rom = os.path.join(ROOT, "out", f"rom-{BUILD}.bin")
     xml = os.path.join(ROOT, "out", "nme-data", "modules.xml")
-    subprocess.run([sys.executable, "-I", os.path.join(ROOT, "tools", "patch_rom.py"), "all",
+    subprocess.run([sys.executable, "-I", os.path.join(ROOT, "tools", "patch_rom.py"), BUILD,
                     os.path.join(EMU, "Roms", "NORD-MODULAR-RACK-VER-3.03.BIN"), rom], check=True)
     subprocess.run([sys.executable, "-I", os.path.join(ROOT, "tools", "make_nme_data.py"),
                     os.path.join(ROOT, "..", "Nomad2026", "data"), os.path.dirname(xml)], check=True)

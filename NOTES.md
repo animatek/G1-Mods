@@ -842,3 +842,30 @@ Consequences:
   (a feature for G1-Emu itself, there).
 - Still open: why `os-all.bin` hangs on the real G1. `factory-3.03-os-short.bin` (Clavia's
   factory OS, 385,024 bytes) tells whether the factory OS boots from a real flash at all.
+
+**The package moved into the update's room (2026-10-26).** `g1rom.py` now stores it right after
+Clavia's OS (`$15DFE0`), with the 52-byte bootstrap at the room's end (`$15FFAC`); the bootstrap
+copies the package **from the flash's copy** (`$35E000`) to `$1C6000`. Measured first: that 8 KB
+filled with `$A5` in the ROM, booted in `g1boot` and dumped: 7,949 bytes still `$A5`, all but 12
+at `$15DFE0` and none in the bootstrap's place (the MIDI queues at `$15E2D2`... only fill once MIDI
+comes, after the registration). Room: 8,140 bytes, about four or five modules (flipflop 862,
+the five control ones of the Turing group 6,382). A bigger build falls back to the old two runs
+(`EMU_STAGES`), G1-Emu only, and `g1update.py` refuses its image. Checked: `all` is byte for byte
+the old ROM; every module's test passes on a build of the new layout (`G1MODS_BUILD=` picks the
+modules a test builds), in three groups of four or five. For a real G1: `Roms/tests/flipflop-os.bin`.
+Next for all 13: compress the package and unpack it at boot.
+
+**Clavia's factory OS boots from a real G1's flash (2026-10-26).** `Roms/tests/factory-3.03-os-short.bin`
+(385,024 bytes, nothing of ours) went in through NME's update and the G1 started normally (Javier).
+So installing the ROM's factory OS as an update works on the hardware, and the first try's hang
+came from what we added (in the old layout: the package in sector 6, run from the RAM copy at
+`$166574`), not from the factory OS nor the way it was sent.
+
+**A module of ours plays on a real G1 (2026-10-26).** `Roms/tests/flipflop-os.bin` (Clavia's factory
+OS with the FlipFlop, type 120, in the new layout: 393,184 bytes) went in through NME's update,
+the G1 booted, NME (branch `mods-layer-2`) took it as a modified OS and offered the FlipFlop, and
+Javier's own patch played: an EventSeq clocking the FlipFlop, Q and NotQ gating two AD-Env/OscA
+voices, the FlipFlop's LED lit (screenshot in the session). The first one on the hardware.
+So the old layout's hang came from where the package was (sector 6 / the RAM at `$166574`), and
+the new layout works on the real board.
+

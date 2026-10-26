@@ -11,14 +11,22 @@ import sys
 ROM_SHA256 = "d9b199f2"  # start of the rack OS 3.03's sha256 (G1-Emu/NOTES.md, "The ROM")
 ROM_SIZE = 512 * 1024
 
-# Where the new types live (NOTES.md, "Where new code can live"). The flash keeps the OS only up
-# to $70000 (RAM $16FFE0): past that are the patch banks, which the OS formats. So the package is
-# stored in two runs of the OS image the OS leaves alone until well after the types are registered
-# (STAGES; the bootstrap at the first's start), and copied at boot to RUN, RAM the OS never uses,
-# where it runs.
-STAGE = 0x166574          # in the image, inside the flash's OS area: the bootstrap, then the package
-STAGES = ((STAGE, 0x16B078), (0x16B07A, 0x16FB7E))   # the OS writes the bytes at $16B078 and $16FB7E
+# Where the new types live (NOTES.md, "The first real G1"). An OS update erases only the flash's
+# sectors 0-5, so an OS image ends before RAM $15FFE0; Clavia's OS ends at $15DFDF, which leaves
+# 8 KB. The package is stored there (STAGE to BOOT), and the bootstrap after it (BOOT, the run's
+# last 52 bytes) copies it at boot to RUN, RAM the OS never uses, where it runs. The bootstrap
+# runs from the RAM copy of the image (the OS leaves those bytes alone until well after the types
+# are registered), but copies the package from the flash's copy, which nothing overwrites.
+STAGE = 0x15DFE0          # in the image, right after Clavia's OS: the package
+STAGE_END = 0x15FFE0      # where an update stops erasing ($360000 in the flash)
 BOOT_LEN = 0x34
+BOOT = STAGE_END - BOOT_LEN
+ROOM = BOOT - STAGE       # 8,140 bytes for the package
+FLASH_OS = 0x300020       # the flash's copy of the image: RAM address X is at FLASH_OS + X - $100000
+# A package too big for that still runs in G1-Emu, which boots the ROM's OS into its flash up to
+# $70000: the old layout, in two runs the OS leaves alone until after the registration. Such a
+# build cannot go into a real G1 (g1update.py refuses its image).
+EMU_STAGES = ((0x166574, 0x16B078), (0x16B07A, 0x16FB7E))   # the OS writes $16B078 and $16FB7E
 FREE = RUN = 0x1C6000      # where the package runs: every address in it is a RUN address
 FREE_END = 0x1E8000        # (the OS leaves $1C57F0-$1EFECF alone; 32 KB kept below its stacks)
 LIST_LAST_JSR = 0x10DF1E  # the registration list's last jsr (type 17's, $143350)
@@ -106,31 +114,38 @@ class Build:
                 for at, (old, new) in sorted(self.calls.items())]
 
     def finish(self):
-        """Returns ([(RAM address in the image, bytes)], hook): the package with its registration
-        routine at the end, behind a bootstrap at STAGE that copies it to RUN and calls it."""
+        """Returns ([(RAM address in the image, bytes)], hook, installable): the package with its
+        registration routine at the end, and a bootstrap that copies it to RUN and calls it. In
+        the update's room if it fits (installable), else in the emulator-only layout."""
         reg = self.put(b"".join(self.register) + bytes.fromhex("4e75"))   # ...rts
         package = b"".join(data for _, data in self.blocks)
         assert len(package) == self.at - RUN
-        (s1, e1), (s2, e2) = STAGES
-        first, rest = package[:e1 - s1 - BOOT_LEN], package[e1 - s1 - BOOT_LEN:]
-        assert len(rest) <= e2 - s2, f"the package ({len(package)} bytes) does not fit the stages"
-        boot = m68k("4eb9", f"{LIST_LAST_TARGET:08x}",       # jsr $143350: the call it replaces
-                    "41f9", f"{s1 + BOOT_LEN:08x}",          # lea package,a0
-                    "43f9", f"{RUN:08x}",                    # lea RUN,a1
-                    "303c", f"{len(first) - 1:04x}",         # move.w #n-1,d0
-                    "12d8",                                  # move.b (a0)+,(a1)+
-                    "51c8 fffc")                             # dbra d0,*-2
-        if rest:                                             # the second stage, after it
-            boot += m68k("41f9", f"{s2:08x}",                # lea stage 2,a0
-                         "303c", f"{len(rest) - 1:04x}",     # move.w #n-1,d0
-                         "12d8",                             # move.b (a0)+,(a1)+
-                         "51c8 fffc")                        # dbra d0,*-2
-        boot += m68k("4eb9", f"{reg:08x}",                   # jsr registration
-                     "4e75")                                 # rts
+        if len(package) <= ROOM:
+            blocks, at = [(STAGE, package)], BOOT
+            boot = copy_routine(FLASH_OS + STAGE - 0x100000, package)
+        else:
+            (s1, e1), (s2, e2) = EMU_STAGES
+            first, rest = package[:e1 - s1 - BOOT_LEN], package[e1 - s1 - BOOT_LEN:]
+            assert len(rest) <= e2 - s2, f"the package ({len(package)} bytes) does not fit the stages"
+            blocks, at = [(s1 + BOOT_LEN, first)] + ([(s2, rest)] if rest else []), s1
+            boot = copy_routine(s1 + BOOT_LEN, first) + (copy_routine(s2, rest, RUN + len(first))
+                                                          if rest else b"")
+        boot = m68k("4eb9", f"{LIST_LAST_TARGET:08x}") + boot + m68k(   # jsr $143350: the call it replaces
+            "4eb9", f"{reg:08x}",                                       # jsr registration
+            "4e75")                                                     # rts
         assert len(boot) <= BOOT_LEN
         boot += bytes.fromhex("4e71") * ((BOOT_LEN - len(boot)) // 2)   # nop
-        hook = (LIST_LAST_JSR + 2, LIST_LAST_TARGET.to_bytes(4, "big"), STAGE.to_bytes(4, "big"))
-        return [(s1, boot + first)] + ([(s2, rest)] if rest else []), hook
+        hook = (LIST_LAST_JSR + 2, LIST_LAST_TARGET.to_bytes(4, "big"), at.to_bytes(4, "big"))
+        return blocks + [(at, boot)], hook, len(package) <= ROOM
+
+
+def copy_routine(src, data, dst=RUN):
+    """68k: copies len(data) bytes from src to dst (a1 runs on when dst is left out)."""
+    return m68k("41f9", f"{src:08x}",                              # lea src,a0
+                *(("43f9", f"{dst:08x}") if dst == RUN else ()),    # lea RUN,a1
+                "303c", f"{len(data) - 1:04x}",                    # move.w #n-1,d0
+                "12d8",                                            # move.b (a0)+,(a1)+
+                "51c8 fffc")                                       # dbra d0,*-2
 
 
 def param_table(params):

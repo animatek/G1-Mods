@@ -20,7 +20,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from g1rom import (ROM_SHA256, ROM_SIZE, RUN, STAGE, VERSION_MARK, Build, Param,  # noqa: E402,F401
+from g1rom import (ROM_SHA256, ROM_SIZE, ROOM, RUN, STAGE, VERSION_MARK, Build, Param,  # noqa: E402,F401
                    audio_type, ram_to_rom)
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
@@ -112,7 +112,7 @@ def patch(src, types, in_place=()):
         b = Build(bytes(rom))
         for add in types:
             add(b)
-        blocks, (addr, old, new) = b.finish()
+        blocks, (addr, old, new), installable = b.finish()
         for at, data in blocks:
             o = ram_to_rom(at)
             if rom[o:o + len(data)] != b"\xff" * len(data):
@@ -127,7 +127,9 @@ def patch(src, types, in_place=()):
             if rom[o - 2:o] != b"\x4e\xb9" or rom[o:o + 4] != old:
                 raise BuildError(f"unexpected call at ${addr - 2:06X}: {rom[o - 2:o + 4].hex()}")
             rom[o:o + 4] = new
-        print(f"new types {b.types}, {b.at - RUN} bytes, stored at ${STAGE:06X}, run at ${RUN:06X}")
+        where = (f"stored at ${STAGE:06X}: fits an OS update" if installable else
+                 f"too big for an OS update ({ROOM} bytes): G1-Emu only")
+        print(f"new types {b.types}, {b.at - RUN} bytes, {where}, run at ${RUN:06X}")
     return bytes(rom)
 
 

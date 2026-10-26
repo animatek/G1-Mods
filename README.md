@@ -10,14 +10,16 @@ folder of its own.
 > Clavia. "Nord" and "Nord Modular" are Clavia's trademarks, named here only to say which
 > instrument this is for.
 
-> **Works in the G1-Emu emulator only. On a real G1 it does not boot yet.** Tried once on a real
-> Nord Modular G1 (2026-10-26): it showed its version and hung there, and Clavia's OS had to be
-> sent again (that worked). Do not install it on a real synth. A modified OS may lose your patches and may leave your synth
+> **Experimental on a real G1.** One build has run on one real Nord Modular G1: the FlipFlop alone
+> (2026-10-26). An earlier build hung at power-on and Clavia's OS had to be sent again (that
+> worked). Only builds small enough for an OS update can go into a real G1 (about four or five
+> modules); every module is tested in the G1-Emu emulator. A modified OS may lose your patches and may leave your synth
 > unusable. Recovery is not guaranteed. You use it entirely at your own risk; you are solely
 > responsible for your instrument.
 
-**Status: a work in progress, private for now.** Thirteen module types play in G1-Emu. A real
-G1 does not boot it yet (`NOTES.md`, "The first real G1"). NME installs an OS into a G1 (its
+**Status: a work in progress, private for now.** Thirteen module types play in G1-Emu. On a real
+G1 the FlipFlop has played (2026-10-26); an update has room for four or five modules
+(`NOTES.md`, "The first real G1"). NME installs an OS into a G1 (its
 *Device > Update Synth OS*), and a web builder is on its way (`web/`).
 
 ## How it works

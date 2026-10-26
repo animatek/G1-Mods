@@ -17,6 +17,7 @@ import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
+BUILD = os.environ.get("G1MODS_BUILD", "all")   # which modules the ROM has (patch_rom.py)
 EMU = os.path.join(ROOT, "..", "G1-Emu")
 BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 PATCHES = ("mix1-1a/mix1-1a-chain.pch",
@@ -35,9 +36,9 @@ RATE = 96000
 
 
 def main():
-    rom = os.path.join(ROOT, "out", "rom-all.bin")
+    rom = os.path.join(ROOT, "out", f"rom-{BUILD}.bin")
     xml = os.path.join(ROOT, "out", "nme-data", "modules.xml")
-    subprocess.run([sys.executable, "-I", os.path.join(ROOT, "tools", "patch_rom.py"), "all",
+    subprocess.run([sys.executable, "-I", os.path.join(ROOT, "tools", "patch_rom.py"), BUILD,
                     os.path.join(EMU, "Roms", "NORD-MODULAR-RACK-VER-3.03.BIN"), rom], check=True)
     subprocess.run([sys.executable, "-I", os.path.join(ROOT, "tools", "make_nme_data.py"),
                     os.path.join(ROOT, "..", "Nomad2026", "data"), os.path.dirname(xml)], check=True)
