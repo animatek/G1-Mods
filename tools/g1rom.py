@@ -8,6 +8,8 @@ import os
 import re
 import sys
 
+import lz
+
 ROM_SHA256 = "d9b199f2"  # start of the rack OS 3.03's sha256 (G1-Emu/NOTES.md, "The ROM")
 ROM_SIZE = 512 * 1024
 
@@ -23,7 +25,9 @@ BOOT_LEN = 0x34
 BOOT = STAGE_END - BOOT_LEN
 ROOM = BOOT - STAGE       # 8,140 bytes for the package
 FLASH_OS = 0x300020       # the flash's copy of the image: RAM address X is at FLASH_OS + X - $100000
-# A package too big for that still runs in G1-Emu, which boots the ROM's OS into its flash up to
+# A package too big for that goes packed (tools/lz.py), the bootstrap unpacking it with UNLZ.
+UNLZ = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "unlz.m68k"), "rb").read()
+# A package too big even packed still runs in G1-Emu, which boots the ROM's OS into its flash up to
 # $70000: the old layout, in two runs the OS leaves alone until after the registration. Such a
 # build cannot go into a real G1 (g1update.py refuses its image).
 EMU_STAGES = ((0x166574, 0x16B078), (0x16B07A, 0x16FB7E))   # the OS writes $16B078 and $16FB7E
@@ -116,27 +120,44 @@ class Build:
     def finish(self):
         """Returns ([(RAM address in the image, bytes)], hook, installable): the package with its
         registration routine at the end, and a bootstrap that copies it to RUN and calls it. In
-        the update's room if it fits (installable), else in the emulator-only layout."""
+        the update's room as it is if it fits; else packed (tools/lz.py), with the bootstrap
+        unpacking it (tools/unlz.s); else in the emulator-only layout."""
         reg = self.put(b"".join(self.register) + bytes.fromhex("4e75"))   # ...rts
         package = b"".join(data for _, data in self.blocks)
         assert len(package) == self.at - RUN
+        call = m68k("4eb9", f"{LIST_LAST_TARGET:08x}")   # jsr $143350: the call it replaces
+        done = m68k("4eb9", f"{reg:08x}",                # jsr registration
+                    "4e75")                              # rts
         if len(package) <= ROOM:
-            blocks, at = [(STAGE, package)], BOOT
-            boot = copy_routine(FLASH_OS + STAGE - 0x100000, package)
-        else:
-            (s1, e1), (s2, e2) = EMU_STAGES
-            first, rest = package[:e1 - s1 - BOOT_LEN], package[e1 - s1 - BOOT_LEN:]
-            assert len(rest) <= e2 - s2, f"the package ({len(package)} bytes) does not fit the stages"
-            blocks, at = [(s1 + BOOT_LEN, first)] + ([(s2, rest)] if rest else []), s1
-            boot = copy_routine(s1 + BOOT_LEN, first) + (copy_routine(s2, rest, RUN + len(first))
-                                                          if rest else b"")
-        boot = m68k("4eb9", f"{LIST_LAST_TARGET:08x}") + boot + m68k(   # jsr $143350: the call it replaces
-            "4eb9", f"{reg:08x}",                                       # jsr registration
-            "4e75")                                                     # rts
+            boot = call + copy_routine(FLASH_OS + STAGE - 0x100000, package) + done
+            boot += bytes.fromhex("4e71") * ((BOOT_LEN - len(boot)) // 2)   # nop
+            return [(STAGE, package), (BOOT, boot)], self._hook(BOOT), True
+        packed = lz.pack(package)
+        assert lz.unpack(packed, len(package)) == package
+        head = call + m68k("2f0a",                                   # move.l a2,-(sp)
+                           "41f9", f"{FLASH_OS + STAGE - 0x100000:08x}",   # lea packed (flash),a0
+                           "43f9", f"{RUN:08x}",                     # lea RUN,a1
+                           "45f9", f"{RUN + len(package):08x}",      # lea RUN+length,a2
+                           "6100 000c",                              # bsr.w unlz
+                           "245f") + done                            # movea.l (sp)+,a2
+        assert len(head) == 40      # the bsr's displacement: unlz right after
+        boot = head + UNLZ
+        at = (STAGE_END - len(boot)) & ~1
+        if STAGE + len(packed) <= at:
+            return [(STAGE, packed), (at, boot)], self._hook(at), True
+        (s1, e1), (s2, e2) = EMU_STAGES
+        first, rest = package[:e1 - s1 - BOOT_LEN], package[e1 - s1 - BOOT_LEN:]
+        assert len(rest) <= e2 - s2, f"the package ({len(package)} bytes) does not fit the stages"
+        boot = call + copy_routine(s1 + BOOT_LEN, first) + (
+            copy_routine(s2, rest, RUN + len(first)) if rest else b"") + done
         assert len(boot) <= BOOT_LEN
         boot += bytes.fromhex("4e71") * ((BOOT_LEN - len(boot)) // 2)   # nop
-        hook = (LIST_LAST_JSR + 2, LIST_LAST_TARGET.to_bytes(4, "big"), at.to_bytes(4, "big"))
-        return blocks + [(at, boot)], hook, len(package) <= ROOM
+        blocks = [(s1 + BOOT_LEN, first)] + ([(s2, rest)] if rest else [])
+        return blocks + [(s1, boot)], self._hook(s1), False
+
+    @staticmethod
+    def _hook(at):
+        return LIST_LAST_JSR + 2, LIST_LAST_TARGET.to_bytes(4, "big"), at.to_bytes(4, "big")
 
 
 def copy_routine(src, data, dst=RUN):

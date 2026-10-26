@@ -3,6 +3,10 @@
 | reads each one's packed word from its DSP and queues a note on or off on the MIDI OUT when the
 | gate's edge count has moved (noteout.asm says what the word holds).
 |
+| On a real G1 the first build with this hung at power-on (2026-10-26, NOTES.md): the scan now
+| follows a pointer only into RAM, even, and with a DSP number that exists, as unused pointers hold
+| power-on garbage there.
+|
 | No list is registered by the module: a scan of every slot's module pointers (common and poly,
 | indexes 1..127) finds them, a few pointers a turn (SCAN_STEP), and each turn a module already
 | found is checked again (its pointer and its type) before it is read, so a patch changed or a
@@ -34,6 +38,9 @@
         .equ X_CHAN,     9
         .equ X_VEL,      10
         .equ MAX,        16              | modules followed at once
+        .equ RAM_LO,     0x100000        | the RAM a module record can be in
+        .equ RAM_HI,     0x1FFF00
+        .equ DSPS,       4
         .equ SCAN_STEP,  8               | module pointers looked at a turn (1024 in all)
 
 | an entry, 20 bytes
@@ -157,7 +164,7 @@ s_next: move.w  S_CURSOR(%a5),%d2
         move.w  %d0,S_CURSOR(%a5)
         move.w  %d2,%d3
         andi.w  #0x7F,%d3                | the index
-        beq.s   s_done                   | 0 is no module
+        beq.w   s_done                   | 0 is no module
         move.w  %d2,%d0
         lsr.w   #8,%d0                   | the slot
         mulu.w  #SLOT_SIZE,%d0
@@ -171,14 +178,22 @@ s_next: move.w  S_CURSOR(%a5),%d2
         lsl.w   #2,%d0
         lea     (%a3,%d0.l),%a1          | the pointer's address
         move.l  (%a1),%d0
-        beq.s   s_done
+        beq.w   s_done
+        cmpi.l  #RAM_LO,%d0              | a pointer into RAM, even: a slot never used holds
+        bcs.w   s_done                   | whatever the RAM had at power-on (zeros only in
+        cmpi.l  #RAM_HI,%d0              | G1-Emu), and following it may stop the CPU
+        bcc.w   s_done
+        btst    #0,%d0
+        bne.w   s_done
         movea.l %d0,%a0
         cmpi.b  #TYPE,0x0E(%a0)
-        bne.s   s_done
+        bne.w   s_done
+        cmpi.b  #DSPS-1,VOICES(%a3)      | and the section's DSP one of the four
+        bhi.w   s_done
         lea     S_ENTRIES(%a5),%a4       | followed already?
         moveq   #MAX-1,%d7
 2:      cmp.l   E_MOD(%a4),%d0
-        beq.s   s_done
+        beq.w   s_done
         lea     E_SIZE(%a4),%a4
         dbra    %d7,2b
         lea     S_ENTRIES(%a5),%a4       | a free entry
@@ -187,7 +202,7 @@ s_next: move.w  S_CURSOR(%a5),%d2
         beq.s   4f
         lea     E_SIZE(%a4),%a4
         dbra    %d7,3b
-        bra.s   s_done                   | none: not followed
+        bra.w   s_done                   | none: not followed
 4:      move.l  %d0,E_MOD(%a4)
         move.l  %a1,E_SLOT(%a4)
         lea     VOICES(%a3),%a0

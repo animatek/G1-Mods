@@ -10,15 +10,14 @@ folder of its own.
 > Clavia. "Nord" and "Nord Modular" are Clavia's trademarks, named here only to say which
 > instrument this is for.
 
-> **Experimental on a real G1.** One build has run on one real Nord Modular G1: the FlipFlop alone
-> (2026-10-26). An earlier build hung at power-on and Clavia's OS had to be sent again (that
-> worked). Only builds small enough for an OS update can go into a real G1 (about four or five
-> modules); every module is tested in the G1-Emu emulator. A modified OS may lose your patches and may leave your synth
+> **Experimental on a real G1.** On one real Nord Modular G1 (2026-10-26), all 13 modules have played
+> in one build. An earlier build hung at power-on and Clavia's OS had to be sent again (that
+> worked). An OS update has room for every module so far (packed); every module is tested in the G1-Emu emulator. A modified OS may lose your patches and may leave your synth
 > unusable. Recovery is not guaranteed. You use it entirely at your own risk; you are solely
 > responsible for your instrument.
 
 **Status: a work in progress, private for now.** Thirteen module types play in G1-Emu. On a real
-G1 the FlipFlop has played (2026-10-26); an update has room for four or five modules
+G1, all 13 in one build have played (2026-10-26)
 (`NOTES.md`, "The first real G1"). NME installs an OS into a G1 (its
 *Device > Update Synth OS*), and a web builder is on its way (`web/`).
 
@@ -107,9 +106,11 @@ holds Clavia's code), so it is never uploaded: it lives only on your computer.
 | File | What it is | What it is for |
 | --- | --- | --- |
 | `Roms/rom-all.bin` | The G1's whole ROM (512 KB) with **every** new module (all the types in the table above). | Booting G1-Emu with the modules: `./run-g1emu.sh` does it. |
-| `Roms/os-all.bin` | The same OS alone, as an update image. **Not made for now**: an update has room for 393,184 bytes and today's builds need more (`NOTES.md`, "The first real G1"). | Putting it into a G1's flash like an OS update: NME's *Device > Update Synth OS*. |
+| `Roms/os-all.bin` | The same OS alone, as an update image (393,184 bytes, what an update has room for; the modules go packed). Made only when it fits (`NOTES.md`, "The first real G1"). | Putting it into a G1's flash like an OS update: NME's *Device > Update Synth OS*. |
 | `Roms/flash-all.bin` | The flash G1-Emu uses with that ROM: the patches you save there. | Kept apart from your usual G1-Emu flash, which is never touched. |
 | `Roms/clavia-original/` | Clavia's 3.03b OS: `clavia-3.03b-os.bin`, the image (`g1update.py unpack` of the `.syx` beside it, recorded from G1-Emu on 2026-10-25). | The way back: Shift + Store at power-on, then NME's *Update Synth OS* with `clavia-3.03b-os.bin`, Safe. It brought a real G1 back on 2026-10-26. |
+| `Roms/works-on-real-g1/` | Only the OS images that have booted on a real G1, with a `README.txt` saying which is which. | What to install on a real G1, and the way back to Clavia's OS. |
+| `Roms/tests/` | Images built to try one thing on a real G1 (a module alone, a set without one). | Each says in `NOTES.md` what it tries. |
 | `Roms/old/` | Earlier experiments (Note Out's tries, the first FlipFlop, audio tests...) and flashes kept aside. | Nothing; kept only to look back. It can be deleted. |
 
 `./run-g1emu.sh` **rebuilds `rom-all.bin` and `os-all.bin` every time it starts**, from G1-Emu's

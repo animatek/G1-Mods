@@ -869,3 +869,54 @@ voices, the FlipFlop's LED lit (screenshot in the session). The first one on the
 So the old layout's hang came from where the package was (sector 6 / the RAM at `$166574`), and
 the new layout works on the real board.
 
+**A patch with the FlipFlop stored in a bank (2026-10-26).** Javier stored his FlipFlop patch on
+the real G1 at 612 under the FlipFlop build, and it stayed. Under Clavia's OS that patch names a
+type the OS does not have: before going back to Clavia's OS, clear or overwrite it (or never load
+it there), as loading it may hang the synth.
+
+**Packed: all 13 modules fit an update (2026-10-26).** A package bigger than the room as it is
+goes packed: `tools/lz.py` (LZSS: a flags byte for eight items; a literal, or two bytes of
+distance 1-4096 and length 3-18) and `tools/unlz.s` (66 bytes, assembled with `m68kasm.sh` into
+`tools/unlz.m68k`), which the bootstrap calls (it saves a2; unlz saves d2-d3/a3) to unpack from
+the flash's copy to `$1C6000`. The bootstrap and unlz (106 bytes) sit at the room's end. All 13:
+14,896 bytes packed into 5,718, about 2.3 KB left. A build that fits as it is stays unpacked, so
+the FlipFlop build is byte for byte the one that played on the real G1. Checked: every module's
+test on the packed `all` build in G1-Emu (`tests/run_all.py`, all but the two that read NME's
+source, which was on another branch); the packer round-trips the package and random data.
+Not yet on a real G1: `Roms/os-all.bin`.
+
+**All 13 packed hang on the real G1 (2026-10-26).** `Roms/os-all.bin` installed and the G1 stopped
+at power-on showing `Modular` / `( 1)3`. Both builds with all 13 have now hung on the hardware
+(the old layout and the packed one) and the FlipFlop alone played, so the cause may be one module
+rather than the layout. Note Out is the first suspect: the only one with a 68k routine of its own
+hooked into the OS's main loop (`$100E6E`), and the only one that does more than register a type.
+Next, one install each: `Roms/tests/all-but-noteout-os.bin` (12 modules, packed: also tries unlz on
+the hardware) and, if that boots, `Roms/tests/noteout-os.bin` (Note Out alone, unpacked).
+
+**12 modules play on the real G1; Note Out is what hangs it (2026-10-26).** `all-but-noteout-os.bin`
+(every module but Note Out, packed: 13,460 bytes into 5,044) booted on Javier's G1 and the modules
+played. So unlz works on the hardware, and the two hangs of the full set came from Note Out, the
+only module with a 68k routine hooked into the OS's main loop (`noteout_poll.s`, at `$100E6E`).
+Why it hangs there and not in G1-Emu is open: to read next (what the real 68331 does differently
+with that hook, its timing against the OS's MIDI queue, or an address that is only harmless in
+the emulator). Until then a build for a real G1 leaves Note Out out.
+
+**Note Out: a guess and a guard (2026-10-26).** Its scan follows every slot's 1,024 module
+pointers, used or not. G1-Emu starts with its RAM at zero, so an unused pointer is 0 and skipped;
+a real G1's RAM holds whatever it had at power-on, so an unused pointer may point anywhere: off
+the bus (the 68331 waits for an acknowledge that never comes) or, one time in 256, at a byte
+that reads as type 60, sending `$10C32E` a DSP number that does not exist. Not proven (the OS may
+clear those tables; not found). `noteout_poll.s` now follows a pointer only inside RAM
+(`$100000`-`$1FFF00`), even, with the section's DSP number 0-3. Checked: `check_note_out.py`, all
+five cases, in G1-Emu. G1-Emu would show this kind of bug if it could start with its RAM filled
+with noise (a feature for G1-Emu itself). To try on the hardware: `Roms/tests/noteout-os.bin`
+(Note Out alone). The web page marks Note Out "G1-Emu only" (`real_g1` in its `module.json`),
+leaves it unticked, and gives no OS update with it ticked.
+
+**The guarded Note Out boots on the real G1 (2026-10-26):** `noteout-os.bin` (Note Out alone) started
+normally, where the unguarded one in the full set had hung, and **its notes came out of the G1's MIDI OUT**
+(Javier). So the guard was the fix, or at least it is enough. Every module has now played on the real G1.
+
+**All 13 in one build play on the real G1 (2026-10-26).** `Roms/os-all.bin` (packed, 14,944 bytes into
+5,758, Note Out guarded) booted on Javier's G1 and every module worked (Javier: "todo funcionando").
+The end of the day: from "does not boot" to the whole set on the hardware.

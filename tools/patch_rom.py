@@ -127,7 +127,9 @@ def patch(src, types, in_place=()):
             if rom[o - 2:o] != b"\x4e\xb9" or rom[o:o + 4] != old:
                 raise BuildError(f"unexpected call at ${addr - 2:06X}: {rom[o - 2:o + 4].hex()}")
             rom[o:o + 4] = new
-        where = (f"stored at ${STAGE:06X}: fits an OS update" if installable else
+        packed = installable and blocks[0][0] == STAGE and len(blocks[0][1]) < b.at - RUN
+        where = (f"stored at ${STAGE:06X}{' packed, ' + str(len(blocks[0][1])) + ' bytes' if packed else ''}"
+                 ": fits an OS update" if installable else
                  f"too big for an OS update ({ROOM} bytes): G1-Emu only")
         print(f"new types {b.types}, {b.at - RUN} bytes, {where}, run at ${RUN:06X}")
     return bytes(rom)

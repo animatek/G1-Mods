@@ -5,6 +5,28 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-26
 
+- Javier and Claude: **all 13 modules in one build play on the real G1**: `os-all.bin` (packed,
+  Note Out guarded) booted and everything worked. Kept in `Roms/works-on-real-g1/all-os.bin`.
+- Javier and Claude: **Note Out works on the real G1** with the guarded scan: Note Out alone
+  booted and its notes came out of the MIDI OUT. Every module has now played on the hardware.
+  Its "G1-Emu only" mark is gone from `module.json`, README and the web page.
+- Claude: **Note Out's scan guarded against power-on garbage**: a module pointer is followed only
+  if it lies in RAM, is even, and its section's DSP is 0-3 (the likely reason it hung a real G1:
+  G1-Emu's RAM starts at zero, a real one's does not). Checked in G1-Emu (`check_note_out.py`);
+  not yet on the hardware (`Roms/tests/noteout-os.bin`). The web page marks modules that fail on
+  a real G1 (`real_g1` in `module.json`): Note Out shows a warning, starts unticked, and with it
+  ticked the page gives the G1-Emu ROM only.
+- Javier and Claude: **twelve modules play on the real G1**: every one but Note Out, packed
+  (`all-but-noteout-os.bin`), booted and played; so the unpacker works on the hardware. The full
+  set had hung twice: **Note Out hangs a real G1** at power-on (its main-loop hook, cause open).
+  README and the web page say so. `Roms/works-on-real-g1/` keeps only the images that booted
+  on the hardware.
+- Claude: **all 13 modules fit an OS update, packed**: `tools/lz.py` packs the package (LZSS)
+  when it does not fit as it is, and `tools/unlz.s` (66 bytes of 68k, `tools/unlz.m68k`)
+  unpacks it at boot from the flash. 14,896 bytes into 5,718. Builds that fit as they are do not
+  change (the FlipFlop one is byte for byte the one that played on the real G1). `run-nme.sh`
+  now runs NME's mods build from `~/.local/share/Animatek/G1-Mods/` (it was in a temporary folder).
+  Checked: every module's test on the packed `all` build in G1-Emu; the packer round-trips.
 - Javier and Claude: **the FlipFlop plays on a real G1**, the first module of ours on the
   hardware: `flipflop-os.bin` (new layout) installed with NME's update, booted, NME offered the
   module and a patch of Javier's played with its LED. Before it, Clavia's factory OS alone

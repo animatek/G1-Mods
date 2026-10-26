@@ -52,6 +52,7 @@ button:disabled { opacity: .45; cursor: not-allowed; }
 .mod .name { font-weight: 700; font-size: 20px; }
 .mod .meta { color: var(--muted); font-size: 15px; }
 .mod .sum { font-size: 17px; margin-top: 4px; }
+.mod .warnline { font-size: 15px; margin-top: 6px; color: var(--warn); font-weight: 600; }
 .room { margin-top: 16px; }
 .meter { height: 14px; border-radius: 7px; background: var(--line); overflow: hidden; }
 .meter div { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
@@ -81,11 +82,10 @@ footer a { color: var(--muted); }
 <p class="lead" style="margin-top:24px">New module types for the Nord Modular G1, built into <b>your own</b> copy of
 its OS, here in your browser. Nothing is uploaded: your ROM and the result never leave this computer.</p>
 
-<div class="notice"><strong>Experimental on a real G1.</strong> One build has run on one real Nord Modular G1:
-the FlipFlop alone. An earlier build hung at power-on until Clavia's OS was sent again. Only a build of four or five
-modules fits an OS update; every module is tested in the G1-Emu emulator. A modified OS may lose your patches and
-may leave your synth unusable. Recovery is not guaranteed. You use it entirely at your own risk. An independent,
-unofficial project, not affiliated with Clavia.</div>
+<div class="notice"><strong>Experimental on a real G1.</strong> On one real Nord Modular G1, all 13 modules have
+played in one build. A modified OS may lose your patches and may leave your synth unusable.
+Recovery is not guaranteed. You use it entirely at your own risk. An independent, unofficial project, not
+affiliated with Clavia.</div>
 
 <h2 id="rom"><span class="n">1</span>Your ROM</h2>
 <p class="lead">The rack's 3.03 ROM, the one G1-Emu boots (<code>NORD-MODULAR-RACK-VER-3.03.BIN</code>, 512 KB).

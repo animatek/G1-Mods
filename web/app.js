@@ -21,11 +21,17 @@ function renderModules() {
   for (const m of bundle.modules) {
     const label = document.createElement("label");
     label.className = "mod";
-    label.innerHTML = `<input type="checkbox" value="${m.folder}" checked>
+    label.innerHTML = `<input type="checkbox" value="${m.folder}"${m.real_g1 ? "" : " checked"}>
       <span><span class="name"></span><div class="meta"></div><div class="sum"></div></span>`;
     label.querySelector(".name").textContent = m.name;
     label.querySelector(".meta").textContent = `Type ${m.type} · ${m.kind} · ${m.author} · v${m.version}`;
     label.querySelector(".sum").textContent = m.summary;
+    if (m.real_g1) {                     // a module known to fail on real hardware
+      const w = document.createElement("div");
+      w.className = "warnline";
+      w.textContent = "⚠ G1-Emu only: " + m.real_g1;
+      label.querySelector(".sum").after(w);
+    }
     label.querySelector("input").addEventListener("change", refresh);
     $("grid").appendChild(label);
   }
@@ -100,9 +106,13 @@ function doBuild() {
     const r = run(sel);
     const tag = sel.length === bundle.modules.length ? "all" : `${sel.length}mods`;
     offer($("dlRom"), r.rom, `g1mods-${tag}-rom.bin`);
-    if (r.os) offer($("dlOs"), r.os, `g1mods-${tag}-os.bin`);
-    $("dlOs").hidden = !r.os;
-    $("noOs").textContent = r.os ? "" : "Not with these modules: " + r.noOs;
+    const emuOnly = bundle.modules.filter((m) => m.real_g1 && sel.includes(m.folder)).map((m) => m.name);
+    const os = r.os && !emuOnly.length ? r.os : null;
+    if (os) offer($("dlOs"), os, `g1mods-${tag}-os.bin`);
+    $("dlOs").hidden = !os;
+    $("noOs").textContent = os ? "" : emuOnly.length
+      ? `Not with ${emuOnly.join(", ")}: it is for G1-Emu only for now. Untick it to get one.`
+      : "Not with these modules: " + r.noOs;
     $("downloads").classList.add("show");
     status($("buildStatus"), `Built: types ${r.types.join(", ")}. Version 3.09 on connecting.`, "ok");
   } catch (e) {

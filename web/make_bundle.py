@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.join(ROOT, "tools"))
 import dspasm  # noqa: E402
 from g1rom import ROOM  # noqa: E402
 
-TOOLS = ("g1rom.py", "dspasm.py", "patch_rom.py", "g1update.py")
+TOOLS = ("g1rom.py", "dspasm.py", "patch_rom.py", "g1update.py", "lz.py", "unlz.m68k")
 MODULE_FILES = ("module.json", "build.py", "*.asm", "*.m68k")
 
 
@@ -40,7 +40,7 @@ def main():
                     files[f"out/{os.path.basename(cache)}"] = cache
         meta = json.load(open(os.path.join(d, "module.json")))
         modules.append({k: meta.get(k) for k in ("type", "name", "fullname", "summary", "kind",
-                                                 "author", "licence", "version")} | {"folder": folder})
+                                                 "author", "licence", "version", "real_g1")} | {"folder": folder})
     bundle = {
         "modules": modules,
         "room": ROOM,
