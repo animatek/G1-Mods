@@ -1,0 +1,54 @@
+name: Deploy web builder to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Pages needs these to upload and deploy.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Packs our code and each module's already-assembled DSP (out/dspasm-*.json, committed)
+      # into web/bundle.json. No G1-Emu and no dspdis are needed: the caches match the source.
+      # If a module's .asm changed without its cache, this fails loudly with dspdis's name,
+      # which means: run web/serve.sh (or web/make_bundle.py) locally to refresh the cache.
+      - name: Pack the modules into web/bundle.json
+        run: python3 web/make_bundle.py
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

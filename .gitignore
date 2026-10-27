@@ -5,7 +5,11 @@
 *.hqx
 *.exe
 /Roms/
-/out/
+/out/*
+# ...but the web builder's DSP cache (our own code, keyed by source) is needed to build
+# web/bundle.json without G1-Emu's dspdis, so GitHub Pages can build it. Never the index
+# (135 MB) nor any ROM: those stay ignored above.
+!/out/dspasm-*.json
 
 # Python caches
 __pycache__/
