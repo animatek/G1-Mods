@@ -3,6 +3,13 @@
 Everything that changes in G1-Mods, newest first. Every change that goes into the repo gets its
 line here, in the same commit (see `CLAUDE.md`).
 
+## 2026-10-27
+
+- Javier and Claude: **the web builder is live on GitHub Pages** at
+  <https://animatek.github.io/G1-Mods/>: a Pages workflow (`.github/workflows/deploy-pages.yml`)
+  packs `web/bundle.json` in CI from the committed DSP caches (`out/dspasm-*.json`, now in git)
+  and deploys `web/`. The repo is public. README and `CLAUDE.md` say so.
+
 ## 2026-10-26
 
 - Claude: **`docs/INSTALL.md`**, the install guide: build, G1-Emu, a real G1 with NME's update,

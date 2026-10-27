@@ -16,10 +16,11 @@ folder of its own.
 > unusable. Recovery is not guaranteed. You use it entirely at your own risk; you are solely
 > responsible for your instrument.
 
-**Status: a work in progress, private for now.** Thirteen module types play in G1-Emu. On a real
+**Status: a work in progress.** Thirteen module types play in G1-Emu. On a real
 G1, all 13 in one build have played (2026-10-26)
 (`NOTES.md`, "The first real G1"). NME installs an OS into a G1 (its
-*Device > Update Synth OS*), and a web builder is on its way (`web/`).
+*Device > Update Synth OS*), and the web builder is live at
+<https://animatek.github.io/G1-Mods/> (`web/`).
 
 ## How it works
 
@@ -84,19 +85,25 @@ tools/patch_rom.py flipflop,mux8 <your 3.03 ROM> Roms/rom-mine.bin   # only some
 
 Close your usual G1-Emu first: both take the same MIDI ports. Your usual flash is not touched.
 
-## The web builder (in progress)
+## The web builder
 
 `web/` is the builder as a web page: you pick your ROM, tick the modules, and it gives you the
 ROM for G1-Emu and the OS update for a G1's flash. It runs **in your browser** (the same Python
 as `tools/patch_rom.py`, through Pyodide), so nothing is uploaded and the result is byte for byte
-the command line's. For now it runs on your own computer:
+the command line's.
+
+- **On the web: <https://animatek.github.io/G1-Mods/>** (GitHub Pages; built from `main` by
+  `.github/workflows/deploy-pages.yml`).
+- **On your own computer:**
 
 ```sh
 web/serve.sh               # then open http://localhost:8090
 ```
 
 It needs the internet once, to load Pyodide. `web/make_bundle.py` packs the modules into
-`web/bundle.json` (ignored; `serve.sh` makes it each time).
+`web/bundle.json` (ignored; `serve.sh` and the Pages workflow each make it). The workflow packs
+it from the committed DSP caches (`out/dspasm-*.json`), so it needs no G1-Emu; edit an `.asm`
+and run `web/serve.sh` locally first to refresh its cache.
 
 ## Installing
 
