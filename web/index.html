@@ -4,28 +4,40 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>G1-Mods Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f6f4ef; --card: #ffffff; --ink: #1d1c1a; --muted: #5d5a53; --line: #dcd7cc;
-  --accent: #c2410c; --accent-ink: #ffffff; --ok: #15803d; --warn: #b45309; --bad: #b91c1c;
-  --tick: #fff4ec;
+  --bg: #f4f4f5; --card: #ffffff; --ink: #18181c; --muted: #52525b; --line: #e4e4e7;
+  --accent: #2c7fff; --accent-ink: #ffffff; --ok: #15803d; --warn: #fd9a00; --bad: #b91c1c;
+  --tick: #eef4ff;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #161514; --card: #201f1d; --ink: #f1eee8; --muted: #aaa498; --line: #38352f;
-    --accent: #fb923c; --accent-ink: #1d1c1a; --ok: #4ade80; --warn: #fbbf24; --bad: #f87171;
-    --tick: #2c2118;
+    --bg: #18181c; --card: #232327; --ink: #f4f4f5; --muted: #a1a1aa; --line: #3f3f46;
+    --accent: #60a5fa; --accent-ink: #18181c; --ok: #4ade80; --warn: #fd9a00; --bad: #f87171;
+    --tick: #1e2a3a;
   }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink);
-  font: 19px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
-header { position: sticky; top: 0; z-index: 2; background: var(--card); border-bottom: 1px solid var(--line); }
-header .bar { max-width: 980px; margin: 0 auto; padding: 14px 16px; display: flex; gap: 20px;
-  align-items: center; flex-wrap: wrap; }
-header strong { font-size: 22px; margin-right: auto; }
-header a { color: var(--ink); text-decoration: none; font-weight: 600; }
-header a:hover { color: var(--accent); }
+  font: 19px/1.55 "Inter", system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { position: sticky; top: 0; z-index: 2;
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  border-bottom: 1px solid var(--line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+header .bar { max-width: 1080px; margin: 0 auto; padding: 0 16px; display: flex; gap: 18px;
+  align-items: center; min-height: 68px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; margin-right: auto; }
+.brand img { height: 38px; width: auto; display: block; }
+.brand .name { font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+header nav { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+header nav a { color: var(--ink); text-decoration: none; font-size: 14px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em; }
+header nav a:hover { color: var(--accent); }
+header nav.ext { border-left: 1px solid var(--line); padding-left: 18px; }
+header nav.ext a { color: var(--muted); }
+header nav.ext a:hover { color: var(--accent); }
 main { max-width: 980px; margin: 0 auto; padding: 8px 16px 64px; }
 h2 { font-size: 26px; margin: 40px 0 6px; }
 h2 .n { display: inline-block; width: 38px; height: 38px; line-height: 38px; text-align: center;
@@ -67,19 +79,25 @@ ol li { margin-bottom: 8px; }
 code { font-size: .9em; background: var(--card); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; }
 footer { color: var(--muted); font-size: 16px; border-top: 1px solid var(--line); margin-top: 48px; padding-top: 16px; }
 footer a { color: var(--muted); }
-footer .links { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; font-weight: 700; }
-footer .links a { color: var(--accent); text-decoration: none; }
-footer .links a:hover { text-decoration: underline; }
-footer .links .sep { color: var(--line); font-weight: 400; }
 </style>
 </head>
 <body>
 <header><div class="bar">
-  <strong>G1-Mods Builder</strong>
-  <a href="#rom">1 · Your ROM</a>
-  <a href="#modules">2 · Modules</a>
-  <a href="#build">3 · Build</a>
-  <a href="#install">4 · Install</a>
+  <span class="brand">
+    <img src="logo-animatek.webp" alt="Animatek logo" width="38" height="38">
+    <span class="name">G1-Mods Builder</span>
+  </span>
+  <nav aria-label="Steps">
+    <a href="#rom">1 · ROM</a>
+    <a href="#modules">2 · Modules</a>
+    <a href="#build">3 · Build</a>
+    <a href="#install">4 · Install</a>
+  </nav>
+  <nav class="ext" aria-label="Projects">
+    <a href="https://github.com/animatek/G1-Mods" target="_blank" rel="noopener">Repository</a>
+    <a href="https://github.com/animatek/G1-Emu" target="_blank" rel="noopener">G1-Emu</a>
+    <a href="https://github.com/animatek/Animatek-NME" target="_blank" rel="noopener">NME</a>
+  </nav>
 </div></header>
 
 <main>
@@ -148,11 +166,6 @@ any build that has it.</p>
 NME with its file). <b>Shift + Patch/Load</b> at power-on boots the ROM's factory OS, never the one in the flash.</p>
 
 <footer>
-<div class="links">
-  <a href="https://github.com/animatek/G1-Mods" target="_blank" rel="noopener">Repository</a><span class="sep">·</span>
-  <a href="https://github.com/animatek/G1-Emu" target="_blank" rel="noopener">G1-Emu emulator</a><span class="sep">·</span>
-  <a href="https://github.com/animatek/Animatek-NME" target="_blank" rel="noopener">Animatek NME editor</a>
-</div>
 GPLv3. Built on <a href="https://github.com/dsp56300/gearmulator">Gearmulator</a> through G1-Emu.
 Do not share built ROMs or OS files: they contain Clavia's firmware. Share your list of modules instead.
 “Nord” and “Nord Modular” are Clavia's trademarks, named only to say which instrument this is for.
