@@ -11,6 +11,8 @@ line here, in the same commit (see `CLAUDE.md`).
   and deploys `web/`. The repo is public. README and `CLAUDE.md` say so.
 - Javier and Claude: **the web builder links to the repository, G1-Emu and Animatek NME** — now in the
   header, restyled to Animatek's look (blue `#2C7FFF`, Inter, the Animatek logo).
+- Javier and Claude: **the warning colour is rose** (`#e11d48`) instead of orange, in the notice
+  ("Experimental on a real G1") and the module warnings.
 
 ## 2026-10-26
 
