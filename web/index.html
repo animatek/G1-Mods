@@ -67,6 +67,10 @@ ol li { margin-bottom: 8px; }
 code { font-size: .9em; background: var(--card); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; }
 footer { color: var(--muted); font-size: 16px; border-top: 1px solid var(--line); margin-top: 48px; padding-top: 16px; }
 footer a { color: var(--muted); }
+footer .links { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; font-weight: 700; }
+footer .links a { color: var(--accent); text-decoration: none; }
+footer .links a:hover { text-decoration: underline; }
+footer .links .sep { color: var(--line); font-weight: 400; }
 </style>
 </head>
 <body>
@@ -144,6 +148,11 @@ any build that has it.</p>
 NME with its file). <b>Shift + Patch/Load</b> at power-on boots the ROM's factory OS, never the one in the flash.</p>
 
 <footer>
+<div class="links">
+  <a href="https://github.com/animatek/G1-Mods" target="_blank" rel="noopener">Repository</a><span class="sep">·</span>
+  <a href="https://github.com/animatek/G1-Emu" target="_blank" rel="noopener">G1-Emu emulator</a><span class="sep">·</span>
+  <a href="https://github.com/animatek/Animatek-NME" target="_blank" rel="noopener">Animatek NME editor</a>
+</div>
 GPLv3. Built on <a href="https://github.com/dsp56300/gearmulator">Gearmulator</a> through G1-Emu.
 Do not share built ROMs or OS files: they contain Clavia's firmware. Share your list of modules instead.
 “Nord” and “Nord Modular” are Clavia's trademarks, named only to say which instrument this is for.

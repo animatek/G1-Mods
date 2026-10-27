@@ -9,6 +9,7 @@ line here, in the same commit (see `CLAUDE.md`).
   <https://animatek.github.io/G1-Mods/>: a Pages workflow (`.github/workflows/deploy-pages.yml`)
   packs `web/bundle.json` in CI from the committed DSP caches (`out/dspasm-*.json`, now in git)
   and deploys `web/`. The repo is public. README and `CLAUDE.md` say so.
+- Javier and Claude: **the web builder's footer links** to the repository, G1-Emu and Animatek NME.
 
 ## 2026-10-26
 
