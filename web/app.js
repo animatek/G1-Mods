@@ -150,10 +150,12 @@ let kindFilter = "all";
 
 function route() {
   const r = location.hash.replace(/^#\/?/, "").split("?")[0];
-  const name = r in ROUTES ? r : "";
+  const isMod = r.startsWith("module/");
+  const name = isMod ? "module" : r in ROUTES ? r : "";
+  if (isMod) renderModulePage(decodeURIComponent(r.slice(7)));
   document.querySelectorAll("section.view").forEach((v) => v.classList.toggle("on", v.dataset.view === name));
-  document.querySelectorAll("#nav a").forEach((a) => a.classList.toggle("on", a.dataset.route === name));
-  $("crumb").textContent = ROUTES[name];
+  document.querySelectorAll("#nav a").forEach((a) => a.classList.toggle("on", (a.dataset.route === name) || (isMod && a.dataset.route === "modules")));
+  $("crumb").textContent = isMod ? "Module" : ROUTES[name];
   window.scrollTo(0, 0);
 }
 
@@ -184,18 +186,20 @@ function renderLibrary() {
   for (const m of list.slice().sort((a, b) => a.type - b.type)) {
     const c = document.createElement("article");
     c.className = "mcard";
-    c.innerHTML = `<div class="art"><div class="t"><span></span><span></span></div>${panelSvg(m.type)}</div>
+    c.dataset.folder = m.folder;
+    c.innerHTML = `<div class="art"><div class="t"><span></span><span></span></div>${m.images.length ? `<img alt="" loading="lazy" style="width:100%;height:70px;object-fit:cover;border-radius:6px;margin-top:6px">` : panelSvg(m.type)}</div>
       <div class="body"><div class="head"><h3><span class="n"></span><small></small></h3><button class="add" type="button"></button></div><div class="full"></div><div class="sum"></div>
-      <div class="row"><span class="by"></span><span><a target="_blank" rel="noopener">Source ↗</a></span></div></div>`;
+      <div class="row"><span class="by"></span><span><a class="open" href="#">Open page →</a></span></div></div>`;
     const t = c.querySelectorAll(".t span");
     t[0].textContent = m.kind; t[1].textContent = "type " + m.type;
+    if (m.images.length) c.querySelector(".art img").src = m.images[0];
     c.querySelector(".n").textContent = m.name;
     c.querySelector("h3 small").textContent = "v" + m.version;
     c.querySelector(".full").textContent = m.fullname;
     c.querySelector(".sum").textContent = m.summary;
     c.querySelector(".by").innerHTML = `<span class="pill ${m.real_g1 ? "warn" : m.kind}"></span>`;
     c.querySelector(".pill").textContent = m.real_g1 ? "G1-Emu only" : m.author;
-    c.querySelector("a").href = "https://github.com/animatek/G1-Mods/tree/main/modules/" + m.folder;
+    c.querySelector("a").href = "#/module/" + m.folder;
     const box = document.querySelector(`#grid input[value="${m.folder}"]`);
     const add = c.querySelector(".add");
     const paint = () => {
@@ -267,6 +271,128 @@ function renderLinks() {
 
 // light or dark; with nothing chosen it follows the system. The icon shows the one a click goes to.
 const darkNow = () => document.documentElement.dataset.theme === "dark";
+
+// ---------- one module's page ----------
+const SIGNALS = { audio: "audio", control: "control", logic: "logic", slave: "slave" };
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function rangeOf(c) { return `${c.minValue ?? 0} – ${c.maxValue ?? 127}`; }
+
+function portList(title, list) {
+  const d = el("div", "ports");
+  d.append(el("h4", null, title));
+  if (!list.length) d.append(el("div", "p", "none"));
+  for (const p of list) { const r = el("div", "p"); r.append(el("b", null, p.name), el("span", null, p.signal || "")); d.append(r); }
+  return d;
+}
+function section(title, open) {
+  const d = el("details", "sec"); if (open) d.open = true;
+  d.append(el("summary", null, title)); const inner = el("div", "in"); d.append(inner); return [d, inner];
+}
+function paras(x) { return (Array.isArray(x) ? x : x ? [x] : []).map((t) => el("p", null, t)); }
+
+function renderModulePage(folder) {
+  const root = $("modpage"); root.innerHTML = "";
+  const m = bundle && bundle.modules.find((x) => x.folder === folder);
+  if (!m) { root.append(el("p", "empty", bundle ? "No such module." : "Loading…")); return; }
+  document.title = `${m.name} · G1-Mods`;
+  const back = el("a", "back", "← All modules"); back.href = "#/modules"; root.append(back);
+
+  const head = el("div", "mhead"); const l = el("div");
+  const tags = el("div", "tags");
+  tags.append(el("span", "pill " + m.kind, m.kind), el("span", "pill", "type " + m.type), el("span", "pill", "v" + m.version));
+  if (m.category) tags.append(el("span", "pill", m.category));
+  if (m.real_g1) tags.append(el("span", "pill warn", "G1-Emu only"));
+  l.append(tags, el("h1", null, m.name), el("p", "lead", m.fullname));
+  head.append(l);
+  const act = el("div", "cta");
+  const b = el("a", "btn primary", "Build with this module"); b.href = "#/builder"; act.append(b);
+  const s = el("a", "btn", "Source ↗"); s.href = "https://github.com/animatek/G1-Mods/tree/main/modules/" + m.folder; s.target = "_blank"; s.rel = "noopener"; act.append(s);
+  head.append(act); root.append(head);
+
+  const lay = el("div", "mlayout"); root.append(lay);
+  // left: the picture(s) and the text
+  const left = el("div"); lay.append(left);
+  const shot = el("div", "shot"); left.append(shot);
+  if (m.images.length) {
+    const big = el("img"); big.src = m.images[0]; big.alt = m.name + " panel"; shot.append(big);
+    if (m.images.length > 1) {
+      const th = el("div", "thumbs");
+      m.images.forEach((src, i) => { const t = el("img", i ? "" : "on"); t.src = src; t.alt = ""; t.onclick = () => {
+        big.src = src; th.querySelectorAll("img").forEach((x) => x.classList.remove("on")); t.classList.add("on"); }; th.append(t); });
+      shot.append(th);
+    }
+  } else {
+    const ph = el("div", "ph"); ph.innerHTML = panelSvg(m.type); shot.append(ph);
+    shot.append(el("div", "cap", "Panel picture coming. Add one as modules/" + m.folder + "/images/panel.png."));
+  }
+  const [about, aIn] = section("About", true);
+  (m.about ? paras(m.about) : [el("p", null, m.summary)]).forEach((p) => aIn.append(p));
+  if (m.credits) paras(m.credits).forEach((p) => aIn.append(p));
+  left.append(about);
+  if (m.usage) {
+    const [u, uIn] = section("How to use it", true);
+    const ol = el("ol"); (Array.isArray(m.usage) ? m.usage : [m.usage]).forEach((t) => ol.append(el("li", null, t))); uIn.append(ol); left.append(u);
+  }
+  const [pt, ptIn] = section(`Ports & lights`, true);
+  const cols = el("div", "portcols");
+  cols.append(portList("Inputs", m.inputs || []), portList("Outputs", m.outputs || []));
+  if ((m.lights || []).length) cols.append(portList("Lights", m.lights.map((x) => ({ name: x.name, signal: x.type }))));
+  ptIn.append(cols); left.append(pt);
+  if ((m.controls || []).length) {
+    const [cs, csIn] = section(`Controls`, true);
+    const t = el("table"); t.innerHTML = "<tr><th>Control</th><th>Range</th><th>Default</th><th>Shown as</th></tr>";
+    for (const c of m.controls) {
+      const r = el("tr"); r.append(el("td", "mono", c.name), el("td", "mono", rangeOf(c)), el("td", "mono", c.defaultValue ?? "0"), el("td", "mono", c.formatter || "—"));
+      t.append(r);
+    }
+    const w = el("div", "tablewrap"); w.append(t); csIn.append(w); left.append(cs);
+  }
+  if (m.notes) { const [n, nIn] = section("Notes & limits", false); paras(m.notes).forEach((p) => nIn.append(p)); left.append(n); }
+
+  // right: the data sheet
+  const right = el("div"); lay.append(right);
+  const sheet = el("div", "panel"); right.append(sheet);
+  sheet.append(el("h3", null, "Data sheet")); sheet.firstChild.style.marginTop = "0";
+  const dl = el("dl", "fact");
+  const row = (k, v) => { dl.append(el("dt", null, k), el("dd", null, v)); };
+  row("Type", String(m.type)); row("Kind", m.kind + (m.kind === "audio" ? " rate" : " rate")); row("Version", m.version);
+  row("Author", m.author); row("Licence", m.licence);
+  row("Real G1", m.real_g1 ? "Not yet: " + m.real_g1 : "Played on a real G1");
+  if (m.status) row("Status", m.status);
+  sheet.append(dl);
+  const ld = m.load || {};
+  const meters = [["cycles", "DSP cycles"], ["prog-mem", "Program memory"], ["x-mem", "X memory"]].filter(([k]) => ld[k] != null);
+  if (meters.length) {
+    sheet.append(el("h3", null, "Load (as NME lists it)"));
+    const g = el("div", "loads");
+    for (const [k, label] of meters) {
+      const v = parseFloat(ld[k]); const c = el("div", "load");
+      c.innerHTML = "<b></b><span></span><i><u></u></i>";
+      c.querySelector("b").textContent = v; c.querySelector("span").textContent = label;
+      c.querySelector("u").style.width = Math.min(100, v * 100 / (k === "cycles" ? 4 : 6)) + "%";
+      g.append(c);
+    }
+    sheet.append(g);
+  }
+  if ((m.patches || []).length) {
+    sheet.append(el("h3", null, "Example patches"));
+    const ul = el("ul");
+    for (const p of m.patches) {
+      const li = el("li"), a = el("a", null, p);
+      a.href = `https://raw.githubusercontent.com/animatek/G1-Mods/main/modules/${m.folder}/${p}`; a.download = p; li.append(a); ul.append(li);
+    }
+    sheet.append(ul);
+    sheet.append(el("p", "cap", "Open them in Animatek NME, on a synth or G1-Emu with these modules."));
+  }
+  // neighbours
+  const sorted = bundle.modules.slice().sort((a, b) => a.type - b.type);
+  const i = sorted.indexOf(m), nav = el("div", "cta");
+  for (const [o, label] of [[sorted[i - 1], "←"], [sorted[i + 1], "→"]]) if (o) {
+    const a = el("a", "btn", label === "←" ? `← ${o.name}` : `${o.name} →`); a.href = "#/module/" + o.folder; nav.append(a);
+  }
+  right.append(nav);
+}
+
 function applyTheme(t) {
   try { localStorage.setItem("g1mods-theme", t); } catch (e) {}
   document.documentElement.dataset.theme = t;
@@ -296,6 +422,7 @@ async function init() {
   renderModules();
   renderFilters();
   renderLibrary();
+  route();
   syncBuildUI();
   refresh();
   py = await loadPyodide();

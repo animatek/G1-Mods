@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-28
 
+- Javier and Claude: **a page for every module** (`#/module/<folder>` on the web): picture, data sheet (type, kind,
+  version, author, licence, real-G1 status, DSP/memory load), ports and lights, controls with range and default,
+  example patches and the next/previous module. Ports, controls and load are read from each `nme-modules.xml`
+  by `web/make_bundle.py`; pictures go in `modules/<name>/images/` (the first is the panel) and optional text
+  (`about`, `usage`, `notes`, `credits`, `status`) in `module.json` (`modules/README.md`). Without a picture the
+  page shows the generated panel. Checked in headless Chromium.
+
 - Javier and Claude: **Patreon and Donate moved to the sidebar's foot** (where the theme button was), and the
   **theme switch is a sun/moon icon in the top bar**, light or dark (it follows the system until it is clicked;
   the choice is remembered). On phones the two links sit at the end of the menu strip. Looked at in headless Chromium.

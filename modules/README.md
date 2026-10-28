@@ -12,6 +12,7 @@ modules/<name>/
                     tools/m68kasm.sh assembles from it, kept so a build needs no toolchain
   nme-modules.xml   its entry in NME's modules.xml, whole
   nme-theme.xml     its panel in NME's classic theme, whole
+  images/           its pictures for the web page (panel.png first): web/make_bundle.py copies them
   check_*.py        its test in G1-Emu, with the patches it plays (*.pch)
 ```
 
@@ -24,6 +25,7 @@ modules/<name>/
 | `kind` | `control` or `audio`: which DSP rate its code runs at. |
 | `author`, `licence`, `version` | who wrote it, under what (GPL-compatible), and which release. |
 | `nme_after` | the type its entries follow in NME's files, so the rest stays byte for byte. |
+| `about`, `usage`, `notes`, `credits`, `status` | optional text for the module's web page: paragraphs, or a list of steps for `usage`. Ports, controls, lights and load come from `nme-modules.xml`. |
 | `tests` | its tests, run by `tests/run_all.py`. |
 
 `registry.json` says which type each module has (`given`), which are still free (`free`), and the

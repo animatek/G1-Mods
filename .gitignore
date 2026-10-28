@@ -16,3 +16,5 @@ __pycache__/
 
 # The web builder's bundle, made by web/make_bundle.py
 /web/bundle.json
+# ...and the pictures it copies from modules/<name>/images/
+/web/modules/

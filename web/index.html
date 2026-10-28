@@ -219,6 +219,42 @@ tr:last-child td { border-bottom: 0; }
 footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); margin-top: 56px; padding-top: 16px; max-width: 80ch; }
 footer a { color: var(--muted); }
 
+
+/* module page */
+.back { font-family: var(--mono); font-size: 14px; text-decoration: none; color: var(--muted); }
+.back:hover { color: var(--accent); }
+.mhead { display: flex; gap: 18px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; margin-top: 14px; }
+.mhead .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.mlayout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 22px; margin-top: 18px; align-items: start; }
+.shot { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+.shot img { width: 100%; height: auto; display: block; border-radius: 8px; background: var(--card2); image-rendering: auto; }
+.shot .ph { background: var(--card2); border-radius: 10px; padding: 18px 18px 8px; }
+.shot .ph svg { width: 100%; height: auto; }
+.shot .cap { color: var(--muted); font-size: 14px; margin-top: 10px; }
+.thumbs { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.thumbs img { width: 84px; height: 56px; object-fit: cover; cursor: pointer; border: 2px solid transparent; border-radius: 8px; }
+.thumbs img.on { border-color: var(--accent); }
+.fact { display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; margin: 0; font-size: 16px; }
+.fact dt { color: var(--muted); font-family: var(--mono); font-size: 13px; text-transform: uppercase; letter-spacing: .06em; padding-top: 3px; }
+.fact dd { margin: 0; }
+.loads { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.load { background: var(--card2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.load b { font-family: var(--mono); font-size: 18px; display: block; }
+.load span { color: var(--muted); font-size: 13px; }
+.load i { display: block; height: 5px; border-radius: 3px; background: var(--line); margin-top: 6px; overflow: hidden; }
+.load i u { display: block; height: 100%; background: var(--accent); }
+details.sec { background: var(--card); border: 1px solid var(--line); border-radius: 12px; margin-top: 12px; }
+details.sec > summary { cursor: pointer; padding: 14px 18px; font-weight: 700; font-size: 18px; list-style: none; display: flex; justify-content: space-between; }
+details.sec > summary::after { content: "+"; font-family: var(--mono); color: var(--muted); }
+details.sec[open] > summary::after { content: "–"; }
+details.sec .in { padding: 0 18px 16px; }
+.portcols { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.ports h4 { margin: 0 0 6px; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.ports div.p { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 16px; }
+.ports div.p span { color: var(--muted); font-family: var(--mono); font-size: 13px; }
+.mcard a.open { font-weight: 700; text-decoration: none; }
+@media (max-width: 880px) { .mlayout { grid-template-columns: 1fr; } }
+
 /* ---------- small screens: the menu goes up, as a strip ---------- */
 @media (max-width: 880px) {
   .shell { grid-template-columns: 1fr; }
@@ -360,6 +396,9 @@ footer a { color: var(--muted); }
     one type, several panels in NME. What is left of each module, and the G2's modules still to port, is in
     <a href="https://github.com/animatek/G1-Mods/blob/main/PORTING.md" target="_blank" rel="noopener">PORTING.md</a>.</p>
 </section>
+
+<!-- ============ ONE MODULE ============ -->
+<section class="view" data-view="module"><div id="modpage"></div></section>
 
 <!-- ============ BUILDER ============ -->
 <section class="view" data-view="builder">
