@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-28
 
+- Claude: **one copy of each guide**. The install and going-back pages lived twice — in `web/index.html` and in
+  `docs/INSTALL.md` — and had already drifted. The web now renders them from the Markdown: `docs/INSTALL.md`
+  (install, no longer carries the going-back part) and the new `docs/RECOVERY.md` (going back & fixes) are turned
+  into HTML by `web/make_bundle.py` (Python-Markdown; tables get the site's scrolling wrapper) and carried in
+  `bundle.json` under `guides`; `app.js` fills the two pages, whose sections in `index.html` are now empty. `README.md`
+  points at both, and the Pages workflow installs `markdown`. Checked by building the bundle and in headless Chromium
+  at 360 px: both pages render with their headings, the "Experimental" notice and the fixes table, and neither overflows.
 - Claude: **the module page no longer overflows a 360 px phone**. `.mlayout`'s mobile breakpoint was
   `grid-template-columns: 1fr`, which is `minmax(auto, 1fr)` and would not let the column shrink below the controls
   table's min-content, pushing `main` and the sidebar to 412 px and the page into a sideways scroll. It is now

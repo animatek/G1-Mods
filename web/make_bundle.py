@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Packs what the web builder runs into web/bundle.json: the builder's Python (tools/), every
-module's folder minus its tests, and each module's assembled DSP code (out/dspasm-*.json, made
-here first if a source changed), so the browser never needs G1-Emu's disassembler.
+module's folder minus its tests, each module's assembled DSP code (out/dspasm-*.json, made
+here first if a source changed), and the guide pages rendered from docs/*.md, so the browser
+never needs G1-Emu's disassembler nor a Markdown renderer.
 
     web/make_bundle.py
 
@@ -15,6 +16,8 @@ import shutil
 import sys
 import xml.etree.ElementTree as ET
 
+import markdown as md   # pure-Python; renders the guide pages (docs/*.md) for the web
+
 WEB = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(WEB)
 sys.path.insert(0, os.path.join(ROOT, "tools"))
@@ -25,6 +28,15 @@ TOOLS = ("g1rom.py", "dspasm.py", "patch_rom.py", "g1update.py", "lz.py", "unlz.
 MODULE_FILES = ("module.json", "build.py", "*.asm", "*.m68k")
 IMAGES = ("*.png", "*.webp", "*.jpg", "*.jpeg", "*.gif")   # a module's pictures: modules/<name>/images/
 OPTIONAL = ("about", "usage", "notes", "credits", "status")   # text for the module's page, in module.json
+
+# The guide pages on the web are the same text as these files: docs/<name>.md -> bundle["guides"][<name>].
+GUIDES = ("install", "recovery")
+
+
+def render_guide(path):
+    """A docs/*.md file as HTML, ready for its web page. Tables get the site's scrolling wrapper."""
+    html = md.markdown(open(path, encoding="utf-8").read(), extensions=["tables"])
+    return html.replace("<table>", '<div class="tablewrap"><table>').replace("</table>", "</table></div>")
 
 
 def sheet(d):
@@ -75,6 +87,7 @@ def main():
                        | {"folder": folder, "images": pics, "patches": patches} | sheet(d))
     bundle = {
         "modules": modules,
+        "guides": {name: render_guide(os.path.join(ROOT, "docs", name.upper() + ".md")) for name in GUIDES},
         "room": ROOM,
         "files": {k: base64.b64encode(open(v, "rb").read()).decode() for k, v in sorted(files.items())},
     }

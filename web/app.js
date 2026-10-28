@@ -276,6 +276,15 @@ function renderLinks() {
   }
 }
 
+// the guide pages (install, recovery, …) are rendered from docs/*.md by make_bundle.py and
+// live in bundle.guides; the sections in index.html are empty until they are filled here.
+function renderGuides() {
+  for (const [key, html] of Object.entries(bundle.guides || {})) {
+    const el = document.querySelector(`.guide[data-guide="${key}"]`);
+    if (el) el.innerHTML = html;
+  }
+}
+
 // light or dark; with nothing chosen it follows the system. The icon shows the one a click goes to.
 const darkNow = () => document.documentElement.dataset.theme === "dark";
 
@@ -433,6 +442,7 @@ async function init() {
   renderModules();
   renderFilters();
   renderLibrary();
+  renderGuides();
   route();
   syncBuildUI();
   refresh();

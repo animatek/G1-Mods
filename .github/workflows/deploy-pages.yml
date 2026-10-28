@@ -27,6 +27,10 @@ jobs:
         with:
           python-version: "3.12"
 
+      # make_bundle.py renders the guide pages from docs/*.md with Python-Markdown.
+      - name: Install Python-Markdown
+        run: pip install markdown
+
       # Packs our code and each module's already-assembled DSP (out/dspasm-*.json, committed)
       # into web/bundle.json. No G1-Emu and no dspdis are needed: the caches match the source.
       # If a module's .asm changed without its cache, this fails loudly with dspdis's name,

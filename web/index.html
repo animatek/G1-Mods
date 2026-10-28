@@ -94,6 +94,10 @@ ol li, ul li { margin-bottom: 8px; }
 .notice { border: 1px solid color-mix(in srgb, var(--warn) 55%, var(--line)); border-left: 4px solid var(--warn);
   border-radius: 12px; padding: 14px 18px; background: var(--card); margin: 22px 0; max-width: 80ch; }
 .notice strong { color: var(--warn); }
+.guide blockquote { border: 1px solid color-mix(in srgb, var(--warn) 55%, var(--line)); border-left: 4px solid var(--warn);
+  border-radius: 12px; padding: 14px 18px; background: var(--card); margin: 22px 0; max-width: 80ch; }
+.guide blockquote p { margin: 0; }
+.guide blockquote strong { color: var(--warn); }
 .hero { padding: 34px 32px; border-radius: 18px; border: 1px solid var(--line); position: relative; overflow: hidden;
   background:
     radial-gradient(900px 300px at 85% -20%, color-mix(in srgb, var(--accent) 28%, transparent), transparent 70%),
@@ -448,80 +452,12 @@ details.sec .in { padding: 0 18px 16px; }
 
 <!-- ============ INSTALL ============ -->
 <section class="view" data-view="install">
-  <h1>Install guide</h1>
-  <p class="lead">How to get the new modules into <b>G1-Emu</b> and into a <b>real Nord Modular G1 rack</b>. Read it all once before you start.</p>
-  <div class="notice"><strong>Experimental.</strong> On one real G1 all 13 modules have played in one build, and going back to
-    Clavia's OS worked every time. That is one synth. Do it at your own risk, and try everything in G1-Emu first.</div>
-
-  <h2>What you need</h2>
-  <ul>
-    <li><b>The rack's 3.03 ROM</b> (<code>NORD-MODULAR-RACK-VER-3.03.BIN</code>, 512 KB). We do not give it: it is Clavia's.</li>
-    <li><b>Animatek NME</b> with G1-Mods support: it shows the new modules when a synth has them, and has <i>Device › Update Synth OS</i>.</li>
-    <li><b>G1-Emu</b>, to try a build before a real synth.</li>
-    <li>For a real G1: a MIDI interface on the G1's <b>PC port</b> (both ways), as for editing.</li>
-    <li>For the way back: <b>Clavia's OS 3.03b updater</b> (Windows or Mac; on Linux it runs in Wine).</li>
-  </ul>
-
-  <h2>1 · Build your OS</h2>
-  <p>Use the <a href="#/builder">builder</a>. You get two files: the <b>ROM</b> for G1-Emu, and the <b>OS update</b> for a real G1's flash.
-    Keep your list of modules, not the files: they contain Clavia's firmware and must not be shared.</p>
-
-  <h2>2 · Try it in G1-Emu</h2>
-  <ol>
-    <li>Close G1-Emu.</li>
-    <li>Start it with the ROM you built and <b>a flash of its own</b>, so your patches are not touched: <code>G1-Emu g1mods-rom.bin g1mods-flash.bin</code>.</li>
-    <li>If its settings name an OS file (<code>os =</code>), leave it empty: that OS would boot instead of the one in your ROM.</li>
-    <li>Connect NME. It says <b>MODDED OS</b>, the synth reports <b>3.09</b>, and the new modules are in the palette.</li>
-    <li>Load a patch that uses them: each module's folder in the repository has one.</li>
-  </ol>
-
-  <h2>3 · Install it on a real G1</h2>
-  <p>In order. About <b>12 minutes</b> at the safe speed.</p>
-  <ol>
-    <li><b>Back up your patches.</b> Save every bank you care about from NME.</li>
-    <li><b>Check which synth NME is talking to</b>: the real G1, not G1-Emu.</li>
-    <li>Switch the G1 off. <b>Hold Shift + Store and switch it on.</b> It shows <i>Update utility</i> and waits.</li>
-    <li>In NME: <i>Device › Update Synth OS</i>. Pick the <b>OS update</b> file, speed <b>Safe</b>, and start.</li>
-    <li>Leave it alone until it ends: do not touch the cable, the synth or the computer.</li>
-    <li>When the G1 asks <b>“Update flash?”</b>, press <b>Store</b> (any other key keeps the old OS). <i>Erasing</i>, <i>Writing</i>, <i>Verifying</i>, then <i>Update completed</i>.</li>
-    <li>Switch it off and on. Connect NME: <b>MODDED OS</b> and the new modules in the palette.</li>
-  </ol>
-
-  <h3>Using the modules</h3>
-  <ul>
-    <li>Play patches with new modules <b>in a slot</b>. Under Clavia's OS, a stored patch that names a module the OS does not have may hang the synth when loaded.</li>
-    <li><b>Before going back to Clavia's OS, delete or overwrite every stored patch that uses a new module.</b></li>
-    <li>A patch with a new module can be sent only to a synth whose OS has it: NME checks.</li>
-  </ul>
+  <div class="guide" data-guide="install"></div>
 </section>
 
 <!-- ============ RECOVERY ============ -->
 <section class="view" data-view="recovery">
-  <h1>Going back &amp; fixes</h1>
-  <p class="lead">The update utility lives in the G1's ROM chip, which nothing here can write. Whatever the flash holds, <b>Shift + Store</b> at power-on reaches it.</p>
-
-  <h2>Back to Clavia's OS</h2>
-  <ol>
-    <li>Delete or overwrite the stored patches that use new modules.</li>
-    <li>Switch the G1 off. <b>Hold Shift + Store and switch it on.</b></li>
-    <li>Run <b>Clavia's 3.03b updater</b>, at its safe (slower) speed, through the same MIDI interface.</li>
-    <li>Press <b>Store</b> at “Update flash?”, wait for <i>Update completed</i>, switch it off and on.</li>
-  </ol>
-  <p><b>Shift + Patch/Load</b> at power-on starts the ROM's factory OS, never the one in the flash: a way to use the synth while you sort it out.</p>
-
-  <h2>If something goes wrong</h2>
-  <div class="tablewrap"><table>
-    <tr><th>What you see</th><th>What it means</th><th>What to do</th></tr>
-    <tr><td><i>Writing to flash / Write Error</i></td><td>The flash could not be written.</td><td>Switch off and on: it returns to the update utility by itself. Install Clavia's 3.03b.</td></tr>
-    <tr><td><i>Update utility / Curr ver 255.255</i> at a normal power-on</td><td>The flash holds no OS (an update failed halfway).</td><td>Install an OS: yours again, or Clavia's 3.03b.</td></tr>
-    <tr><td>It shows its name and version and stays there</td><td>The OS installed but does not start.</td><td>Shift + Store at power-on, install Clavia's 3.03b, and report it.</td></tr>
-    <tr><td>No <i>Update utility</i> with Shift + Store</td><td>The keys were not held from the start.</td><td>Hold both before switching on, until the display changes.</td></tr>
-  </table></div>
-
-  <h2>Reporting a problem</h2>
-  <p>Open an <a href="https://github.com/animatek/G1-Mods/issues" target="_blank" rel="noopener">issue</a> with the list of modules in the build,
-    whether it was G1-Emu or a real G1, what the display showed, and what you did just before. There is no support for real hardware and no promise
-    of a fix, but every report helps.</p>
+  <div class="guide" data-guide="recovery"></div>
 </section>
 
 <!-- ============ NORD MODULAR ============ -->

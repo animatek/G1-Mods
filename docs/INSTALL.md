@@ -1,7 +1,8 @@
 # Installing G1-Mods
 
 How to get the new modules into **G1-Emu** and into a **real Nord Modular G1 rack**, step by
-step, and how to go back to Clavia's OS. Read it all once before you start.
+step. Read it all once before you start, and see the way back (`docs/RECOVERY.md`) before you
+touch a real synth.
 
 > **Experimental.** On one real G1 (2026-10-26) all 13 modules have played in one build, and
 > going back to Clavia's OS worked every time. That is one synth. A modified OS may still lose
@@ -21,15 +22,15 @@ step, and how to go back to Clavia's OS. Read it all once before you start.
 
 ## 1. Build your OS
 
-On the builder page (`web/`, `web/serve.sh` on your computer for now):
+On the builder page (on the live site, or `web/serve.sh` from a clone):
 
 1. Drop your 3.03 ROM on it. It checks it is the right one. Nothing is uploaded.
 2. Tick the modules you want.
 3. Tick that you have read the risks, and press **Build my OS**.
 4. You get two files:
-   - **the ROM** (`g1mods-...-rom.bin`): for G1-Emu;
-   - **the OS update** (`g1mods-...-os.bin`): for a real G1's flash. If the page does not offer
-     it, say why it gives (too many modules, or a module not ready for a real G1).
+    - **the ROM** (`g1mods-...-rom.bin`): for G1-Emu;
+    - **the OS update** (`g1mods-...-os.bin`): for a real G1's flash. If the page does not offer
+      it, it says why (too many modules, or a module not ready for a real G1).
 
 From a clone of this repo the same is `tools/patch_rom.py` and `tools/g1update.py fromrom`
 (README, "Where the builds are").
@@ -71,29 +72,3 @@ Do these in order. The whole update takes about **12 minutes** at the safe speed
   the synth. **Before going back to Clavia's OS, delete or overwrite every stored patch that uses
   a new module.**
 - A patch with a new module can be sent only to a synth whose OS has that module: NME checks.
-
-## 4. Going back to Clavia's OS
-
-1. Delete or overwrite the stored patches that use new modules (above).
-2. Switch the G1 off. **Hold Shift + Store and switch it on.**
-3. Run **Clavia's 3.03b updater**, at its safe (slower) speed, through the same MIDI interface.
-4. Press **Store** at "Update flash?", wait for *Update completed*, switch it off and on.
-
-## If something goes wrong
-
-| What you see | What it means | What to do |
-| --- | --- | --- |
-| *Writing to flash / Write Error* | The flash could not be written. | Switch off and on: it goes back to the update utility by itself. Install Clavia's 3.03b (section 4). |
-| *Update utility / Curr ver 255.255* at a normal power-on | The flash holds no OS (an update that failed halfway). | Install an OS: yours again, or Clavia's 3.03b. |
-| It shows its name and version and stays there | The OS installed but does not start. | Shift + Store at power-on and install Clavia's 3.03b. Report it (below). |
-| No *Update utility* with Shift + Store | The keys were not held from the start. | Hold both before switching on, until the display changes. |
-
-The update utility lives in the G1's ROM chip, which nothing here can write. Whatever the flash
-holds, Shift + Store at power-on reaches it. **Shift + Patch/Load** at power-on starts the ROM's
-factory OS, never the one in the flash: a way to use the synth while you sort it out.
-
-## Reporting a problem
-
-Open an issue with: the list of modules in the build, whether it was G1-Emu or a real G1, what
-the display showed, and what you did just before. There is no support for real hardware and no
-promise of a fix (README, "Who is responsible for what"), but every report helps.

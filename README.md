@@ -107,8 +107,9 @@ and run `web/serve.sh` locally first to refresh its cache.
 
 ## Installing
 
-[`docs/INSTALL.md`](docs/INSTALL.md): building your OS, trying it in G1-Emu, installing it on a
-real G1 with NME, and going back to Clavia's OS, step by step.
+[`docs/INSTALL.md`](docs/INSTALL.md): building your OS, trying it in G1-Emu and installing it on a
+real G1 with NME, step by step. [`docs/RECOVERY.md`](docs/RECOVERY.md): going back to Clavia's OS
+and what to do when something goes wrong.
 
 ## Where the builds are
 
