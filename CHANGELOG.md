@@ -5,6 +5,9 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-28
 
+- Javier and Claude: **the 13 module panel pictures** (Javier's NME captures) are in each
+  `modules/<name>/images/panel.png`; the web shows them on the cards (whole, not cropped) and on each module's page.
+
 - Javier and Claude: **a page for every module** (`#/module/<folder>` on the web): picture, data sheet (type, kind,
   version, author, licence, real-G1 status, DSP/memory load), ports and lights, controls with range and default,
   example patches and the next/previous module. Ports, controls and load are read from each `nme-modules.xml`

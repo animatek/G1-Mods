@@ -187,7 +187,7 @@ function renderLibrary() {
     const c = document.createElement("article");
     c.className = "mcard";
     c.dataset.folder = m.folder;
-    c.innerHTML = `<div class="art"><div class="t"><span></span><span></span></div>${m.images.length ? `<img alt="" loading="lazy" style="width:100%;height:70px;object-fit:cover;border-radius:6px;margin-top:6px">` : panelSvg(m.type)}</div>
+    c.innerHTML = `<div class="art"><div class="t"><span></span><span></span></div>${m.images.length ? `<img alt="" loading="lazy" style="width:100%;height:96px;object-fit:contain;image-rendering:auto;margin-top:6px">` : panelSvg(m.type)}</div>
       <div class="body"><div class="head"><h3><span class="n"></span><small></small></h3><button class="add" type="button"></button></div><div class="full"></div><div class="sum"></div>
       <div class="row"><span class="by"></span><span><a class="open" href="#">Open page →</a></span></div></div>`;
     const t = c.querySelectorAll(".t span");
