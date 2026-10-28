@@ -10,5 +10,15 @@
   "nme_after": 89,
   "tests": [
     "check_flipflop.py"
-  ]
+  ],
+  "about": [
+    "A flip-flop remembers one bit. It has two types, picked by the Type button: D-type and RS-type. Q is the stored bit and NotQ its opposite.",
+    "D-type: on each rising edge of Clk, Q takes whatever In is at that moment. RS-type: a rising edge on In sets Q; with In low, each rising edge of Clk toggles Q. Rst, when high, clears Q in both types and wins over everything else."
+  ],
+  "usage": [
+    "Clock a D-type from an LFO or a sequencer's gate and feed In from another gate: Q samples it on every clock.",
+    "Choose RS and leave In unplugged: every clock edge toggles Q, so it divides the clock by two.",
+    "Use Rst to bring several flip-flops back in step at the start of a bar."
+  ],
+  "notes": "Control rate: good for gates and slow logic, not for audio. The example patch flipflop-lfo.pch clocks it from an LFO."
 }

@@ -10,5 +10,15 @@
   "nme_after": 91,
   "tests": [
     "check_step_seq_5.py"
-  ]
+  ],
+  "about": [
+    "A five-step sequencer with one bipolar knob for each step, after Buchla's five-stage sequencers. Each rising edge of Clk moves to the next step and the fifth goes back to the first. Out is the value of the current step, from -64 to +63, and five LEDs show where it is.",
+    "Rst works as the G1's own sequencers' does: its edge arms the module and the next clock goes to step 1. It starts on the last step, so the first clock plays step 1. That keeps it in step with a CtrlSeq on the same clock and reset."
+  ],
+  "usage": [
+    "Send a clock to Clk and Out to an oscillator's pitch, or to a filter's cutoff.",
+    "Set each knob to the value you want for that step.",
+    "Plug the same clock and reset into a CtrlSeq: the two stay together."
+  ],
+  "notes": "Control rate. Five steps is fixed; use two in a row with a counter for longer patterns."
 }

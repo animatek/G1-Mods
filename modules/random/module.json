@@ -10,5 +10,16 @@
   "nme_after": 101,
   "tests": [
     "check_random.py"
-  ]
+  ],
+  "about": [
+    "The G2's random generators in one clocked module, with what the G1's own lack: a Seed that repeats, Poly (each voice with its own values), Edge (gliding between values) and a chance per clock.",
+    "On each rising edge of Clk a new random number is drawn. Out moves toward it by Step (127 jumps all the way, low values wander), gliding there with Edge. Trig is high on the clocks a second draw falls under Prob. Seed makes the same values come back; Length (1-16) loops them, 0 is free. Uni makes the output positive, which suits a filter or a resonance."
+  ],
+  "usage": [
+    "Clock it and send Out to a cutoff: Step high for a new value each clock, low for a slow wander.",
+    "Set a Seed and a Length to get a short random pattern that repeats, and change the Seed to find another.",
+    "Use Trig as a probabilistic gate."
+  ],
+  "notes": "Poly was checked by ear (17 Oct 2026): the voices play different sequences. Control rate.",
+  "credits": "Javier asked for the positive (Uni) option, for filters and resonance."
 }

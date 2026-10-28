@@ -10,5 +10,14 @@
   "nme_after": 126,
   "tests": [
     "check_mux8.py"
-  ]
+  ],
+  "about": [
+    "Chooses one of eight inputs and sends it to the output. The input picked is the Sel knob plus the level at Ctrl, in steps of eight units, held to 1-8. It is the G2's Mux8-1 and Sw8-1 in one module, because the G1 has few free types.",
+    "With Ctrl unplugged, the knob picks the input (the Sw8-1). With Sel on 1, a level at Ctrl picks it (the Mux8-1). Eight LEDs show which one is on."
+  ],
+  "usage": [
+    "Plug eight sources into In 1-8 and turn Sel to switch between them.",
+    "Send a stepped control signal (a sequencer or a counter's output) to Ctrl to switch under automation."
+  ],
+  "notes": "Control rate, for levels and gates. Audio through it would be at the control rate."
 }

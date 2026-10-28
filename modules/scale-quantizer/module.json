@@ -10,5 +10,15 @@
   "nme_after": 124,
   "tests": [
     "check_scale_quantizer.py"
-  ]
+  ],
+  "about": [
+    "Moves a pitch to the nearest note of a scale you pick by name, on a root note. It is easier to set up than the G1's KeyQuant and its twelve buttons. After JW-Modules' Quantizer.",
+    "In is rounded to the nearest semitone and then moved to the nearest note of the scale (the lower one on a tie). Root picks the key from C to B, Scale one of 16 scales, and Octave shifts the result from -4 to +4 octaves."
+  ],
+  "usage": [
+    "Put it between a random or sequenced CV (the Turing Machine's CV, for example) and an oscillator's pitch.",
+    "Choose a Root and a Scale: the notes now stay in that key.",
+    "Use Octave to bring the result into the range you want."
+  ],
+  "notes": "Missing: CV inputs for Root and Scale. Control rate."
 }

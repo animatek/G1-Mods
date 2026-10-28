@@ -10,5 +10,14 @@
   "nme_after": 120,
   "tests": [
     "check_counter8.py"
-  ]
+  ],
+  "about": [
+    "Eight outputs, one high at a time, moving on with the clock, after the G2's 8Counter. Each rising edge of Clk moves to the next step and the eighth goes back to the first. Eight LEDs show the step.",
+    "Rst works as the G1's sequencers' does: it arms the counter and the next clock goes to the first step. It starts on the last one, so the first clock plays the first. It keeps in step with a CtrlSeq or a 5-Step Seq on the same clock and reset."
+  ],
+  "usage": [
+    "Send a clock to Clk and use each output as the gate of a different drum or event.",
+    "Plug a reset in to start every bar on step 1."
+  ],
+  "notes": "Control rate."
 }

@@ -10,5 +10,15 @@
   "nme_after": 126,
   "tests": [
     "check_bits.py"
-  ]
+  ],
+  "about": [
+    "The G2's BinCounter, ADConv and DAConv in one module, by a Mode button. Each mode makes a byte (0-255). Out is that byte as a level, and Bit 1-8 are its bits as logic signals. Eight LEDs show it.",
+    "Count: every rising edge of Clk adds one, and 255 goes back to 0. A>D: In (0 to +64 units) is turned into a byte in 256 steps. D>A: B1-B8 are read as bits, each one set when its input is above 0."
+  ],
+  "usage": [
+    "Count from a clock and use the bits as divided clocks: Bit 1 runs at half the rate, Bit 2 at a quarter.",
+    "In A>D, feed a slow LFO to get its value as eight gates.",
+    "In D>A, build a stepped level from eight gates."
+  ],
+  "notes": "Control rate. The counter keeps counting in every mode, so switching back finds it where it went."
 }

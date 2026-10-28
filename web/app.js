@@ -223,6 +223,13 @@ function syncBuildUI() {
   if (!bundle) return;
   const n = ticked().length;
   $("barCount").textContent = n;
+  const ma = $("modAdd");
+  if (ma) {
+    const box = document.querySelector(`#grid input[value="${ma.dataset.folder}"]`);
+    const on = box && box.checked;
+    ma.textContent = on ? "✓ In my build" : "+ Add to my build";
+    ma.setAttribute("aria-pressed", on ? "true" : "false");
+  }
   $("mbText").textContent = `My build · ${n} of ${bundle.modules.length} modules`;
   document.querySelectorAll(".mcard").forEach((c) => {
     const add = c.querySelector(".add");
@@ -305,7 +312,10 @@ function renderModulePage(folder) {
   l.append(tags, el("h1", null, m.name), el("p", "lead", m.fullname));
   head.append(l);
   const act = el("div", "cta");
-  const b = el("a", "btn primary", "Build with this module"); b.href = "#/builder"; act.append(b);
+  const b = el("button", "btn primary"); b.type = "button"; b.id = "modAdd"; b.dataset.folder = m.folder;
+  b.onclick = () => { const box = document.querySelector(`#grid input[value="${m.folder}"]`); if (box) { box.checked = !box.checked; refresh(); } };
+  act.append(b);
+  const go = el("a", "btn", "Build your OS →"); go.href = "#/builder"; act.append(go);
   const s = el("a", "btn", "Source ↗"); s.href = "https://github.com/animatek/G1-Mods/tree/main/modules/" + m.folder; s.target = "_blank"; s.rel = "noopener"; act.append(s);
   head.append(act); root.append(head);
 
@@ -391,6 +401,7 @@ function renderModulePage(folder) {
     const a = el("a", "btn", label === "←" ? `← ${o.name}` : `${o.name} →`); a.href = "#/module/" + o.folder; nav.append(a);
   }
   right.append(nav);
+  syncBuildUI();
 }
 
 function applyTheme(t) {

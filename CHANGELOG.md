@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-28
 
+- Javier and Claude: **text for every module's page** (`about`, `usage`, `notes`, and `credits` on the Random) in the
+  13 `module.json`, written from each `.asm` header and `PORTING.md`; and the page's button now **adds or removes
+  the module from "My build"** (it followed the builder's ticks, as the cards' + do) instead of only linking to the
+  builder. Checked in headless Chromium at desktop and phone widths; `tests/check_insert.py` OK.
+
 - Javier and Claude: **the 13 module panel pictures** (Javier's NME captures) are in each
   `modules/<name>/images/panel.png`; the web shows them on the cards (whole, not cropped) and on each module's page.
 

@@ -10,5 +10,15 @@
   "nme_after": 101,
   "tests": [
     "check_level.py"
-  ]
+  ],
+  "about": [
+    "The G2's ModAmt, MinMax, T&H and WindSw in one module, by a Mode selector. Two inputs, A and B, and two outputs.",
+    "ModAmt: B sets how much of A goes through, by Amount. Out 2 is the rest. MinMax: Out 1 is the lower of A and B, Out 2 the higher. T&H: Out 1 tracks A while B is high and holds it while low; Out 2 does the opposite. Window: Out 1 is A while B is between Lo and Hi, else 0; Out 2 is high while it is."
+  ],
+  "usage": [
+    "Use ModAmt with Amount at 127 as a VCA for control signals.",
+    "Use T&H with a clock at B to sample a signal: a sample-and-hold.",
+    "Use Window to open a path only when another signal is in range."
+  ],
+  "notes": "Control rate, for levels and gates."
 }

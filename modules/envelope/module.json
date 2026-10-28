@@ -10,5 +10,15 @@
   "nme_after": 42,
   "tests": [
     "check_envelope.py"
-  ]
+  ],
+  "about": [
+    "The G2's ADDSR, H, D and Mod AHD envelopes from one engine. Stages: attack, decay 1 (to Level 1), decay 2 (to Sustain) and release. Each is an exponential approach, from instant to about 17 seconds. Env goes from 0 to +64 units, and End is high while the envelope is idle.",
+    "Gate mode: it holds at Sustain while Gate is high, and releases when Gate falls (the ADDSR). Trig mode: the length of the gate does not matter, and decay 2 goes on into the release when it reaches Sustain (the D, the H with Decay 1 at Level 1 as the hold, the AHD)."
+  ],
+  "usage": [
+    "Gate mode with Attack and Release: a normal envelope for an amplifier.",
+    "Trig mode: a percussive shape that fires on any trigger.",
+    "End goes high when the envelope finishes: use it to trigger the next event."
+  ],
+  "notes": "No time-modulation inputs yet (the Mod AHD's). Control rate."
 }

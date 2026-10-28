@@ -10,5 +10,15 @@
   "nme_after": 19,
   "tests": [
     "check_mix1_1a.py"
-  ]
+  ],
+  "about": [
+    "One mixer channel with a level, an On button and a chain input. The output is the chain plus the input times the level, so you can string several together to make a bigger mixer.",
+    "Based on the G2's Mixer 1-1 A."
+  ],
+  "usage": [
+    "Plug a source into In and set Level.",
+    "Plug the Out of another Mix1-1A into Chain to add its signal: each module is one channel of the mixer.",
+    "Switch On off to mute the channel without unplugging it. The chain still passes through."
+  ],
+  "notes": "Missing: the Lin / dB / Exp level curves of the G2's mixers. The level follows the G1 Mixer's own curve for now."
 }
