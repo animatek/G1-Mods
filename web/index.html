@@ -166,6 +166,8 @@ ol li, ul li { margin-bottom: 8px; }
 .dl a { display: inline-block; margin-top: 8px; font-weight: 700; font-size: 19px; }
 
 
+.btn.support { padding: 7px 14px; font-size: 15px; white-space: nowrap; }
+.btn.support.patreon { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 /* add-to-build */
 .add { font: inherit; font-family: var(--mono); font-size: 22px; line-height: 1; width: 36px; height: 36px; border-radius: 10px;
   border: 1px solid var(--line); background: var(--card2); color: var(--ink); cursor: pointer; flex: none; }
@@ -220,6 +222,7 @@ footer a { color: var(--muted); }
   aside nav a { white-space: nowrap; padding: 8px 12px; }
   aside nav a .count { display: none; }
   .top { position: static; padding: 10px 14px; flex-wrap: wrap; } .crumb, .badge { display: none; }
+  .search { order: 3; flex-basis: 100%; }
   .search { max-width: none; }
   main { padding: 24px 14px 56px; }
   .disclaimer { padding: 10px 14px; }
@@ -274,6 +277,8 @@ footer a { color: var(--muted); }
       <input id="q" type="search" placeholder="Search modules…" aria-label="Search modules" autocomplete="off">
     </label>
     <span class="badge">OS 3.03 → 3.09</span>
+    <a class="btn support patreon" href="https://www.patreon.com/c/animatek" target="_blank" rel="noopener">Patreon</a>
+    <a class="btn support" href="https://www.paypal.com/donate/?hosted_button_id=YATW56VC46ENE" target="_blank" rel="noopener">Donate</a>
   </div>
   <div class="disclaimer">An independent, unofficial project. Not affiliated with, endorsed by or supported by Clavia.</div>
 
