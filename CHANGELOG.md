@@ -5,6 +5,9 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-28
 
+- Javier and Claude: **Patreon and Donate moved to the sidebar's foot** (where the theme button was), and the
+  **theme switch is a sun/moon icon in the top bar**, light or dark (it follows the system until it is clicked;
+  the choice is remembered). On phones the two links sit at the end of the menu strip. Looked at in headless Chromium.
 - Javier and Claude: **Patreon and Donate (PayPal) buttons in the top bar**, right of the "OS 3.03 → 3.09" badge
   (the same PayPal link as the repo's GitHub Sponsors), and the PayPal one in the Links page. Looked at in headless
   Chromium at desktop and phone widths.

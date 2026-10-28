@@ -265,11 +265,12 @@ function renderLinks() {
   }
 }
 
+// light or dark; with nothing chosen it follows the system. The icon shows the one a click goes to.
+const darkNow = () => document.documentElement.dataset.theme === "dark";
 function applyTheme(t) {
   try { localStorage.setItem("g1mods-theme", t); } catch (e) {}
-  if (t === "auto") document.documentElement.removeAttribute("data-theme");
-  else document.documentElement.dataset.theme = t;
-  $("theme").textContent = "Theme: " + t;
+  document.documentElement.dataset.theme = t;
+  $("theme").title = $("theme").ariaLabel = t === "dark" ? "Switch to light" : "Switch to dark";
 }
 
 window.addEventListener("hashchange", route);
@@ -279,13 +280,12 @@ $("q").addEventListener("input", () => {
   if (bundle && location.hash !== "#/modules") location.hash = "#/modules";
   if (bundle) renderLibrary();
 });
-$("theme").addEventListener("click", () => {
-  const order = ["auto", "dark", "light"];
-  let cur = "auto";
-  try { cur = localStorage.getItem("g1mods-theme") || "auto"; } catch (e) {}
-  applyTheme(order[(order.indexOf(cur) + 1) % 3]);
-});
-try { applyTheme(localStorage.getItem("g1mods-theme") || "auto"); } catch (e) {}
+$("theme").addEventListener("click", () => applyTheme(darkNow() ? "light" : "dark"));
+{
+  let t = null;
+  try { t = localStorage.getItem("g1mods-theme"); } catch (e) {}
+  applyTheme(t === "light" || t === "dark" ? t : matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+}
 renderLinks();
 route();
 
