@@ -5,6 +5,12 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-28
 
+- Claude: **sharing and finding**. Open Graph and Twitter cards with a 1200×630 preview image (`web/og.png`,
+  made with the site's colours), page titles and descriptions that follow the route (a module's name and summary, a
+  guide's own title), and a fuller LINKS page: Animatek's **YouTube** and the **Nord Modular Editor**, the
+  community's online patch archive (nordmodular.com, named in the plan, no longer answers). The `#/module/<folder>`
+  addresses stay as they are. Checked in headless Chromium: the title and description change per route and the two
+  new links are on the page.
 - Claude: **more on each module page**. Each example `.pch` now says what it does, not only its file name
   (`patch_notes` in `module.json`, written for all 15 patches, shown under the link); a **video slot** per module
   (`video` in `module.json`, a YouTube embed, empty until Javier has one); and **image captions** (`image_captions`)

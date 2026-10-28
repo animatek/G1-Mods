@@ -136,6 +136,8 @@ const LINKS = [
     { name: "Patreon", url: "https://www.patreon.com/c/animatek", note: "Guides, videos and the making of. The software stays open.", ic: "P" },
     { name: "Donate (PayPal)", url: "https://www.paypal.com/donate/?hosted_button_id=YATW56VC46ENE", note: "A one-off donation to keep the project going.", ic: "$" },
     { name: "Animatek", url: "https://animatek.net", note: "Courses, articles and the rest of the work.", ic: "A" },
+    { name: "YouTube", url: "https://www.youtube.com/@animatek", note: "Guides, demos and the making of, on video.", ic: "YT" },
+    { name: "Nord Modular Editor", url: "https://nordmodulareditor.com", note: "The online editor and patch archive for the G1 and G2: browse and share patches.", ic: "NM" },
   ]},
   { group: "Thanks", items: [
     { name: "Gearmulator", url: "https://github.com/dsp56300/gearmulator", note: "The DSP56300 core G1-Emu is built on.", ic: "GE" },
@@ -147,6 +149,26 @@ const ROUTES = {
   recovery: "Going back & fixes", "turing-scale": "First patch", "nme-g1emu": "Connect NME to G1-Emu",
   "clock-reset": "Clock & reset", modular: "Nord Modular G1", links: "Links", contribute: "Contribute", about: "About & legal",
 };
+const BASE_DESC = "New module types for the Nord Modular G1, built into your own copy of its OS. Module library, web builder, guides and links.";
+const DESCRIPTIONS = {
+  "": BASE_DESC,
+  modules: "Every G1-Mods module: its picture, ports, controls and example patches.",
+  builder: "Build your own G1 OS with the modules you want, right in the browser.",
+  install: "Installing G1-Mods: build your OS, try it in G1-Emu, install it on a real G1.",
+  recovery: "Going back to Clavia's OS, and what to do when something goes wrong.",
+  "turing-scale": "First patch: the Turing Machine and the Scale Quantizer into an oscillator.",
+  "nme-g1emu": "Connect Animatek NME to G1-Emu — the safe way in before a real G1.",
+  "clock-reset": "Clock & reset: how the sequencers, the 5-Step Seq and the 8Counter stay in step.",
+  modular: "The Nord Modular G1: its history, its three models, and how a patch runs on its DSPs.",
+  links: "The code, the editor, the emulator and the people behind G1-Mods.",
+  contribute: "Help build G1-Mods: how a module is made, tested in G1-Emu first.",
+  about: "About G1-Mods and the legal bits.",
+};
+function setMeta(title, desc) {
+  document.title = title;
+  const m = document.querySelector('meta[name="description"]');
+  if (m) m.content = desc;
+}
 let kindFilter = "all";
 
 function route() {
@@ -157,6 +179,7 @@ function route() {
   document.querySelectorAll("section.view").forEach((v) => v.classList.toggle("on", v.dataset.view === name));
   document.querySelectorAll("#nav a").forEach((a) => a.classList.toggle("on", (a.dataset.route === name) || (isMod && a.dataset.route === "modules")));
   $("crumb").textContent = isMod ? "Module" : ROUTES[name];
+  if (!isMod) setMeta(name === "" ? "G1-Mods · modules for the Nord Modular G1" : `${ROUTES[name]} · G1-Mods`, DESCRIPTIONS[name] || BASE_DESC);
   window.scrollTo(0, 0);
 }
 
@@ -315,7 +338,7 @@ function renderModulePage(folder) {
   const root = $("modpage"); root.innerHTML = "";
   const m = bundle && bundle.modules.find((x) => x.folder === folder);
   if (!m) { root.append(el("p", "empty", bundle ? "No such module." : "Loading…")); return; }
-  document.title = `${m.name} · G1-Mods`;
+  setMeta(`${m.name} · G1-Mods`, m.summary);
   const back = el("a", "back", "← All modules"); back.href = "#/modules"; root.append(back);
 
   const head = el("div", "mhead"); const l = el("div");
