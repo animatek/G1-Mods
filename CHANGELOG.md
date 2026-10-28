@@ -5,6 +5,14 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-28
 
+- Claude: **usage guides under Learn**. Four new pages, each a `docs/*.md` rendered by `make_bundle.py` like the
+  install and recovery guides: **First patch** (Turing Machine → Scale Quantizer → OscA, with a new
+  `patches/turing-scale.pch`), **Connect NME to G1-Emu** (the safe way in), **Clock & reset** (how the G1's
+  sequencers, the 5-Step Seq and the 8Counter stay in step, pointing at the existing `seq5-ctrlseq.pch` and
+  `counter8.pch`), and a fuller **Nord Modular G1** page (history, the three models, how a patch runs on the DSPs,
+  control vs audio rate). The Learn group in the nav now lists all six, `app.js` has the routes, and `make_bundle.py`'s
+  `GUIDES` covers them. Checked in headless Chromium at 360 px (all six render, no overflow, nav highlights); the new
+  patch played in `g1patchtest` (output 1, the pitch stepping as the Turing clocked).
 - Claude: **one copy of each guide**. The install and going-back pages lived twice — in `web/index.html` and in
   `docs/INSTALL.md` — and had already drifted. The web now renders them from the Markdown: `docs/INSTALL.md`
   (install, no longer carries the going-back part) and the new `docs/RECOVERY.md` (going back & fixes) are turned

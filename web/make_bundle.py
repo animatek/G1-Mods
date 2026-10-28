@@ -30,7 +30,7 @@ IMAGES = ("*.png", "*.webp", "*.jpg", "*.jpeg", "*.gif")   # a module's pictures
 OPTIONAL = ("about", "usage", "notes", "credits", "status")   # text for the module's page, in module.json
 
 # The guide pages on the web are the same text as these files: docs/<name>.md -> bundle["guides"][<name>].
-GUIDES = ("install", "recovery")
+GUIDES = ("install", "recovery", "turing-scale", "nme-g1emu", "clock-reset", "modular")
 
 
 def render_guide(path):

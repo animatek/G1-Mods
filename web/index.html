@@ -301,6 +301,12 @@ details.sec .in { padding: 0 18px 16px; }
       <svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>Install guide</a>
     <a href="#/recovery" data-route="recovery">
       <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v5h5"/></svg>Going back &amp; fixes</a>
+    <a href="#/turing-scale" data-route="turing-scale">
+      <svg viewBox="0 0 24 24"><path d="M4 6c4-4 8 4 12 0v12c-4 4-8-4-12 0z"/></svg>First patch</a>
+    <a href="#/nme-g1emu" data-route="nme-g1emu">
+      <svg viewBox="0 0 24 24"><path d="M7 7l10 10"/><circle cx="6" cy="6" r="2"/><circle cx="18" cy="18" r="2"/></svg>Connect NME to G1-Emu</a>
+    <a href="#/clock-reset" data-route="clock-reset">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Clock &amp; reset</a>
     <a href="#/modular" data-route="modular">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="10" r="2"/><circle cx="16" cy="10" r="2"/><path d="M7 16h10"/></svg>Nord Modular G1</a>
     <div class="group">Community</div>
@@ -460,36 +466,24 @@ details.sec .in { padding: 0 18px 16px; }
   <div class="guide" data-guide="recovery"></div>
 </section>
 
+<!-- ============ TURING-SCALE ============ -->
+<section class="view" data-view="turing-scale">
+  <div class="guide" data-guide="turing-scale"></div>
+</section>
+
+<!-- ============ NME-G1EMU ============ -->
+<section class="view" data-view="nme-g1emu">
+  <div class="guide" data-guide="nme-g1emu"></div>
+</section>
+
+<!-- ============ CLOCK-RESET ============ -->
+<section class="view" data-view="clock-reset">
+  <div class="guide" data-guide="clock-reset"></div>
+</section>
+
 <!-- ============ NORD MODULAR ============ -->
 <section class="view" data-view="modular">
-  <h1>The Nord Modular G1</h1>
-  <p class="lead">A virtual-analogue modular synthesizer by Clavia, released in 1998: a rack of DSP chips you patch from a computer, with real knobs for the parameters you assign.</p>
-
-  <h2>What it is</h2>
-  <ul>
-    <li>You build the sound on screen from <b>modules</b> (oscillators, filters, envelopes, sequencers…) joined by cables, in an editor.</li>
-    <li>The patch runs <b>inside the synth</b>, on its DSPs, so it keeps sounding without the computer.</li>
-    <li>Knobs, <b>morphs</b> and MIDI controllers can be assigned to any parameter, which makes it playable.</li>
-    <li>It came as a keyboard, a rack (the one G1-Mods targets) and the smaller Micro Modular.</li>
-  </ul>
-
-  <h2>Why add modules now</h2>
-  <p>Clavia stopped at 128 module types and moved on to the G2. The G1's OS is a program like any other: if you know where a module is registered,
-    what its parameters are and how its DSP code is laid out, you can add one. That is what this project does, with code written new.</p>
-
-  <h2>From a type number to a module</h2>
-  <ol>
-    <li>The OS knows each module by a <b>type number</b>. G1-Mods takes the free ones.</li>
-    <li>It registers the module: name, parameters, lights, inputs and outputs.</li>
-    <li>It adds the module's <b>DSP56300</b> code, assembled by our own tool.</li>
-    <li>The OS says <b>3.09</b> when an editor asks. Animatek NME then offers the new panels.</li>
-  </ol>
-
-  <h2>Tools around it</h2>
-  <div class="cols">
-    <a class="tile" href="https://github.com/animatek/Animatek-NME" target="_blank" rel="noopener"><div class="k">Editor</div><h3>Animatek NME</h3><p>The modern editor for the G1, with support for modified OSes.</p></a>
-    <a class="tile" href="https://github.com/animatek/G1-Emu" target="_blank" rel="noopener"><div class="k">Emulator</div><h3>G1-Emu</h3><p>The G1 running its own OS, as a plugin or standalone. The test bench here.</p></a>
-  </div>
+  <div class="guide" data-guide="modular"></div>
 </section>
 
 <!-- ============ LINKS ============ -->

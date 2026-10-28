@@ -144,7 +144,8 @@ const LINKS = [
 
 const ROUTES = {
   "": "Overview", modules: "All modules", builder: "Build your OS", install: "Install guide",
-  recovery: "Going back & fixes", modular: "Nord Modular G1", links: "Links", contribute: "Contribute", about: "About & legal",
+  recovery: "Going back & fixes", "turing-scale": "First patch", "nme-g1emu": "Connect NME to G1-Emu",
+  "clock-reset": "Clock & reset", modular: "Nord Modular G1", links: "Links", contribute: "Contribute", about: "About & legal",
 };
 let kindFilter = "all";
 
