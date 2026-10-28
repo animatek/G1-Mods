@@ -121,8 +121,144 @@ function doBuild() {
   }
 }
 
+
+// ---------- the site around the builder ----------
+// To add a link, add a row here: group, label, address, one line about it, two letters for its badge.
+const LINKS = [
+  { group: "Code", items: [
+    { name: "G1-Mods", url: "https://github.com/animatek/G1-Mods", note: "This project: the modules, the tools and the tests.", ic: "GM" },
+    { name: "Animatek NME", url: "https://github.com/animatek/Animatek-NME", note: "The modern editor for the Nord Modular G1.", ic: "NME" },
+    { name: "G1-Emu", url: "https://github.com/animatek/G1-Emu", note: "The G1 emulated, as a plugin and standalone.", ic: "EM" },
+    { name: "Report a problem", url: "https://github.com/animatek/G1-Mods/issues", note: "Issues: what you saw and what you did before.", ic: "!" },
+  ]},
+  { group: "Support & community", items: [
+    { name: "Patreon", url: "https://www.patreon.com/c/animatek", note: "Guides, videos and the making of. The software stays open.", ic: "P" },
+    { name: "Animatek", url: "https://animatek.net", note: "Courses, articles and the rest of the work.", ic: "A" },
+  ]},
+  { group: "Thanks", items: [
+    { name: "Gearmulator", url: "https://github.com/dsp56300/gearmulator", note: "The DSP56300 core G1-Emu is built on.", ic: "GE" },
+  ]},
+];
+
+const ROUTES = {
+  "": "Overview", modules: "All modules", builder: "Build your OS", install: "Install guide",
+  recovery: "Going back & fixes", modular: "Nord Modular G1", links: "Links", about: "About & legal",
+};
+let kindFilter = "all";
+
+function route() {
+  const r = location.hash.replace(/^#\/?/, "").split("?")[0];
+  const name = r in ROUTES ? r : "";
+  document.querySelectorAll("section.view").forEach((v) => v.classList.toggle("on", v.dataset.view === name));
+  document.querySelectorAll("#nav a").forEach((a) => a.classList.toggle("on", a.dataset.route === name));
+  $("crumb").textContent = ROUTES[name];
+  window.scrollTo(0, 0);
+}
+
+// a tiny deterministic "panel": knobs and jacks drawn from the type number, so each card has its own face
+function panelSvg(type) {
+  let s = type * 2654435761 >>> 0, out = "";
+  const rnd = () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const knobs = 3 + Math.floor(rnd() * 3);
+  for (let i = 0; i < knobs; i++) {
+    const x = 30 + i * (240 / knobs), a = rnd() * 4.4 - 2.2;
+    out += `<circle cx="${x}" cy="26" r="13" fill="none" stroke="var(--accent)" stroke-width="2" opacity=".85"/>` +
+      `<line x1="${x}" y1="26" x2="${x + 9 * Math.sin(a)}" y2="${26 - 9 * Math.cos(a)}" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round"/>`;
+  }
+  const leds = 4 + Math.floor(rnd() * 5);
+  for (let i = 0; i < leds; i++)
+    out += `<rect x="${16 + i * 12}" y="50" width="8" height="5" rx="2" fill="var(--accent)" opacity="${rnd() > .5 ? 1 : .25}"/>`;
+  for (let i = 0; i < 4; i++)
+    out += `<circle cx="${236 + (i % 2) * 22}" cy="${48 + Math.floor(i / 2) * 14}" r="4.5" fill="none" stroke="var(--muted)" stroke-width="1.6"/>`;
+  return `<svg viewBox="0 0 300 70" aria-hidden="true">${out}</svg>`;
+}
+
+function renderLibrary() {
+  const q = $("q").value.trim().toLowerCase();
+  const list = bundle.modules.filter((m) =>
+    (kindFilter === "all" || m.kind === kindFilter) &&
+    (!q || [m.name, m.fullname, m.summary, m.kind, String(m.type)].join(" ").toLowerCase().includes(q)));
+  $("mcards").innerHTML = "";
+  for (const m of list.slice().sort((a, b) => a.type - b.type)) {
+    const c = document.createElement("article");
+    c.className = "mcard";
+    c.innerHTML = `<div class="art"><div class="t"><span></span><span></span></div>${panelSvg(m.type)}</div>
+      <div class="body"><h3><span class="n"></span><small></small></h3><div class="full"></div><div class="sum"></div>
+      <div class="row"><span class="by"></span><span><a target="_blank" rel="noopener">Source ↗</a></span></div></div>`;
+    const t = c.querySelectorAll(".t span");
+    t[0].textContent = m.kind; t[1].textContent = "type " + m.type;
+    c.querySelector(".n").textContent = m.name;
+    c.querySelector("h3 small").textContent = "v" + m.version;
+    c.querySelector(".full").textContent = m.fullname;
+    c.querySelector(".sum").textContent = m.summary;
+    c.querySelector(".by").innerHTML = `<span class="pill ${m.real_g1 ? "warn" : m.kind}"></span>`;
+    c.querySelector(".pill").textContent = m.real_g1 ? "G1-Emu only" : m.author;
+    c.querySelector("a").href = "https://github.com/animatek/G1-Mods/tree/main/modules/" + m.folder;
+    $("mcards").appendChild(c);
+  }
+  $("mempty").hidden = list.length > 0;
+}
+
+function renderFilters() {
+  const kinds = ["all", ...new Set(bundle.modules.map((m) => m.kind))];
+  $("filters").innerHTML = "";
+  for (const k of kinds) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip" + (k === kindFilter ? " on" : "");
+    b.textContent = k === "all" ? "All" : k[0].toUpperCase() + k.slice(1);
+    b.onclick = () => { kindFilter = k; renderFilters(); renderLibrary(); };
+    $("filters").appendChild(b);
+  }
+}
+
+function renderLinks() {
+  $("links").innerHTML = "";
+  for (const g of LINKS) {
+    const d = document.createElement("div");
+    d.className = "linkgroup";
+    d.innerHTML = `<h3></h3><div class="linkgrid"></div>`;
+    d.querySelector("h3").textContent = g.group;
+    for (const l of g.items) {
+      const a = document.createElement("a");
+      a.className = "link"; a.href = l.url; a.target = "_blank"; a.rel = "noopener";
+      a.innerHTML = `<div class="ic"></div><div><b></b><span></span></div>`;
+      a.querySelector(".ic").textContent = l.ic;
+      a.querySelector("b").textContent = l.name;
+      a.querySelector("span").textContent = l.note;
+      d.querySelector(".linkgrid").appendChild(a);
+    }
+    $("links").appendChild(d);
+  }
+}
+
+function applyTheme(t) {
+  try { localStorage.setItem("g1mods-theme", t); } catch (e) {}
+  if (t === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.dataset.theme = t;
+  $("theme").textContent = "Theme: " + t;
+}
+
+window.addEventListener("hashchange", route);
+$("q").addEventListener("input", () => {
+  if (bundle && location.hash !== "#/modules") location.hash = "#/modules";
+  if (bundle) renderLibrary();
+});
+$("theme").addEventListener("click", () => {
+  const order = ["auto", "dark", "light"];
+  let cur = "auto";
+  try { cur = localStorage.getItem("g1mods-theme") || "auto"; } catch (e) {}
+  applyTheme(order[(order.indexOf(cur) + 1) % 3]);
+});
+try { applyTheme(localStorage.getItem("g1mods-theme") || "auto"); } catch (e) {}
+renderLinks();
+route();
+
 async function init() {
   bundle = await (await fetch("bundle.json")).json();
+  $("navCount").textContent = bundle.modules.length;
+  $("sMods").textContent = bundle.modules.length;
+  renderFilters();
+  renderLibrary();
   renderModules();
   refresh();
   py = await loadPyodide();

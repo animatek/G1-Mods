@@ -3,6 +3,14 @@
 Everything that changes in G1-Mods, newest first. Every change that goes into the repo gets its
 line here, in the same commit (see `CLAUDE.md`).
 
+## 2026-10-28
+
+- Javier and Claude: **the web is redesigned as a small site**, Modwerk-like in layout and Animatek's in colour
+  (blue `#2C7FFF`, Inter and JetBrains Mono, dark and light, a theme button): a sidebar (a strip on phones),
+  search, an overview, a **module library** with cards and a kind filter, the builder (unchanged logic), the
+  install and way-back guides, a page on the Nord Modular G1, and a **links page** driven by the `LINKS` list at
+  the top of `web/app.js` (add a row to add a link). Checked in headless Chromium at desktop and phone widths.
+
 ## 2026-10-27
 
 - Javier and Claude: **the web builder is live on GitHub Pages** at
