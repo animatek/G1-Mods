@@ -5,6 +5,12 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-28
 
+- Javier and Claude: **the module library has a + on every card** to add the module to the ROM (it
+  ticks the builder's box, so both stay in step), a bar with the count, Add all / Clear and a link to the
+  builder, and a "My build" box in the sidebar. New **Contribute** page (set up to develop, how a
+  module is laid out, the limits, a first pull request step by step, testing before flashing, house
+  rules), shaped after elekloader's contributor pages and written for this repo. Checked in headless
+  Chromium; the click path itself was not exercised.
 - Javier and Claude: **the web is redesigned as a small site**, Modwerk-like in layout and Animatek's in colour
   (blue `#2C7FFF`, Inter and JetBrains Mono, dark and light, a theme button): a sidebar (a strip on phones),
   search, an overview, a **module library** with cards and a kind filter, the builder (unchanged logic), the

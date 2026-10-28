@@ -165,6 +165,29 @@ ol li, ul li { margin-bottom: 8px; }
 .dl { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
 .dl a { display: inline-block; margin-top: 8px; font-weight: 700; font-size: 19px; }
 
+
+/* add-to-build */
+.add { font: inherit; font-family: var(--mono); font-size: 22px; line-height: 1; width: 36px; height: 36px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--card2); color: var(--ink); cursor: pointer; flex: none; }
+.add:hover { border-color: var(--accent); color: var(--accent); }
+.add.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.mcard.in { border-color: var(--accent); }
+.mcard .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.buildbar { position: sticky; bottom: 14px; margin-top: 22px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+  background: var(--card); border: 1px solid var(--accent); border-radius: 14px; padding: 12px 16px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.18); }
+.buildbar b { font-family: var(--mono); color: var(--accent); }
+.buildbar .sp { margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; }
+.mybuild { margin: 14px 4px 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card2); font-size: 14px; color: var(--muted); }
+.mybuild b { display: block; font-size: 15px; color: var(--ink); }
+.mybuild a { font-weight: 700; text-decoration: none; }
+.steps4 { counter-reset: s; list-style: none; padding: 0; }
+.steps4 li { counter-increment: s; position: relative; padding-left: 46px; margin-bottom: 14px; }
+.steps4 li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 32px; height: 32px; line-height: 32px; text-align: center;
+  border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-family: var(--mono); font-weight: 700; }
+pre { font-family: var(--mono); font-size: 14px; background: var(--card2); border: 1px solid var(--line); border-radius: 10px;
+  padding: 12px 16px; overflow-x: auto; max-width: 80ch; line-height: 1.55; }
+
 /* tables */
 table { border-collapse: collapse; width: 100%; max-width: 900px; font-size: 16px; background: var(--card);
   border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
@@ -200,6 +223,7 @@ footer a { color: var(--muted); }
   .search { max-width: none; }
   main { padding: 24px 14px 56px; }
   .disclaimer { padding: 10px 14px; }
+  .mybuild { display: none; }
   h1, .hero h1 { font-size: 32px; }
 }
 </style>
@@ -229,9 +253,13 @@ footer a { color: var(--muted); }
     <div class="group">Community</div>
     <a href="#/links" data-route="links">
       <svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.6 0l3-3a4 4 0 0 0-5.6-5.6l-1 1"/><path d="M14 10a4 4 0 0 0-5.6 0l-3 3a4 4 0 0 0 5.6 5.6l1-1"/></svg>Links</a>
+    <a href="#/contribute" data-route="contribute">
+      <svg viewBox="0 0 24 24"><path d="M8 9l-4 3 4 3"/><path d="M16 9l4 3-4 3"/><path d="M14 5l-4 14"/></svg>Contribute</a>
     <a href="#/about" data-route="about">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5v.1"/></svg>About &amp; legal</a>
   </nav>
+  <div class="mybuild" id="mybuild"><b id="mbText">My build · 0 modules</b>
+    <a href="#/builder">Build your OS →</a></div>
   <div class="side-foot">
     GPLv3 · by <a href="https://animatek.net" target="_blank" rel="noopener">Animatek</a><br>
     <button class="btn themebtn" id="theme" type="button">Theme: auto</button>
@@ -300,6 +328,14 @@ footer a { color: var(--muted); }
   <div class="filters" id="filters"></div>
   <div class="mcards" id="mcards"></div>
   <div class="empty" id="mempty" hidden>No module matches.</div>
+  <div class="buildbar">
+    <span><b id="barCount">0</b> in your build · press <b>+</b> on a card to add or remove one</span>
+    <span class="sp">
+      <button class="btn" id="barAll" type="button">Add all</button>
+      <button class="btn" id="barNone" type="button">Clear</button>
+      <a class="btn primary" href="#/builder">Build your OS →</a>
+    </span>
+  </div>
   <p class="lead" style="margin-top:28px">Five type numbers are still free (93, 109, 116, 119, 122), so the catalogue grows by families:
     one type, several panels in NME. What is left of each module, and the G2's modules still to port, is in
     <a href="https://github.com/animatek/G1-Mods/blob/main/PORTING.md" target="_blank" rel="noopener">PORTING.md</a>.</p>
@@ -466,6 +502,78 @@ footer a { color: var(--muted); }
   <h1>Links</h1>
   <p class="lead">The code, the editor, the emulator and the people behind it.</p>
   <div id="links"></div>
+</section>
+
+<!-- ============ CONTRIBUTE ============ -->
+<section class="view" data-view="contribute">
+  <h1>Help build it</h1>
+  <p class="lead">G1-Mods is a passion project and it grows from what people bring to it. Pull requests are welcome and you do not
+    need to ask first. Take a module from the checklist, write it, test it in G1-Emu, and your name goes on it: in the module's
+    <code>author</code> field, in the changelog line, and in the notes of the release that includes it.</p>
+  <div class="cta" style="margin-top:0">
+    <a class="btn primary" href="https://github.com/animatek/G1-Mods/blob/main/PORTING.md" target="_blank" rel="noopener">The checklist (PORTING.md)</a>
+    <a class="btn" href="https://github.com/animatek/G1-Mods" target="_blank" rel="noopener">The repository</a>
+    <a class="btn" href="https://github.com/animatek/G1-Mods/issues" target="_blank" rel="noopener">Issues</a>
+  </div>
+
+  <h2>Get started developing</h2>
+  <p class="lead">From nothing to your first module playing in the emulator: about an hour, most of it building G1-Emu.</p>
+  <h3>What you need</h3>
+  <ul>
+    <li><b>Python 3</b> and <b>git</b>. The tools (<code>patch_rom.py</code>, <code>dspasm.py</code>…) need nothing else.</li>
+    <li><b>Your own 3.03 ROM</b> (<code>NORD-MODULAR-RACK-VER-3.03.BIN</code>). Nothing of Clavia's is ever in the repository or in a pull request.</li>
+    <li><b>G1-Emu</b>, built from source next to the <code>G1-Mods</code> folder (<code>../G1-Emu</code>): it is the test bench.</li>
+    <li><b>Animatek NME</b> with G1-Mods support, to see the module's panel and play it.</li>
+    <li>A 68k cross toolchain only if your module needs 68k code of its own (as Note Out does). Its assembled bytes are kept in the
+      repository, so building and testing never need it.</li>
+  </ul>
+
+  <h3>How a module is laid out</h3>
+  <pre>modules/&lt;name&gt;/
+  module.json       type, names, author, licence, version
+  build.py          how its type is put into the OS
+  &lt;name&gt;.asm       its DSP56300 code, written new
+  nme-modules.xml   its entry in NME's module list
+  nme-theme.xml     its panel in NME's classic theme
+  check_&lt;name&gt;.py  its test in G1-Emu, with the patches it plays (*.pch)</pre>
+  <p>A module asks for a type number in <code>modules/registry.json</code>, the only place that gives them. A patch keeps the type
+    for ever, so a number once given is never reused. The builder and NME's data pick the new folder up by themselves.</p>
+
+  <h3>The limits that matter</h3>
+  <ul>
+    <li>The G1 has <b>128 module types</b> and that cannot grow. Few are free, so small modules can share one type as variants.</li>
+    <li>Each DSP has <b>4K words of program and 2K+2K of data</b>, all internal, no external RAM. Delays and reverbs of the G2's size
+      do not fit a real G1; they could only run in the emulator.</li>
+    <li>The OS update has a fixed room (shown by the meter in the <a href="#/builder">builder</a>): every module you add uses some of it.</li>
+  </ul>
+
+  <h2>Your first pull request</h2>
+  <p class="lead">Taking an entry from the checklist to the release notes. A draft that says what it could not finish is a fine start.</p>
+  <ol class="steps4">
+    <li><b>Pick an entry.</b> Choose a module in <code>PORTING.md</code>, or propose your own. Opening an issue to say you are on it avoids two people doing the same one, but it is not required.</li>
+    <li><b>Fork and branch.</b> Copy a small module's folder (FlipFlop or Level) as your starting point.</li>
+    <li><b>Write it new.</b> Clavia's code is studied, never copied. Describe how a Clavia module works in words in your notes if it helps; the DSP code is yours, under a GPL-compatible licence.</li>
+    <li><b>Test it in G1-Emu.</b> <code>./run-g1emu.sh</code> builds a ROM with every module on a flash of its own; <code>python3 tests/run_all.py</code> runs every module's test. Add a test that plays your module with a patch.</li>
+    <li><b>Write the changelog line.</b> In English, in <code>CHANGELOG.md</code>, in the same commit: who, what changes, how it was checked.</li>
+    <li><b>Open the pull request.</b> Say which type number you asked for, what works, and what is missing.</li>
+  </ol>
+
+  <h2>Test before you flash</h2>
+  <p class="lead">You can build, run and check nearly all of it without a synth, and a G1 always comes back.</p>
+  <ul>
+    <li><b>In the emulator first.</b> A real G1 is only flashed when everything works in G1-Emu. Never flash a module that has not played there.</li>
+    <li><b>Every module has a test</b> that plays it in G1-Emu, and the cross-module checks verify the OS still builds and that NME's data matches.</li>
+    <li><b>The way back always exists.</b> The update utility is in the G1's ROM chip, which nothing here can write: Shift + Store at power-on reaches it
+      whatever the flash holds (see <a href="#/recovery">Going back &amp; fixes</a>).</li>
+    <li><b>Before touching a real synth</b>, check which device NME is connected to: the real G1 or G1-Emu.</li>
+  </ul>
+
+  <h2>House rules</h2>
+  <ul>
+    <li>Nothing of Clavia's in Git: no ROM, no OS image, no DSP code copied from either.</li>
+    <li>Everything in English: code, notes, changelog, commits.</li>
+    <li>One folder a module, one changelog line a change.</li>
+  </ul>
 </section>
 
 <!-- ============ ABOUT ============ -->

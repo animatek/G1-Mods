@@ -41,6 +41,7 @@ function renderModules() {
 // count alone before.
 async function refresh() {
   const sel = ticked();
+  syncBuildUI();
   canBuild();
   if (!rom || !py || !sel.length) {
     $("meter").style.width = "0";
@@ -142,7 +143,7 @@ const LINKS = [
 
 const ROUTES = {
   "": "Overview", modules: "All modules", builder: "Build your OS", install: "Install guide",
-  recovery: "Going back & fixes", modular: "Nord Modular G1", links: "Links", about: "About & legal",
+  recovery: "Going back & fixes", modular: "Nord Modular G1", links: "Links", contribute: "Contribute", about: "About & legal",
 };
 let kindFilter = "all";
 
@@ -183,7 +184,7 @@ function renderLibrary() {
     const c = document.createElement("article");
     c.className = "mcard";
     c.innerHTML = `<div class="art"><div class="t"><span></span><span></span></div>${panelSvg(m.type)}</div>
-      <div class="body"><h3><span class="n"></span><small></small></h3><div class="full"></div><div class="sum"></div>
+      <div class="body"><div class="head"><h3><span class="n"></span><small></small></h3><button class="add" type="button"></button></div><div class="full"></div><div class="sum"></div>
       <div class="row"><span class="by"></span><span><a target="_blank" rel="noopener">Source ↗</a></span></div></div>`;
     const t = c.querySelectorAll(".t span");
     t[0].textContent = m.kind; t[1].textContent = "type " + m.type;
@@ -194,9 +195,41 @@ function renderLibrary() {
     c.querySelector(".by").innerHTML = `<span class="pill ${m.real_g1 ? "warn" : m.kind}"></span>`;
     c.querySelector(".pill").textContent = m.real_g1 ? "G1-Emu only" : m.author;
     c.querySelector("a").href = "https://github.com/animatek/G1-Mods/tree/main/modules/" + m.folder;
+    const box = document.querySelector(`#grid input[value="${m.folder}"]`);
+    const add = c.querySelector(".add");
+    const paint = () => {
+      const on = box && box.checked;
+      add.textContent = on ? "✓" : "+";
+      add.classList.toggle("on", on);
+      add.title = on ? "In your build: press to remove" : "Add to your build";
+      add.setAttribute("aria-pressed", on ? "true" : "false");
+      add.setAttribute("aria-label", (on ? "Remove " : "Add ") + m.name);
+      c.classList.toggle("in", on);
+    };
+    add.onclick = () => { box.checked = !box.checked; refresh(); };
+    paint();
     $("mcards").appendChild(c);
   }
   $("mempty").hidden = list.length > 0;
+}
+
+// the + buttons, the bar and the sidebar box follow the builder's ticks, which are the one truth
+function syncBuildUI() {
+  if (!bundle) return;
+  const n = ticked().length;
+  $("barCount").textContent = n;
+  $("mbText").textContent = `My build · ${n} of ${bundle.modules.length} modules`;
+  document.querySelectorAll(".mcard").forEach((c) => {
+    const add = c.querySelector(".add");
+    const folder = c.querySelector("a").href.split("/").pop();
+    const box = document.querySelector(`#grid input[value="${folder}"]`);
+    const on = box && box.checked;
+    add.textContent = on ? "✓" : "+";
+    add.classList.toggle("on", on);
+    add.title = on ? "In your build: press to remove" : "Add to your build";
+    add.setAttribute("aria-pressed", on ? "true" : "false");
+    c.classList.toggle("in", on);
+  });
 }
 
 function renderFilters() {
@@ -239,6 +272,8 @@ function applyTheme(t) {
 }
 
 window.addEventListener("hashchange", route);
+$("barAll").addEventListener("click", () => { document.querySelectorAll("#grid input").forEach((i) => (i.checked = true)); refresh(); });
+$("barNone").addEventListener("click", () => { document.querySelectorAll("#grid input").forEach((i) => (i.checked = false)); refresh(); });
 $("q").addEventListener("input", () => {
   if (bundle && location.hash !== "#/modules") location.hash = "#/modules";
   if (bundle) renderLibrary();
@@ -257,9 +292,10 @@ async function init() {
   bundle = await (await fetch("bundle.json")).json();
   $("navCount").textContent = bundle.modules.length;
   $("sMods").textContent = bundle.modules.length;
+  renderModules();
   renderFilters();
   renderLibrary();
-  renderModules();
+  syncBuildUI();
   refresh();
   py = await loadPyodide();
   for (const [path, b64] of Object.entries(bundle.files)) {
