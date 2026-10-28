@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-28
 
+- Claude: **the module page no longer overflows a 360 px phone**. `.mlayout`'s mobile breakpoint was
+  `grid-template-columns: 1fr`, which is `minmax(auto, 1fr)` and would not let the column shrink below the controls
+  table's min-content, pushing `main` and the sidebar to 412 px and the page into a sideways scroll. It is now
+  `minmax(0, 1fr)`, so the table scrolls inside its own `.tablewrap`. Checked in headless Chromium at 360 px: every
+  route stays 360 px wide and the controls table scrolls; desktop is unchanged.
 - Javier and Claude: **`WEB-PLAN.md`**, the written plan for what is left on the web (check the live site, one copy of
   each guide, usage guides, more on module pages, sharing, later ideas).
 - Javier and Claude: **text for every module's page** (`about`, `usage`, `notes`, and `credits` on the Random) in the

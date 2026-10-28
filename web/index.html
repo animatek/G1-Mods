@@ -253,7 +253,7 @@ details.sec .in { padding: 0 18px 16px; }
 .ports div.p { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 16px; }
 .ports div.p span { color: var(--muted); font-family: var(--mono); font-size: 13px; }
 .mcard a.open { font-weight: 700; text-decoration: none; }
-@media (max-width: 880px) { .mlayout { grid-template-columns: 1fr; } }
+@media (max-width: 880px) { .mlayout { grid-template-columns: minmax(0, 1fr); } }
 
 /* ---------- small screens: the menu goes up, as a strip ---------- */
 @media (max-width: 880px) {
