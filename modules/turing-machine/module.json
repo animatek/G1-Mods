@@ -20,5 +20,8 @@
     "Turn Prob to the right to lock a pattern you like, then to the centre to let it evolve.",
     "Use the gate outputs to trigger drums, envelopes or anything else: ones in a row give separate gates."
   ],
-  "notes": "Missing: a Rst input, and the expander's mixed gates (1+2, 2+4, 4+7, 1+2+4+7). Control rate."
+  "notes": "Missing: a Rst input, and the expander's mixed gates (1+2, 2+4, 4+7, 1+2+4+7). Control rate.",
+  "patch_notes": {
+    "turing.pch": "ClkGen clocks the Turing Machine; its CV and gate 1 are on the outs."
+  }
 }

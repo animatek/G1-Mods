@@ -20,5 +20,8 @@
     "Use T&H with a clock at B to sample a signal: a sample-and-hold.",
     "Use Window to open a path only when another signal is in range."
   ],
-  "notes": "Control rate, for levels and gates."
+  "notes": "Control rate, for levels and gates.",
+  "patch_notes": {
+    "level.pch": "Two LFOs and a clock drive the Level through its modes (ModAmt, MinMax, T&H); Out 1, Out 2, A and B are on the outs."
+  }
 }

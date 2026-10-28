@@ -20,5 +20,8 @@
     "Plug another oscillator or noise into Exc to excite the string with your own sound.",
     "Lower Damp for a duller string, raise Decay for a longer ring."
   ],
-  "notes": "The lowest note is about 94 Hz, from a line of 1,024 words. Lower would need the line run at half or a quarter of the rate. Javier played it on 17 Oct 2026: it works. It is the biggest code in G1-Mods."
+  "notes": "The lowest note is about 94 Hz, from a line of 1,024 words. Lower would need the line run at half or a quarter of the rate. Javier played it on 17 Oct 2026: it works. It is the biggest code in G1-Mods.",
+  "patch_notes": {
+    "string.pch": "A pluck triggers the Karplus-Strong string, set by its note."
+  }
 }

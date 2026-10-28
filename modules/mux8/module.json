@@ -19,5 +19,8 @@
     "Plug eight sources into In 1-8 and turn Sel to switch between them.",
     "Send a stepped control signal (a sequencer or a counter's output) to Ctrl to switch under automation."
   ],
-  "notes": "Control rate, for levels and gates. Audio through it would be at the control rate."
+  "notes": "Control rate, for levels and gates. Audio through it would be at the control rate.",
+  "patch_notes": {
+    "mux8.pch": "Eight constants into In 1–8; Sel (the knob), or a level at Ctrl, picks which reaches the output."
+  }
 }

@@ -20,5 +20,8 @@
     "In A>D, feed a slow LFO to get its value as eight gates.",
     "In D>A, build a stepped level from eight gates."
   ],
-  "notes": "Control rate. The counter keeps counting in every mode, so switching back finds it where it went."
+  "notes": "Control rate. The counter keeps counting in every mode, so switching back finds it where it went.",
+  "patch_notes": {
+    "bits.pch": "ClkGen clocks the counter and an LFO feeds its input; the byte, Bit 1 and Bit 8 come out."
+  }
 }

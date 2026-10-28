@@ -19,5 +19,8 @@
     "Send a clock to Clk and use each output as the gate of a different drum or event.",
     "Plug a reset in to start every bar on step 1."
   ],
-  "notes": "Control rate."
+  "notes": "Control rate.",
+  "patch_notes": {
+    "counter8.pch": "ClkGen clocks the 8Counter and an LFO resets it; two of its eight outputs are on the outs."
+  }
 }

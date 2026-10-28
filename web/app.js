@@ -293,6 +293,10 @@ const darkNow = () => document.documentElement.dataset.theme === "dark";
 const SIGNALS = { audio: "audio", control: "control", logic: "logic", slave: "slave" };
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 function rangeOf(c) { return `${c.minValue ?? 0} – ${c.maxValue ?? 127}`; }
+function youtubeEmbed(url) {
+  const m = String(url).match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,})/);
+  return m ? `https://www.youtube-nocookie.com/embed/${m[1]}` : url;
+}
 
 function portList(title, list) {
   const d = el("div", "ports");
@@ -335,15 +339,27 @@ function renderModulePage(folder) {
   const shot = el("div", "shot"); left.append(shot);
   if (m.images.length) {
     const big = el("img"); big.src = m.images[0]; big.alt = m.name + " panel"; shot.append(big);
+    const caps = m.image_captions || [];
+    const cap = el("div", "cap"); cap.textContent = caps[0] || ""; cap.hidden = !caps[0]; shot.append(cap);
     if (m.images.length > 1) {
       const th = el("div", "thumbs");
-      m.images.forEach((src, i) => { const t = el("img", i ? "" : "on"); t.src = src; t.alt = ""; t.onclick = () => {
-        big.src = src; th.querySelectorAll("img").forEach((x) => x.classList.remove("on")); t.classList.add("on"); }; th.append(t); });
+      m.images.forEach((src, i) => {
+        const t = el("img", i ? "" : "on"); t.src = src; t.alt = caps[i] || "";
+        t.onclick = () => { big.src = src; cap.textContent = caps[i] || ""; cap.hidden = !caps[i];
+          th.querySelectorAll("img").forEach((x) => x.classList.remove("on")); t.classList.add("on"); };
+        th.append(t);
+      });
       shot.append(th);
     }
   } else {
     const ph = el("div", "ph"); ph.innerHTML = panelSvg(m.type); shot.append(ph);
     shot.append(el("div", "cap", "Panel picture coming. Add one as modules/" + m.folder + "/images/panel.png."));
+  }
+  if (m.video) {
+    const v = el("div", "video");
+    v.innerHTML = `<iframe src="${youtubeEmbed(m.video)}" title="${m.name} video" loading="lazy" allowfullscreen
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+    left.append(v);
   }
   const [about, aIn] = section("About", true);
   (m.about ? paras(m.about) : [el("p", null, m.summary)]).forEach((p) => aIn.append(p));
@@ -399,7 +415,10 @@ function renderModulePage(folder) {
     const ul = el("ul");
     for (const p of m.patches) {
       const li = el("li"), a = el("a", null, p);
-      a.href = `https://raw.githubusercontent.com/animatek/G1-Mods/main/modules/${m.folder}/${p}`; a.download = p; li.append(a); ul.append(li);
+      a.href = `https://raw.githubusercontent.com/animatek/G1-Mods/main/modules/${m.folder}/${p}`; a.download = p; li.append(a);
+      const note = (m.patch_notes || {})[p];
+      if (note) li.append(el("span", "pnote", " — " + note));
+      ul.append(li);
     }
     sheet.append(ul);
     sheet.append(el("p", "cap", "Open them in Animatek NME, on a synth or G1-Emu with these modules."));

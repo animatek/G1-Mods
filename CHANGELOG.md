@@ -5,6 +5,14 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-28
 
+- Claude: **more on each module page**. Each example `.pch` now says what it does, not only its file name
+  (`patch_notes` in `module.json`, written for all 15 patches, shown under the link); a **video slot** per module
+  (`video` in `module.json`, a YouTube embed, empty until Javier has one); and **image captions** (`image_captions`)
+  so a second panel picture can be labelled (the thumbnails already switch). The texts flagged as "read from the
+  code, not played" were re-checked against G1-Emu: the Mix1-1A chain adds its channel (the chained output is 6 dB
+  over one channel, and Off leaves the chain passing) and the Note Out's Note (0 units is E4, +12 an octave) and
+  Gate thru are as written — `check_mix1_1a.py` and `check_note_out.py` pass, nothing changed. Looked at in headless
+  Chromium at 360 px.
 - Claude: **usage guides under Learn**. Four new pages, each a `docs/*.md` rendered by `make_bundle.py` like the
   install and recovery guides: **First patch** (Turing Machine → Scale Quantizer → OscA, with a new
   `patches/turing-scale.pch`), **Connect NME to G1-Emu** (the safe way in), **Clock & reset** (how the G1's

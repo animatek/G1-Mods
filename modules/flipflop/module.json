@@ -20,5 +20,9 @@
     "Choose RS and leave In unplugged: every clock edge toggles Q, so it divides the clock by two.",
     "Use Rst to bring several flip-flops back in step at the start of a bar."
   ],
-  "notes": "Control rate: good for gates and slow logic, not for audio. The example patch flipflop-lfo.pch clocks it from an LFO."
+  "notes": "Control rate: good for gates and slow logic, not for audio. The example patch flipflop-lfo.pch clocks it from an LFO.",
+  "patch_notes": {
+    "flipflop-lfo.pch": "ClkGen clocks a D-type flip-flop that samples an LFO; Q, the LFO, the clock and NotQ are on the outs.",
+    "flipflop-neighbour.pch": "An RS flip-flop toggling, with a Constant right after it: Q and NotQ each keep their own word."
+  }
 }

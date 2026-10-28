@@ -20,5 +20,8 @@
     "Choose a Root and a Scale: the notes now stay in that key.",
     "Use Octave to bring the result into the range you want."
   ],
-  "notes": "Missing: CV inputs for Root and Scale. Control rate."
+  "notes": "Missing: CV inputs for Root and Scale. Control rate.",
+  "patch_notes": {
+    "quant.pch": "An LFO sweeps the Scale Quantizer, which snaps it to the notes of a scale."
+  }
 }

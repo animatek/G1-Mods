@@ -20,5 +20,9 @@
     "Set each knob to the value you want for that step.",
     "Plug the same clock and reset into a CtrlSeq: the two stay together."
   ],
-  "notes": "Control rate. Five steps is fixed; use two in a row with a counter for longer patterns."
+  "notes": "Control rate. Five steps is fixed; use two in a row with a counter for longer patterns.",
+  "patch_notes": {
+    "seq5-ctrlseq.pch": "One ClkGen clocks a 5-Step Seq and a CtrlSeq; one LFO resets both, keeping them in step.",
+    "seq5.pch": "ClkGen clocks the 5-Step Seq; its five knobs set the steps."
+  }
 }

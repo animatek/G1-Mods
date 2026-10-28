@@ -20,5 +20,8 @@
     "Trig mode: a percussive shape that fires on any trigger.",
     "End goes high when the envelope finishes: use it to trigger the next event."
   ],
-  "notes": "No time-modulation inputs yet (the Mod AHD's). Control rate."
+  "notes": "No time-modulation inputs yet (the Mod AHD's). Control rate.",
+  "patch_notes": {
+    "env.pch": "A square LFO gates the Envelope; Env and End are on the outs."
+  }
 }

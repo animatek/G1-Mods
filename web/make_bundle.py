@@ -27,7 +27,8 @@ from g1rom import ROOM  # noqa: E402
 TOOLS = ("g1rom.py", "dspasm.py", "patch_rom.py", "g1update.py", "lz.py", "unlz.m68k")
 MODULE_FILES = ("module.json", "build.py", "*.asm", "*.m68k")
 IMAGES = ("*.png", "*.webp", "*.jpg", "*.jpeg", "*.gif")   # a module's pictures: modules/<name>/images/
-OPTIONAL = ("about", "usage", "notes", "credits", "status")   # text for the module's page, in module.json
+# Optional module.json fields the page reads: the text, a video URL, per-image captions, per-patch notes.
+OPTIONAL = ("about", "usage", "notes", "credits", "status", "video", "image_captions", "patch_notes")
 
 # The guide pages on the web are the same text as these files: docs/<name>.md -> bundle["guides"][<name>].
 GUIDES = ("install", "recovery", "turing-scale", "nme-g1emu", "clock-reset", "modular")
