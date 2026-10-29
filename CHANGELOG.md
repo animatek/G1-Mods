@@ -5,6 +5,12 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the builder is locked until the risk is accepted.** The "I have read it" box moves from step 3 up to the
+  warning at the top of the page, and steps 1 to 4 (the ROM, the modules, the build, the downloads) are dimmed and
+  inert (no click, no keyboard, no file drop) until it is ticked; unticking locks them again. Its text also no
+  longer says "tested only in the emulator", which contradicted the warning above it (13 modules have played on a
+  real G1). Checked with the real ROM in headless Chromium: locked at load (steps inert, "Build" disabled), unlocked
+  on ticking, then the ROM is accepted, the meter reads 5.6 of 7.9 KB and a build gives the OS update.
 - Claude: **the builder's room meter.** It looked broken twice over. (1) Before a ROM is given the bar stayed empty
   with only "13 of 13 modules ticked"; it is now hidden and the line says what it waits for (the ROM, or the
   builder loading). (2) With a ROM it compared the modules' size *before* packing (14.6 KB) with the room for the

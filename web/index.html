@@ -181,6 +181,8 @@ ol li, ul li { margin-bottom: 8px; }
 .room { margin-top: 16px; }
 .meter { height: 14px; border-radius: 7px; background: var(--line); overflow: hidden; }
 .meter div { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+.gate.locked { opacity: .4; filter: grayscale(.5); pointer-events: none; user-select: none; }
+.gate { transition: opacity .2s; }
 .risk { display: flex; gap: 12px; align-items: flex-start; background: var(--card); border: 1px solid var(--line);
   border-radius: 12px; padding: 14px; margin: 16px 0; cursor: pointer; max-width: 80ch; }
 .risk input { width: 22px; height: 22px; margin-top: 4px; accent-color: var(--accent); flex: none; }
@@ -435,7 +437,12 @@ details.sec .in { padding: 0 18px 16px; }
   <div class="notice"><strong>Experimental on a real G1.</strong> On one real Nord Modular G1, <span id="nReal">all the modules</span> have
     played in one build. A modified OS may lose your patches and may leave your synth unusable.
     Recovery is not guaranteed. You use it entirely at your own risk.</div>
+  <label class="risk"><input type="checkbox" id="agree">
+    <span><b>I have read it and I accept.</b> A modified OS may lose my patches and leave my synth unusable, recovery is not
+    guaranteed, and I am responsible for my own instrument. I will try it in G1-Emu first.</span></label>
+  <p class="lead" id="gateHint">Tick it to unlock the steps below.</p>
 
+  <div class="gate locked" id="gate" inert>
   <h2 class="step"><span class="n">1</span>Your ROM</h2>
   <p class="lead">The rack's 3.03 ROM, the one G1-Emu boots (<code>NORD-MODULAR-RACK-VER-3.03.BIN</code>, 512 KB).
     We do not give it: it is Clavia's.</p>
@@ -457,9 +464,6 @@ details.sec .in { padding: 0 18px 16px; }
   </div>
 
   <h2 class="step"><span class="n">3</span>Build</h2>
-  <label class="risk"><input type="checkbox" id="agree">
-    <span>I have read it: this was tested only in the emulator, it may leave a real G1 unusable, and I am
-    responsible for my own instrument.</span></label>
   <button class="btn primary big" id="go" disabled type="button">Build my OS</button>
   <div class="status wait" id="buildStatus">Loading the builder…</div>
   <div class="downloads" id="downloads">
@@ -475,6 +479,7 @@ details.sec .in { padding: 0 18px 16px; }
 
   <h2 class="step"><span class="n">4</span>Install</h2>
   <p class="lead">Next: the <a href="#/install">install guide</a>, and the <a href="#/recovery">way back</a> before you start.</p>
+  </div>
 </section>
 
 <!-- ============ INSTALL ============ -->

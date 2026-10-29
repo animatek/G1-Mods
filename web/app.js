@@ -601,6 +601,16 @@ drop.addEventListener("drop", (e) => {
 });
 $("all").addEventListener("click", () => { document.querySelectorAll("#grid input").forEach((i) => (i.checked = true)); refresh(); });
 $("none").addEventListener("click", () => { document.querySelectorAll("#grid input").forEach((i) => (i.checked = false)); refresh(); });
-$("agree").addEventListener("change", canBuild);
+// Nothing of the builder works until the risk is accepted: the steps are inert (no click, no keyboard,
+// no drop) and dimmed until the box is ticked, and ticking it off locks them again.
+function gate() {
+  const on = $("agree").checked;
+  $("gate").inert = !on;
+  $("gate").classList.toggle("locked", !on);
+  $("gateHint").hidden = on;
+  canBuild();
+}
+$("agree").addEventListener("change", gate);
+gate();
 $("go").addEventListener("click", doBuild);
 init().catch((e) => status($("buildStatus"), "The builder did not load: " + message(e), "bad"));
