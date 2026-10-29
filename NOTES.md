@@ -920,3 +920,51 @@ normally, where the unguarded one in the full set had hung, and **its notes came
 **All 13 in one build play on the real G1 (2026-10-26).** `Roms/os-all.bin` (packed, 14,944 bytes into
 5,758, Note Out guarded) booted on Javier's G1 and every module worked (Javier: "todo funcionando").
 The end of the day: from "does not boot" to the whole set on the hardware.
+
+
+## The Micro Modular
+
+*(2026-10-29, Javier asked whether the modules could go into a Micro; they can, in G1-Emu's Micro model.)*
+
+The Micro Modular runs **its own OS**, but it is the same code base as the rack's, built for one DSP: 69 % of the
+16-byte runs of its 3.03b image are also in the rack ROM's OS, and so are 71 % of the rack's own 3.03b image's. The
+patcher is written for the **rack ROM's OS** and its addresses (the type table at `$1C3B00`, the registration
+list's last jsr at `$10DF1E`, the IAm's version at `$10B288`, the Mixer's data used as a template...), so the Micro
+is a *relocation*: the same things, somewhere else.
+
+- **Finding where.** Line the two OSes up on every 24-byte run that is in both exactly once (136,810 of them in
+  one order), and read each address off the nearest run. `tools/micro_check.py <rack ROM> <Micro image>` does it and
+  compares with `MICRO_ADDR` in `g1rom.py` (20 addresses: every OS routine the generated 68k code calls, the hook,
+  the version, the Mixer's templates), and each one's first bytes are the same code. The type table is the one
+  place the OS does not name an address: it is the constant the aligned code uses in place of `$1C3B00` (31 of
+  31 uses agree: **`$17C09C`**), and the RAM dump after boot has its entries.
+- **The same free types.** The Micro leaves the same 18 types unregistered as the rack (6, 41, 42, 55, 56, 60, 93,
+  101, 109, 116, 119-126), so `FREE_TYPES` and the registry are unchanged.
+- **More room, and less than a ROM.** The Micro's OS image is 354,016 bytes against the rack's 385,024, ending at
+  `$1566E0`, so the package goes right after it with **39 KB** of room (the rack has 8 KB, and packs). The RAM it runs in
+  (`$1C6000`) is untouched after boot in the Micro too (it leaves `$17DD76-$1EFEE5` free).
+- **No ROM to start from.** The Micro's boot ROM is not Clavia's updater's, and G1-Emu boots the Micro's OS on the
+  rack's boot ROM. So the patcher takes the Micro's **3.03b update image** (what the updater carries; G1-Emu's
+  `Roms/Micro/extract-os.py` extracts it) and puts it where a ROM keeps its OS, in a blank 512 KB buffer, so every
+  address below works as for the rack; the result is the OS image (`g1update.from_rom`).
+- **How the code is translated.** `g1rom.py` keeps every address in the rack ROM's coordinates and `osa()` turns it into
+  the target's when `G1MODS_TARGET=micro` (`patch_rom.py --micro`): in the data it reads and copies, and in the
+  hand-assembled 68k, where `m68k()` translates the operand of each `jsr` and `move.l #,d0` and **stops** on an OS
+  address that is not in the table, instead of calling the wrong place. The rack build is byte for byte what it was.
+
+**Checked** (`tests/check_micro.py`, in G1-Emu's Micro model): the image builds (393,184 bytes, as the rack's, since the
+bootstrap sits at the end of what an update erases); the loaded OS says 3.09; **the twelve types** have an entry in
+the type table and nothing else changed; every module's example patch is taken by the OS and plays. FlipFlop's LED
+(a value the OS reads from the DSP) moves, so its code runs. The module checks of the rack (`check_*.py`) read
+four outputs and do not apply as they are: **the Micro OS puts a patch's Out 3/4 on slots that G1-Emu now silences
+(G1-Emu's #83)**, so those tests would need patches on 1/2 only.
+
+**Not done.**
+- **Note Out (type 60) is not on the Micro** (`"micro": false`): its two hooks in the OS main loop (`$100E6E`, `$1156BE`)
+  are in code that is not the same in the Micro (the lined-up runs do not cover them).
+- **Nothing here has touched a real Micro**, and nobody has one to try: an update to a Micro's flash is the rack's
+  procedure, assumed to erase the same sectors 0-5 (the image ends in sector 5, as the rack's does). Treat it as
+  emulator-only until someone with a Micro and a way back (its updater) has done it.
+- **The web builder takes the rack's ROM only.** The Micro's image comes out of Clavia's updater (`.exe`): its
+  extraction is a dozen lines (G1-Emu's `extract-os.py`), and could run in the browser too.
+- **NME**: a Micro that says 3.09 should get the modules offered by the same rule as a rack; not tried.

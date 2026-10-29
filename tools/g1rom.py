@@ -10,8 +10,16 @@ import sys
 
 import lz
 
+# Which OS the types are built into. The rack's 3.03 ROM is the default (and the only one the web builder
+# takes). `G1MODS_TARGET=micro` builds into the Micro Modular's 3.03b OS image instead (tools/patch_rom.py
+# --micro): the same code base, relocated, so every OS address this file and the modules name (all in the
+# rack ROM's coordinates) is translated by osa() when the target is the Micro. NOTES.md, "The Micro Modular".
+TARGET = os.environ.get("G1MODS_TARGET", "rack")
+assert TARGET in ("rack", "micro"), "G1MODS_TARGET is rack or micro"
 ROM_SHA256 = "d9b199f2"  # start of the rack OS 3.03's sha256 (G1-Emu/NOTES.md, "The ROM")
 ROM_SIZE = 512 * 1024
+MICRO_OS_SIZE = 354016    # the Micro's 3.03b image (Clavia's updater, extracted): ends at $1566E0
+MICRO_OS_SHA256 = "0ccbffa6"   # the start of its sha256
 
 # Where the new types live (NOTES.md, "The first real G1"). An OS update erases only the flash's
 # sectors 0-5, so an OS image ends before RAM $15FFE0; Clavia's OS ends at $15DFDF, which leaves
@@ -19,7 +27,8 @@ ROM_SIZE = 512 * 1024
 # last 52 bytes) copies it at boot to RUN, RAM the OS never uses, where it runs. The bootstrap
 # runs from the RAM copy of the image (the OS leaves those bytes alone until well after the types
 # are registered), but copies the package from the flash's copy, which nothing overwrites.
-STAGE = 0x15DFE0          # in the image, right after Clavia's OS: the package
+STAGE = 0x15DFE0 if TARGET == "rack" else 0x1566E0   # in the image, right after Clavia's OS: the package
+# (the Micro's 3.03b is 354,016 bytes against the rack's 385,024, so its package has 39 KB, not 8, and goes unpacked)
 STAGE_END = 0x15FFE0      # where an update stops erasing ($360000 in the flash)
 BOOT_LEN = 0x34
 BOOT = STAGE_END - BOOT_LEN
@@ -42,11 +51,49 @@ LIST_LAST_TARGET = 0x143350
 # Clavia never released, which Clavia's editor 3.03 still takes (it checks the major and the
 # minor's tens only: 3.00 to 3.09). NME reads it as "this synth has G1-Mods" (NOTES.md, "The mark").
 MODS_VERSION_LOW = 9
-VERSION_MARK = (0x10B288, 0x157C0003, 0x157C0000 | MODS_VERSION_LOW)   # move.b #9,(8,a2)
 
 
 def ram_to_rom(addr):
     return addr - 0x100000 + 0xC800
+
+
+# The OS routines and data this file names, in the rack ROM's coordinates, and where the Micro's 3.03b has
+# them. Found by lining the two images up on every 24-byte run that is in both once (136,000 of them, in
+# order) and reading each address off the nearest run; every one was checked by its first bytes being the
+# same code (tools/micro_check.py does it again on the images you bring).
+MICRO_ADDR = {
+    0x10B252: 0x104838,
+    0x10B288: 0x10486E,
+    0x10C248: 0x1056B2,
+    0x10C32E: 0x105798,
+    0x10C49C: 0x105906,
+    0x10C49E: 0x105908,
+    0x10C4B0: 0x10591A,
+    0x10D142: 0x1065AA,
+    0x10DC42: 0x1070AA,
+    0x10DF1E: 0x107386,
+    0x116832: 0x10F9FC,
+    0x1169BA: 0x10FB84,
+    0x124202: 0x11C81C,
+    0x1243DA: 0x11C9F4,
+    0x131B94: 0x12A198,
+    0x136EFE: 0x12F502,
+    0x143350: 0x13B954,
+    0x14937E: 0x141A84,
+    0x149382: 0x141A88,
+    0x14ADBC: 0x1434C2,
+}
+
+
+def osa(addr):
+    """An OS address of the rack ROM, as it is in the target's OS."""
+    if TARGET == "rack":
+        return addr
+    assert addr in MICRO_ADDR, f"${addr:06X} is not known in the Micro's OS"
+    return MICRO_ADDR[addr]
+
+
+VERSION_MARK = (osa(0x10B288), 0x157C0003, 0x157C0000 | MODS_VERSION_LOW)   # move.b #9,(8,a2)
 
 
 # The types the OS leaves free: its table has 128 (0-127, and a patch keeps a type in 7 bits, so
@@ -59,7 +106,7 @@ FREE_TYPES = (6, 41, 42, 55, 56, 60, 93, 101, 109, 116, 119, 120, 121, 122, 123,
 
 
 def entry(t):
-    return 0x1C3B00 + t * 0x30
+    return (0x1C3B00 if TARGET == "rack" else 0x17C09C) + t * 0x30
 
 
 def words(*ws):
@@ -103,7 +150,7 @@ class Build:
                 "51c8 fffc")                 # dbra d0,*-2
         for off, val in sorted(fields.items()):
             code += "23fc" f"{val:08x}{e + off:08x}"   # move.l #val,entry+off
-        self.register.append(bytes.fromhex(code.replace(" ", "")))
+        self.register.append(m68k(code))
         self.types.append(new_type)
 
     def redirect_call(self, at, old_target, new_target):
@@ -157,7 +204,7 @@ class Build:
 
     @staticmethod
     def _hook(at):
-        return LIST_LAST_JSR + 2, LIST_LAST_TARGET.to_bytes(4, "big"), at.to_bytes(4, "big")
+        return osa(LIST_LAST_JSR) + 2, osa(LIST_LAST_TARGET).to_bytes(4, "big"), at.to_bytes(4, "big")
 
 
 def copy_routine(src, data, dst=RUN):
@@ -187,13 +234,13 @@ def mixer3_variant(b, new_type, code=None, code_patch=None, x_words=None, y_word
     own or the Mixer's with some words changed, and maybe other X/Y counts, other numbers of
     parameters, inputs and outputs (io) and a parameter table of its own. Code longer than 8 words goes on its own, with a copy of
     the connection routine that patches the output at its last word."""
-    src = 0x14937E   # its data: +$2C, descriptor (+$28), X/Y data, code, +$24 and its two offset bytes
+    src = osa(0x14937E)   # its data: +$2C, descriptor (+$28), X/Y data, code, +$24 and its two offset bytes
     fields = {}
     code_at = None
     if params:
         fields[0x1C] = b.put(param_table(params))
     if code and len(code) != 8:
-        conn = bytearray(b.rom_bytes(0x131B94, 0x8E))   # the Mixer (3)'s +$0C
+        conn = bytearray(b.rom_bytes(osa(0x131B94), 0x8E))   # the Mixer (3)'s +$0C
         at = conn.find(bytes.fromhex("3f3c0007"))      # move.w #7,-(sp): the output's word
         assert at > 0 and conn[-2:] == bytes.fromhex("4e75")
         conn[at + 2:at + 4] = (len(code) - 1).to_bytes(2, "big")
@@ -232,8 +279,24 @@ def mixer3_variant(b, new_type, code=None, code_patch=None, x_words=None, y_word
 
 
 def m68k(*parts):
-    """Concatenates hex strings of hand-assembled 68k code."""
-    return bytes.fromhex("".join(parts).replace(" ", ""))
+    """Concatenates hex strings of hand-assembled 68k code. Written in the rack ROM's addresses: for the
+    Micro, the operand of every `jsr` (4eb9) and `move.l #,d0` (203c) that names an OS routine is
+    translated, and one that is not in MICRO_ADDR stops the build instead of calling the wrong place."""
+    h = "".join(parts).replace(" ", "").lower()
+    if TARGET == "rack":
+        return bytes.fromhex(h)
+    out = []
+    i = 0
+    while i < len(h):
+        word = h[i:i + 4]
+        out.append(word)
+        i += 4
+        if word in ("4eb9", "203c") and i + 8 <= len(h):
+            value = int(h[i:i + 8], 16)
+            if 0x100000 <= value < 0x15E000:
+                out.append(f"{osa(value):08x}")
+                i += 8
+    return bytes.fromhex("".join(out))
 
 
 def led_routine(x_word, on_when_set=True):
@@ -505,7 +568,7 @@ def control_type(b, new_type, asm, x_init, params=(), led=None, steps=None, bits
     p_at = b.put(words(*code))
     # the descriptor: ClkDiv's (control part only), with every field we know of set here, and
     # the ones we do not know zero in it, as checked
-    desc = bytearray(b.rom_bytes(0x14ADBC, 0x30))
+    desc = bytearray(b.rom_bytes(osa(0x14ADBC), 0x30))
     known = {0x06, 0x08, 0x1A, 0x1E, 0x20, 0x22, 0x24}
     assert all(desc[o:o + 2] == b"\0\0" for o in range(0, 0x30, 2) if o not in known)
     branches = len(BRANCH.findall(open(path).read()))
@@ -517,7 +580,7 @@ def control_type(b, new_type, asm, x_init, params=(), led=None, steps=None, bits
     desc[0x24:0x26] = record_words(len(params)).to_bytes(2, "big")   # its record
     fields[0x28] = b.put(desc)
     fields[0x24] = b.put(words(x_at, x_at, p_at, x_at, x_at, p_at) + bytes.fromhex("fffe"))
-    fields[0x08] = 0x136EFE
+    fields[0x08] = osa(0x136EFE)
     fields[0x18] = (len(params) << 24) | (len(inputs) << 16) | (len(outputs) << 8)
     b.specs[new_type] = ([p.maximum for p in params], len(inputs), len(outputs))
     b.add_type(new_type, 69, fields)
@@ -551,7 +614,7 @@ def audio_type(b, new_type, asm, x_init, params=(), x_words=None):
                                             part=0))
     x_at = b.put(words(*x_init))
     p_at = b.put(words(*code))
-    desc = bytearray(b.rom_bytes(0x149382, 0x30))         # the Mixer (3)'s: audio only
+    desc = bytearray(b.rom_bytes(osa(0x149382), 0x30))         # the Mixer (3)'s: audio only
     known = {0x02, 0x08, 0x0E, 0x12, 0x14, 0x16, 0x24}
     assert all(desc[o:o + 2] == b"\0\0" for o in range(0, 0x30, 2) if o not in known)
     branches = len(BRANCH.findall(open(path).read()))
@@ -565,7 +628,7 @@ def audio_type(b, new_type, asm, x_init, params=(), x_words=None):
     # audio X, Y, P; the control part's (empty) the same; the nop slots: audio 2 words before the
     # end, control none (as the Mixer (3)'s)
     fields[0x24] = b.put(words(x_at, x_at, p_at, x_at, x_at, p_at) + bytes.fromhex("feff"))
-    fields[0x08] = 0x136EFE
+    fields[0x08] = osa(0x136EFE)
     fields[0x18] = (len(params) << 24) | (len(inputs) << 16) | (len(outputs) << 8)
     b.specs[new_type] = ([p.maximum for p in params], len(inputs), len(outputs))
     b.add_type(new_type, 19, fields)

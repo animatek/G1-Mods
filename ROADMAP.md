@@ -1,6 +1,6 @@
 # Roadmap
 
-What is wanted and not done. Nothing here works yet.
+What is wanted and not done, and what is done but not finished.
 
 ## An OS for G1-Emu alone, with more modules
 
@@ -14,12 +14,13 @@ Today the ROM the builder hands out is the same OS as the update image, in a who
 
 ## The Micro Modular
 
-G1-Mods builds on the **rack's 3.03 ROM**, and that is the only thing the builder takes. A Micro Modular
-runs **its own OS**, a different binary on one DSP with other addresses, and there is no Micro ROM image to
-rebuild: its OS comes out of Clavia's updater as an update image. So a G1-Mods OS does not exist for the
-Micro: in G1-Emu's Micro model, or in the plugin's, the Micro's own OS runs and the modules are not there
-(NME offers them only to a synth that says 3.09, which a Micro never does).
+**Done, in the emulator, from the command line** (2026-10-29): `tools/patch_rom.py --micro all <Micro 3.03b OS image> out.bin`
+puts twelve of the thirteen modules into the Micro's OS, and G1-Emu's Micro model boots it and plays their patches
+(`tests/check_micro.py`; NOTES.md, "The Micro Modular"). To try it: G1-Emu's *Settings > Micro OS* takes that image.
 
-What it would take: a patcher that works on the Micro's OS image instead of a ROM (the hooks, the free
-module types, the DSP room are all found again for that OS), and its own test in G1-Emu's Micro model before
-anything goes near a real Micro. Not started.
+Still to do, in order of how much it matters:
+- **Someone with a real Micro**, and its updater for the way back, to try the update. Until then it is emulator-only.
+- **The web builder for the Micro**: the user drops Clavia's Micro updater (`.exe`), the page extracts the image
+  (a few lines of Python, which Pyodide runs) and builds. Not started.
+- **Note Out on the Micro**: its two hooks in the OS main loop are not where the rack's are.
+- **NME's side**: check that a Micro that says 3.09 is offered the modules.

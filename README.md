@@ -136,6 +136,17 @@ tools/patch_rom.py all ../G1-Emu/Roms/NORD-MODULAR-RACK-VER-3.03.BIN Roms/rom-al
 tools/g1update.py fromrom Roms/rom-all.bin Roms/os-all.bin
 ```
 
+**The Micro Modular** (experimental, in G1-Emu's Micro model only): it has no ROM to bring, its OS is the update
+image from Clavia's Micro updater (`G1-Emu/Roms/Micro/extract-os.py` extracts it), and twelve of the modules go into it:
+
+```sh
+tools/patch_rom.py --micro all ../G1-Emu/Roms/Micro/micro-os.bin Roms/os-micro-all.bin
+tests/check_micro.py        # boots it in G1-Emu's Micro model and plays every module's patch
+```
+
+Then G1-Emu's *Settings > Micro OS* takes `os-micro-all.bin`. Nobody has tried it on a real Micro: see
+`NOTES.md`, "The Micro Modular".
+
 `out/` is something else: the tools' working files (the DSP assembler's index, NME data copies).
 No ROM goes there.
 

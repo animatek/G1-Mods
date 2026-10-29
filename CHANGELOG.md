@@ -5,6 +5,18 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the modules go into the Micro Modular's OS** (experimental; in G1-Emu's Micro model only). Javier had said a modified
+  Micro could not be done for lack of its ROM; but the Micro runs the same code base as the rack, relocated, and what the
+  patcher takes is the OS, not the ROM. `tools/patch_rom.py --micro all <Micro 3.03b image> out.bin` builds twelve of the
+  thirteen modules into the Micro's update image (Note Out is out: its two hooks are in code that differs). How: the two OSes
+  lined up on 136,810 shared 24-byte runs, every OS address the patcher names translated (`MICRO_ADDR` in `g1rom.py`, 20
+  addresses, each checked by its first bytes; `tools/micro_check.py` redoes it on your images), the Micro's type table
+  found at `$17C09C` (31 of 31 uses of the rack's `$1C3B00` agree), the package after its smaller OS (39 KB of room against the
+  rack's 8). `m68k()` translates the `jsr` and `move.l #` operands and stops on an address it does not know. Checked with the new
+  `tests/check_micro.py` in G1-Emu's Micro model: it builds (393,184 bytes), says 3.09, the twelve types are registered and nothing
+  else in the table changed, and every example patch is taken and plays (FlipFlop's LED moves, so its code runs). The rack
+  build is byte for byte what it was, and `check_insert.py` passes. **Not tried on a real Micro**, which nobody here has: treat it as
+  emulator-only. Notes in `NOTES.md` ("The Micro Modular"), roadmap and install guides updated.
 - Claude: **it says that the Micro Modular is not supported.** G1-Mods builds on the rack's 3.03 ROM, and a Micro runs its own
   OS (another binary, one DSP, no ROM image to rebuild: its OS comes out of Clavia's updater), so a modified ROM
   loaded for G1-Emu's Micro model changes nothing: the Micro's own OS runs. Found by Javier trying it. Said in

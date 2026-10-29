@@ -22,5 +22,7 @@
   "notes": "The note is the nearest semitone, kept to 0-127, with 0 units as note 64 (an E, the keyboard's Note out).",
   "patch_notes": {
     "noteout-lfo.pch": "An LFO's square gates the Note Out, which sends notes out of the G1's MIDI OUT."
-  }
+  },
+  "micro": false,
+  "micro_why": "its two hooks in the OS main loop are at other places in the Micro's OS: not found yet"
 }

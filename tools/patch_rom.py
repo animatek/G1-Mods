@@ -3,6 +3,7 @@
 
     tools/patch_rom.py all ../G1-Emu/Roms/NORD-MODULAR-RACK-VER-3.03.BIN Roms/rom-all.bin
     tools/patch_rom.py flipflop,mux8 <rom> Roms/rom-mine.bin     # just these modules
+    tools/patch_rom.py --micro flipflop <Micro 3.03b OS image> Roms/os-micro.bin   # the Micro Modular's OS
     tools/patch_rom.py --list
 
 Each module is a folder in modules/ (its module.json, its build.py, its DSP code and its tests);
@@ -19,9 +20,15 @@ import json
 import os
 import sys
 
+# --micro builds into the Micro Modular's OS image instead of the rack's ROM; g1rom reads the target when it
+# is imported, so it is decided here, first.
+if "--micro" in sys.argv:
+    sys.argv.remove("--micro")
+    os.environ["G1MODS_TARGET"] = "micro"
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from g1rom import (ROM_SHA256, ROM_SIZE, ROOM, RUN, STAGE, VERSION_MARK, Build, Param,  # noqa: E402,F401
-                   audio_type, ram_to_rom)
+from g1rom import (MICRO_OS_SHA256, MICRO_OS_SIZE, ROM_SHA256, ROM_SIZE, ROOM, RUN, STAGE,  # noqa: E402,F401
+                   TARGET, VERSION_MARK, Build, Param, audio_type, ram_to_rom)
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 MODULES = os.path.join(ROOT, "modules")
@@ -84,8 +91,10 @@ EXPERIMENTS = {
 
 def _all():
     mods = modules()
-    EXPERIMENTS["all"] = ("every module in modules/: " + ", ".join(
-        f"{m.type} ({m.meta['name']})" for m in mods), [m.add for m in mods], [])
+    if TARGET == "micro":      # the ones that are on the Micro (a module's "micro": false in its module.json)
+        mods = [m for m in mods if m.meta.get("micro", True)]
+    EXPERIMENTS["all"] = ("every module in modules/" + (" that is on the Micro" if TARGET == "micro" else "") + ": " +
+                          ", ".join(f"{m.type} ({m.meta['name']})" for m in mods), [m.add for m in mods], [])
 
 
 _all()
@@ -98,9 +107,17 @@ class BuildError(Exception):
 def patch(src, types, in_place=()):
     """The user's ROM (bytes) with these types (callables given the Build) and in-place words;
     the new ROM, as bytes. What the command line and the web builder (web/) both call."""
-    rom = bytearray(src)
-    if len(rom) != ROM_SIZE or not hashlib.sha256(rom).hexdigest().startswith(ROM_SHA256):
-        raise BuildError("not the rack OS 3.03 ROM")
+    if TARGET == "micro":
+        # The Micro has no ROM of its own to bring: its OS is the update image (Clavia's updater, extracted).
+        # It is put where the rack ROM keeps its OS, so every address below works as it does for the rack.
+        if len(src) != MICRO_OS_SIZE or not hashlib.sha256(src).hexdigest().startswith(MICRO_OS_SHA256):
+            raise BuildError("not the Micro Modular's 3.03b OS image (354,016 bytes)")
+        rom = bytearray(b"\xff" * ROM_SIZE)
+        rom[ram_to_rom(0x100000):ram_to_rom(0x100000) + len(src)] = src
+    else:
+        rom = bytearray(src)
+        if len(rom) != ROM_SIZE or not hashlib.sha256(rom).hexdigest().startswith(ROM_SHA256):
+            raise BuildError("not the rack OS 3.03 ROM")
     if types:
         in_place = list(in_place) + [VERSION_MARK]   # an OS with modules says so (3.09)
     for addr, old, new in in_place:
@@ -152,6 +169,12 @@ def main():
         rom = patch(open(src, "rb").read(), *EXPERIMENTS[name][1:])
     except BuildError as e:
         sys.exit(str(e))
+    if TARGET == "micro":
+        import g1update
+        try:
+            rom = g1update.from_rom(rom)     # the OS image, the Micro's modules in it
+        except SystemExit as e:
+            sys.exit(str(e))
     os.makedirs(os.path.dirname(os.path.abspath(dst)), exist_ok=True)
     open(dst + ".tmp", "wb").write(rom)
     os.replace(dst + ".tmp", dst)   # never a half-written ROM for an emulator starting meanwhile

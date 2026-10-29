@@ -28,9 +28,9 @@ If you are unsure, use the OS update: it works on both. The ROM is only a shortc
   when a synth has them, and has *Device > Update Synth OS* to install an OS over MIDI. Older
   versions do not know the new modules: with one, a G1-Mods OS connects but the modules are not offered.
 - **G1-Emu**, to try a build before a real synth.
-- **A rack or keyboard G1.** A **Micro Modular** runs another OS and is **not supported yet**: the builder takes
-  the rack's ROM only, and G1-Emu's Micro model runs the Micro's own OS, without the modules (see the
-  [roadmap](../ROADMAP.md)).
+- **A rack or keyboard G1.** The **Micro Modular** runs another OS. Twelve of the modules can be built into it
+  from the command line (`tools/patch_rom.py --micro`) and run in G1-Emu's Micro model; the web builder takes the
+  rack's ROM only, and nobody has tried it on a real Micro (see the [roadmap](../ROADMAP.md) and `NOTES.md`).
 - For a real G1: a MIDI interface connected to the G1's **PC port** (both ways), as for editing.
 - For the way back on a real G1, either of these:
     - **NME's *Device > Update Synth OS*** with **Clavia's own 3.03b OS image** (a `.bin`): the same
