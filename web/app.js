@@ -153,16 +153,19 @@ const LINKS = [
 ];
 
 const ROUTES = {
-  "": "Overview", modules: "All modules", builder: "Build your OS", compare: "Compare", install: "Install guide",
+  "": "Overview", modules: "All modules", builder: "Build your OS", compare: "Compare", install: "Install guide", guides: "Guides",
   recovery: "Going back & fixes", "turing-scale": "First patch", "nme-g1emu": "Connect NME to G1-Emu",
   "clock-reset": "Clock & reset", modular: "Nord Modular G1", changelog: "Changelog", links: "Links", contribute: "Contribute", about: "About & legal",
 };
+// pages that live under another entry of the sidebar light that entry up
+const NAV_OF = { compare: "modules", "turing-scale": "guides", "nme-g1emu": "guides", "clock-reset": "guides", modular: "guides", changelog: "about" };
 const BASE_DESC = "New module types for the Nord Modular G1, built into your own copy of its OS. Module library, web builder, guides and links.";
 const DESCRIPTIONS = {
   "": BASE_DESC,
   modules: "Every G1-Mods module: its picture, ports, controls and example patches.",
   builder: "Build your own G1 OS with the modules you want, right in the browser.",
   compare: "Two modules side by side: their ports, controls and data.",
+  guides: "Short guides: a first patch, connecting NME to G1-Emu, clock and reset, and the Nord Modular G1.",
   install: "Installing G1-Mods: build your OS, try it in G1-Emu, install it on a real G1.",
   recovery: "Going back to Clavia's OS, and what to do when something goes wrong.",
   "turing-scale": "First patch: the Turing Machine and the Scale Quantizer into an oscillator.",
@@ -184,10 +187,10 @@ let kindFilter = "all";
 function route() {
   const r = location.hash.replace(/^#\/?/, "").split("?")[0];
   const isMod = r.startsWith("module/");
-  const name = isMod ? "module" : r in ROUTES ? r : "";
+  const name = isMod ? "module" : r === "links" ? "about" : r in ROUTES ? r : "";
   if (isMod) renderModulePage(decodeURIComponent(r.slice(7)));
   document.querySelectorAll("section.view").forEach((v) => v.classList.toggle("on", v.dataset.view === name));
-  document.querySelectorAll("#nav a").forEach((a) => a.classList.toggle("on", (a.dataset.route === name) || (isMod && a.dataset.route === "modules")));
+  document.querySelectorAll("#nav a").forEach((a) => a.classList.toggle("on", (a.dataset.route === (NAV_OF[name] || name)) || (isMod && a.dataset.route === "modules")));
   $("crumb").textContent = isMod ? "Module" : ROUTES[name];
   if (!isMod) setMeta(name === "" ? "G1-Mods · modules for the Nord Modular G1" : `${ROUTES[name]} · G1-Mods`, DESCRIPTIONS[name] || BASE_DESC);
   window.scrollTo(0, 0);

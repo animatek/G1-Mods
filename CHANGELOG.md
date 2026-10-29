@@ -5,6 +5,12 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the site's sidebar goes from 14 entries to 8.** The four short guides (First patch, Connect NME to G1-Emu,
+  Clock & reset, The Nord Modular G1) sit behind one **Guides** entry that lists them; **Compare** is a link on the
+  module library; **Links** is a section of **About** (which also links the changelog). Every old address still works
+  (`#/links` opens About; the others keep their page and light up their parent entry). The overview's builder tile no
+  longer says "a ROM for the emulator and an update for a G1". Checked: all 16 routes load in headless Chromium with
+  the right entry lit and "The builder is ready"; every external link in the site and the docs answers (18 checked).
 - Claude: **the page and the install guide say which file is for what.** The OS update is for G1-Emu and a real G1
   and loads only through update mode (G1-Emu: Settings > OS... > Update mode; a real G1: Shift + Store at power-on,
   then NME's Update Synth OS); the ROM is for G1-Emu alone and loads from Settings > ROM > Choose... A table at the

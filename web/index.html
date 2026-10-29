@@ -316,32 +316,20 @@ details.sec .in { padding: 0 18px 16px; }
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>All modules<span class="count" id="navCount"></span></a>
     <a href="#/builder" data-route="builder">
       <svg viewBox="0 0 24 24"><path d="M14 7l3-3 3 3-3 3z"/><path d="M4 20l10-10"/><path d="M4 14v6h6"/></svg>Build your OS</a>
-    <a href="#/compare" data-route="compare">
-      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/></svg>Compare</a>
     <div class="group">Learn</div>
     <a href="#/install" data-route="install">
       <svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>Install guide</a>
     <a href="#/recovery" data-route="recovery">
       <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2"/><path d="M4 4v5h5"/></svg>Going back &amp; fixes</a>
-    <a href="#/turing-scale" data-route="turing-scale">
-      <svg viewBox="0 0 24 24"><path d="M4 6c4-4 8 4 12 0v12c-4 4-8-4-12 0z"/></svg>First patch</a>
-    <a href="#/nme-g1emu" data-route="nme-g1emu">
-      <svg viewBox="0 0 24 24"><path d="M7 7l10 10"/><circle cx="6" cy="6" r="2"/><circle cx="18" cy="18" r="2"/></svg>Connect NME to G1-Emu</a>
-    <a href="#/clock-reset" data-route="clock-reset">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Clock &amp; reset</a>
-    <a href="#/modular" data-route="modular">
-      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="10" r="2"/><circle cx="16" cy="10" r="2"/><path d="M7 16h10"/></svg>Nord Modular G1</a>
+    <a href="#/guides" data-route="guides">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Guides</a>
     <div class="group">Community</div>
     <a href="https://discord.gg/CMw5mbWe58" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>Discord</a>
-    <a href="#/links" data-route="links">
-      <svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.6 0l3-3a4 4 0 0 0-5.6-5.6l-1 1"/><path d="M14 10a4 4 0 0 0-5.6 0l-3 3a4 4 0 0 0 5.6 5.6l1-1"/></svg>Links</a>
     <a href="#/contribute" data-route="contribute">
       <svg viewBox="0 0 24 24"><path d="M8 9l-4 3 4 3"/><path d="M16 9l4 3-4 3"/><path d="M14 5l-4 14"/></svg>Contribute</a>
-    <a href="#/changelog" data-route="changelog">
-      <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Changelog</a>
     <a href="#/about" data-route="about">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5v.1"/></svg>About &amp; legal</a>
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5v.1"/></svg>About &amp; links</a>
   </nav>
   <div class="mybuild" id="mybuild"><b id="mbText">My build · 0 modules</b>
     <a href="#/builder">Build your OS →</a></div>
@@ -395,7 +383,7 @@ details.sec .in { padding: 0 18px 16px; }
   <h2>Where to start</h2>
   <div class="cols">
     <a class="tile" href="#/modules"><div class="k">Library</div><h3>See what is there</h3><p>Every module with its type number, what it does and its source.</p></a>
-    <a class="tile" href="#/builder"><div class="k">Builder</div><h3>Make your OS</h3><p>Drop your own ROM, tick modules, get a ROM for the emulator and an update for a G1.</p></a>
+    <a class="tile" href="#/builder"><div class="k">Builder</div><h3>Make your OS</h3><p>Drop your own ROM, tick modules, get an OS update for G1-Emu and a real G1 (and a ROM for the emulator).</p></a>
     <a class="tile" href="#/install"><div class="k">Guide</div><h3>Install it, safely</h3><p>First in G1-Emu, then on a real rack, step by step.</p></a>
     <a class="tile" href="#/recovery"><div class="k">Guide</div><h3>The way back</h3><p>Return to Clavia's OS, and what to do when something goes wrong.</p></a>
     <a class="tile" href="#/modular"><div class="k">Learn</div><h3>The Nord Modular G1</h3><p>What it is, why it still matters, and how a module type becomes a module.</p></a>
@@ -418,6 +406,7 @@ details.sec .in { padding: 0 18px 16px; }
   <h1>Module library</h1>
   <p class="lead">Modules written for the G1, each with a type number that stays its own for ever, so a patch that uses it opens on any build that has it.</p>
   <div class="filters" id="filters"></div>
+  <p class="lead" style="margin:0 0 14px"><a href="#/compare">Compare two modules side by side →</a></p>
   <div class="mcards" id="mcards"></div>
   <div class="empty" id="mempty" hidden>No module matches.</div>
   <div class="buildbar">
@@ -487,6 +476,18 @@ details.sec .in { padding: 0 18px 16px; }
 </section>
 
 <!-- ============ INSTALL ============ -->
+<!-- ============ GUIDES ============ -->
+<section class="view" data-view="guides">
+  <h1>Guides</h1>
+  <p class="lead">Short ones, to read when you need them. Installing and going back have their own entries above.</p>
+  <div class="cols">
+    <a class="tile" href="#/turing-scale"><div class="k">Patch</div><h3>First patch</h3><p>The Turing Machine and the Scale Quantizer into an oscillator.</p></a>
+    <a class="tile" href="#/nme-g1emu"><div class="k">Setup</div><h3>Connect NME to G1-Emu</h3><p>The safe way in before a real G1.</p></a>
+    <a class="tile" href="#/clock-reset"><div class="k">Patch</div><h3>Clock &amp; reset</h3><p>Keeping the sequencing modules in step.</p></a>
+    <a class="tile" href="#/modular"><div class="k">Learn</div><h3>The Nord Modular G1</h3><p>What it is, why it still matters, and how a module type becomes a module.</p></a>
+  </div>
+</section>
+
 <section class="view" data-view="install">
   <div class="guide" data-guide="install"></div>
 </section>
@@ -534,13 +535,6 @@ details.sec .in { padding: 0 18px 16px; }
 <!-- ============ CHANGELOG ============ -->
 <section class="view" data-view="changelog">
   <div class="guide" data-guide="changelog"></div>
-</section>
-
-<!-- ============ LINKS ============ -->
-<section class="view" data-view="links">
-  <h1>Links</h1>
-  <p class="lead">The code, the editor, the emulator and the people behind it.</p>
-  <div id="links"></div>
 </section>
 
 <!-- ============ CONTRIBUTE ============ -->
@@ -627,6 +621,10 @@ details.sec .in { padding: 0 18px 16px; }
     <li>Built on <a href="https://github.com/dsp56300/gearmulator" target="_blank" rel="noopener">Gearmulator</a> through G1-Emu.</li>
     <li>You use it entirely at your own risk and are responsible for your instrument.</li>
   </ul>
+  <p>What changed and when: the <a href="#/changelog">changelog</a>.</p>
+  <h2>Links</h2>
+  <p class="lead">The code, the editor, the emulator and the people behind it.</p>
+  <div id="links"></div>
 </section>
 
 <footer>G1-Mods · GPLv3 · <a href="https://github.com/animatek/G1-Mods" target="_blank" rel="noopener">Source on GitHub</a> ·
