@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the builder's module cards are minimal.** Each one in step 2 had the type, kind, author, version and the
+  whole summary, a screenful of text to pick from. It is now the tick, the name, the author and a "Page →" link to the
+  module's own page, where the rest is; the "G1-Emu only" warning stays on the card because it changes what the build
+  gives. The grid is narrower (230 px cards) so more fit a row. Checked: headless Chromium, 13 cards in rows of three,
+  the builder ready.
 - Claude: **Contribute is a short page and a `CONTRIBUTING.md`.** The page had grown to four sections (setup, module
   layout, first pull request, test before you flash, house rules) typed into the HTML, and nothing in the repository
   said it to someone arriving from GitHub. That text moves, unchanged in substance, to `CONTRIBUTING.md` (the file

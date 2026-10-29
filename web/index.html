@@ -167,14 +167,16 @@ ol li, ul li { margin-bottom: 8px; }
 .status { margin-top: 10px; font-weight: 600; }
 .status.ok { color: var(--ok); } .status.bad { color: var(--bad); } .status.wait { color: var(--muted); }
 .tools { display: flex; gap: 10px; margin: 0 0 12px; flex-wrap: wrap; }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
 .mod { display: flex; gap: 12px; align-items: flex-start; background: var(--card); border: 1px solid var(--line);
   border-radius: 12px; padding: 14px; cursor: pointer; }
 .mod:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
 .mod input { width: 22px; height: 22px; margin-top: 4px; accent-color: var(--accent); flex: none; }
 .mod .name { font-weight: 700; font-size: 19px; }
 .mod .meta { color: var(--muted); font-size: 14px; font-family: var(--mono); }
-.mod .sum { font-size: 16px; margin-top: 4px; }
+.mod { align-items: center; }
+.mod > span { flex: 1; min-width: 0; }
+.mod .more { flex: none; font-size: 15px; font-weight: 700; text-decoration: none; }
 .mod .warnline { font-size: 15px; margin-top: 6px; color: var(--warn); font-weight: 600; }
 .room { margin-top: 16px; }
 .meter { height: 14px; border-radius: 7px; background: var(--line); overflow: hidden; }

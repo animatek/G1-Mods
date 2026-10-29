@@ -21,16 +21,19 @@ function renderModules() {
   for (const m of bundle.modules) {
     const label = document.createElement("label");
     label.className = "mod";
+    // Only what is needed to pick it: the name, who wrote it, the tick, and the module's page for the rest.
+    // The "G1-Emu only" warning stays: it changes what the build gives.
     label.innerHTML = `<input type="checkbox" value="${m.folder}"${m.real_g1 ? "" : " checked"}>
-      <span><span class="name"></span><div class="meta"></div><div class="sum"></div></span>`;
+      <span><span class="name"></span><div class="meta"></div></span><a class="more" href="#">Page →</a>`;
     label.querySelector(".name").textContent = m.name;
-    label.querySelector(".meta").textContent = `Type ${m.type} · ${m.kind} · ${m.author} · v${m.version}`;
-    label.querySelector(".sum").textContent = m.summary;
+    label.querySelector(".meta").textContent = m.author;
+    label.querySelector(".more").href = "#/module/" + m.folder;
+    label.querySelector(".more").setAttribute("aria-label", "Open the page of " + m.name);
     if (m.real_g1) {                     // a module known to fail on real hardware
       const w = document.createElement("div");
       w.className = "warnline";
       w.textContent = "⚠ G1-Emu only: " + m.real_g1;
-      label.querySelector(".sum").after(w);
+      label.querySelector(".meta").after(w);
     }
     label.querySelector("input").addEventListener("change", refresh);
     $("grid").appendChild(label);
