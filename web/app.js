@@ -549,6 +549,14 @@ async function init() {
   bundle = await (await fetch("bundle.json")).json();
   $("navCount").textContent = bundle.modules.length;
   $("sMods").textContent = bundle.modules.length;
+  // Counted from the modules, so the overview follows the library: a module is "played on a real G1"
+  // unless its module.json says (real_g1) that it is for G1-Emu only.
+  const real = bundle.modules.filter((m) => !m.real_g1).length, all = bundle.modules.length;
+  $("sReal").textContent = `${real}/${all}`;
+  $("nReal").textContent = real === all ? `all ${all} modules` : `${real} of ${all} modules`;
+  const free = bundle.free || [];
+  $("nFree").textContent = String(free.length);
+  $("freeList").textContent = free.join(", ");
   renderModules();
   renderFilters();
   renderLibrary();

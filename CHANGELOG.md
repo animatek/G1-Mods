@@ -5,6 +5,12 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the overview's figures are computed, not typed.** The number of modules, "X/Y played on a real G1" (the
+  modules that are not marked `real_g1`, i.e. G1-Emu only), the sentence "all N modules have played in one build" and
+  the free type numbers (new `free` in `bundle.json`, from `modules/registry.json`) now come from the bundle, so
+  adding a module or claiming a number changes the page with no edit to it. No database: the data was already in
+  the bundle, rebuilt on every deploy. The stat lost its hard-coded date. Checked: headless Chromium shows
+  13/13, "all 13 modules", "5 type numbers are still free (93, 109, 116, 119, 122)" and the builder ready.
 - Claude: **the site's sidebar goes from 14 entries to 8.** The four short guides (First patch, Connect NME to G1-Emu,
   Clock & reset, The Nord Modular G1) sit behind one **Guides** entry that lists them; **Compare** is a link on the
   module library; **Links** is a section of **About** (which also links the changelog). Every old address still works

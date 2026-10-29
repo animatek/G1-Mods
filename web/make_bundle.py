@@ -92,6 +92,7 @@ def main():
         "modules": modules,
         "guides": guides,
         "room": ROOM,
+        "free": reg["free"],   # type numbers still unclaimed, for the overview and the library
         "files": {k: base64.b64encode(open(v, "rb").read()).decode() for k, v in sorted(files.items())},
     }
     out = os.path.join(WEB, "bundle.json")
