@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **it says that the Micro Modular is not supported.** G1-Mods builds on the rack's 3.03 ROM, and a Micro runs its own
+  OS (another binary, one DSP, no ROM image to rebuild: its OS comes out of Clavia's updater), so a modified ROM
+  loaded for G1-Emu's Micro model changes nothing: the Micro's own OS runs. Found by Javier trying it. Said in
+  `ROADMAP.md` (what it would take: a patcher for the Micro's OS image, not started), both install guides and the
+  builder's step 1 (English and Spanish). Checked: the page loads and the text shows in both languages.
 - Claude: **the web is in Spanish too, with a language selector** left of the sun/moon button. It follows the browser's
   language the first time and remembers the choice; changing it redraws the page in place (the ROM, the ticked
   modules and the builder's state stay). How it is built: the HTML and the code stay English and are the source;
