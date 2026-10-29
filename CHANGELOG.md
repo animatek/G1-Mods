@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the builder's two downloads say which is which.** A whole ROM (512 KB, `…-rom.bin`) went into NME's
+  Update Synth OS instead of the OS update (`…-os.bin`) and was refused as too big: the page listed the ROM
+  first and gave no hint where each file goes. The OS update (for a real G1, what NME's Update Synth OS takes)
+  is now first, the ROM is labelled "for G1-Emu only" with that warning. File names unchanged, so the guides
+  still match. NME's own message for a whole ROM now says the same (`Animatek-NME` 795d8c3).
 - Claude: **fix: the web builder did not load** ("can't access property textContent, add is null"). The compare
   view, added earlier today, reuses the `mcard` class, and the sync of the "+" buttons walked every `.mcard`
   expecting each to have one; the compare cards have none, so `init()` died before the builder was ready. It now

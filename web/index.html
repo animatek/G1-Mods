@@ -472,10 +472,12 @@ details.sec .in { padding: 0 18px 16px; }
   <button class="btn primary big" id="go" disabled type="button">Build my OS</button>
   <div class="status wait" id="buildStatus">Loading the builder…</div>
   <div class="downloads" id="downloads">
-    <div class="dl"><b>For G1-Emu</b><br>The whole ROM, with the modules.<br>
-      <a id="dlRom" download>⬇ ROM</a></div>
-    <div class="dl"><b>For a G1's flash</b><br>The OS alone, as an update image.<br>
+    <div class="dl"><b>For a real G1</b><br>The OS alone, as an update image. This is the file NME's
+      <i>Device &gt; Update Synth OS</i> takes.<br>
       <a id="dlOs" download>⬇ OS update</a><div class="status bad" id="noOs"></div></div>
+    <div class="dl"><b>For G1-Emu only</b><br>The whole 512 KB ROM, with the modules. <b>Not</b> for Update Synth OS:
+      NME refuses it as too big.<br>
+      <a id="dlRom" download>⬇ ROM</a></div>
   </div>
 
   <h2 class="step"><span class="n">4</span>Install</h2>
