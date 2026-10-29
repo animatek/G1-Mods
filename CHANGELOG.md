@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **Contribute is a short page and a `CONTRIBUTING.md`.** The page had grown to four sections (setup, module
+  layout, first pull request, test before you flash, house rules) typed into the HTML, and nothing in the repository
+  said it to someone arriving from GitHub. That text moves, unchanged in substance, to `CONTRIBUTING.md` (the file
+  GitHub shows on new pull requests); the page keeps the invitation, three buttons (How to contribute, the checklist,
+  Issues) and the four rules in a line. The web page lost about 4 KB. Checked: the page loads and links the file.
 - Claude: **the overview's figures are computed, not typed.** The number of modules, "X/Y played on a real G1" (the
   modules that are not marked `real_g1`, i.e. G1-Emu only), the sentence "all N modules have played in one build" and
   the free type numbers (new `free` in `bundle.json`, from `modules/registry.json`) now come from the bundle, so

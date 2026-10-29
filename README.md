@@ -69,7 +69,7 @@ catalogue grows by families: one type, several panels in NME.
   `g1rom.py` is what every module's build uses, `dspasm.py` the DSP assembler.
 - `tests/`: the tests across modules, and `run_all.py`, which runs them all.
 - [`NOTES.md`](NOTES.md): how it was worked out, the OS's insides, step by step.
-  [`PORTING.md`](PORTING.md): the plan. [`CHANGELOG.md`](CHANGELOG.md): what changed.
+  [`CONTRIBUTING.md`](CONTRIBUTING.md): how to take part. [`PORTING.md`](PORTING.md): the plan. [`CHANGELOG.md`](CHANGELOG.md): what changed.
 
 ## Trying it
 
