@@ -5,6 +5,7 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- [Docs] Claude: NOTES.md records the capture of Clavia's Micro updater against G1-Emu's Micro update-mode stand-in: same stream as the rack's, identical to `g1update.py build` but for the last block's padding. Checked: compared 3,164 messages.
 - Claude: **`run-nme.sh` is gone.** It started a special NME built from the `mods-layer` branch (a binary kept outside the
   repo), which is not needed since the layer is in NME's `main` (0.25): any NME from `main` offers the modules to a synth that
   says 3.09, and a stale copy of that binary was what made a modified Micro look unrecognised. The README says to use NME

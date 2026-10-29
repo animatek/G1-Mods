@@ -979,3 +979,10 @@ Then it is restarted. The rack's is Shift + Store at power-on and "Update flash?
 Micro's stream is the rack's (`g1update.py`'s, which NME's Update Synth OS sends) or differs, and which flash sectors its
 update erases: that is why a G1-Mods OS for the Micro is emulator-only, and why G1-Emu has no update mode for its Micro.
 
+**Captured: Clavia's own Micro updater against G1-Emu's update-mode stand-in** (2026-10-29, `Nord Micro Modular OS v3.03b
+Update.exe` in Wine, PC Port in and out, Safe). It sent 3,164 messages, the rack's stream exactly: greeting (`F0 33 7F 06 00 00 00 F7`),
+one header `70` (flash address `$300020` too), 3,161 data blocks `71` of 112 bytes and the checksum `73`; its image is the
+354,016-byte OS, starting `46 FC 27 00`. `g1update.py`'s `build()` of that image reproduces it **message for message except the last
+data block's padding**, as for the rack. So the Micro's stream is the rack's (what NME's Update Synth OS sends); what is still
+unknown is the Micro's own boot ROM's answers and which flash sectors it erases. The capture holds Clavia's OS: not kept in the repo.
+
