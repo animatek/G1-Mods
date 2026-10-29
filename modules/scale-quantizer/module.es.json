@@ -1,0 +1,17 @@
+{
+  "fullname": "Scale Quantizer, un tono a la nota más cercana de una escala",
+  "summary": "Un tono a la nota más cercana de una de 16 escalas, con Root y Octave.",
+  "about": [
+    "Lleva un tono a la nota más cercana de una escala que eliges por su nombre, sobre una nota raíz. Es más fácil de ajustar que el KeyQuant del G1 y sus doce botones. A imagen del Quantizer de JW-Modules.",
+    "In se redondea al semitono más cercano y luego se lleva a la nota más cercana de la escala (la inferior en caso de empate). Root elige la tonalidad de Do a Si, Scale una de 16 escalas, y Octave desplaza el resultado de -4 a +4 octavas."
+  ],
+  "usage": [
+    "Ponlo entre un CV aleatorio o secuenciado (el CV de la Turing Machine, por ejemplo) y el tono de un oscilador.",
+    "Elige un Root y una Scale: las notas se quedan ya en esa tonalidad.",
+    "Usa Octave para llevar el resultado al rango que quieras."
+  ],
+  "notes": "Falta: entradas de CV para Root y Scale. Tasa de control.",
+  "patch_notes": {
+    "quant.pch": "Un LFO barre el Scale Quantizer, que lo ajusta a las notas de una escala."
+  }
+}

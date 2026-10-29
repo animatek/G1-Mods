@@ -1,0 +1,17 @@
+{
+  "fullname": "Envelope: ADDSR, o de un solo disparo (D, H, AHD)",
+  "summary": "ADDSR, o de un solo disparo (D, H, AHD).",
+  "about": [
+    "Las envolventes ADDSR, H, D y Mod AHD del G2 desde un mismo motor. Etapas: ataque, decay 1 (hasta Level 1), decay 2 (hasta Sustain) y release. Cada una es una aproximación exponencial, de instantánea a unos 17 segundos. Env va de 0 a +64 unidades, y End está alta mientras la envolvente está en reposo.",
+    "Modo Gate: se mantiene en Sustain mientras Gate está alta y se libera cuando Gate cae (la ADDSR). Modo Trig: la duración de la gate no importa, y decay 2 sigue hacia el release cuando llega a Sustain (la D, la H con Decay 1 en Level 1 como mantenimiento, la AHD)."
+  ],
+  "usage": [
+    "Modo Gate con Attack y Release: una envolvente normal para un amplificador.",
+    "Modo Trig: una forma percusiva que se dispara con cualquier trigger.",
+    "End sube cuando la envolvente termina: úsala para disparar el siguiente evento."
+  ],
+  "notes": "Aún sin entradas de modulación de tiempo (las de la Mod AHD). Tasa de control.",
+  "patch_notes": {
+    "env.pch": "Un LFO cuadrado abre la gate de la Envelope; Env y End están en las salidas."
+  }
+}

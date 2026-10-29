@@ -1,0 +1,17 @@
+{
+  "fullname": "Bits: un contador binario, de A a D y de D a A",
+  "summary": "Contador binario, conversión de analógico a digital y de digital a analógico.",
+  "about": [
+    "El BinCounter, el ADConv y el DAConv del G2 en un solo módulo, con un botón Mode. Cada modo hace un byte (0-255). Out es ese byte como un nivel, y Bit 1-8 son sus bits como señales lógicas. Ocho LED lo muestran.",
+    "Count: cada flanco de subida de Clk suma uno, y 255 vuelve a 0. A>D: In (de 0 a +64 unidades) se convierte en un byte en 256 pasos. D>A: B1-B8 se leen como bits, cada uno activo cuando su entrada está por encima de 0."
+  ],
+  "usage": [
+    "Cuenta desde un reloj y usa los bits como relojes divididos: Bit 1 va a la mitad de velocidad, Bit 2 a un cuarto.",
+    "En A>D, mete un LFO lento para obtener su valor como ocho gates.",
+    "En D>A, construye un nivel escalonado a partir de ocho gates."
+  ],
+  "notes": "Tasa de control. El contador sigue contando en todos los modos, así que al volver lo encuentras donde llegó.",
+  "patch_notes": {
+    "bits.pch": "ClkGen marca el reloj del contador y un LFO alimenta su entrada; salen el byte, el Bit 1 y el Bit 8."
+  }
+}

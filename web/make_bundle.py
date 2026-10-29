@@ -85,11 +85,17 @@ def main():
         patches = [os.path.basename(p) for p in sorted(glob.glob(os.path.join(d, "*.pch")))]
         modules.append({k: meta.get(k) for k in ("type", "name", "fullname", "summary", "kind",
                                                  "author", "licence", "version", "real_g1") + OPTIONAL}
-                       | {"folder": folder, "images": pics, "patches": patches} | sheet(d))
+                       | {"folder": folder, "images": pics, "patches": patches,
+                          "es": json.load(open(os.path.join(d, "module.es.json"), encoding="utf-8"))
+                          if os.path.exists(os.path.join(d, "module.es.json")) else None} | sheet(d))
     guides = {name: render_guide(os.path.join(ROOT, "docs", name.upper() + ".md")) for name in GUIDES}
+    # The same guides in Spanish, from docs/es/: the page uses them in place of the English ones
+    guides_es = {name: render_guide(os.path.join(ROOT, "docs", "es", name.upper() + ".md")) for name in GUIDES
+                 if os.path.exists(os.path.join(ROOT, "docs", "es", name.upper() + ".md"))}
     bundle = {
         "modules": modules,
         "guides": guides,
+        "guides_es": guides_es,
         "room": ROOM,
         "free": reg["free"],   # type numbers still unclaimed, for the overview and the library
         "files": {k: base64.b64encode(open(v, "rb").read()).decode() for k, v in sorted(files.items())},

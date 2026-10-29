@@ -1,0 +1,16 @@
+{
+  "fullname": "Selector de 8 a 1, por un pomo y un nivel",
+  "summary": "Selector de ocho a uno, por un pomo y un nivel (con el Sw8-1 del G2 dentro).",
+  "about": [
+    "Elige una de ocho entradas y la manda a la salida. La entrada elegida es el pomo Sel más el nivel de Ctrl, en pasos de ocho unidades, limitado a 1-8. Es el Mux8-1 y el Sw8-1 del G2 en un solo módulo, porque el G1 tiene pocos tipos libres.",
+    "Con Ctrl sin conectar, el pomo elige la entrada (el Sw8-1). Con Sel en 1, la elige un nivel en Ctrl (el Mux8-1). Ocho LED muestran cuál está activa."
+  ],
+  "usage": [
+    "Conecta ocho fuentes a In 1-8 y gira Sel para pasar de una a otra.",
+    "Manda una señal de control escalonada (la salida de un secuenciador o de un contador) a Ctrl para cambiar de forma automática."
+  ],
+  "notes": "Tasa de control, para niveles y gates. El audio que pasara por él iría a tasa de control.",
+  "patch_notes": {
+    "mux8.pch": "Ocho constantes en In 1–8; Sel (el pomo), o un nivel en Ctrl, elige cuál llega a la salida."
+  }
+}

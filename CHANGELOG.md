@@ -5,6 +5,17 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the web is in Spanish too, with a language selector** left of the sun/moon button. It follows the browser's
+  language the first time and remembers the choice; changing it redraws the page in place (the ROM, the ticked
+  modules and the builder's state stay). How it is built: the HTML and the code stay English and are the source;
+  `web/lang-es.json` maps each English text to its Spanish, and `web/lang.js` applies it to what is on the page and,
+  with an observer, to whatever the code adds later; texts with numbers go through `tx("... %0 ...", n)`. The six
+  guides are in `docs/es/` (bundled as `guides_es`) and every module has a `module.es.json` with its summary, about,
+  usage, notes and patch notes in Spanish (`es` in the bundle; a module without one shows its English). Also found
+  while doing it: the overview's warning had been replaced by the builder's one, restored. Checked in headless
+  Chromium with the real rack ROM: the whole builder runs in Spanish (ROM accepted, 5.6 of 7.9 KB, build, downloads),
+  switching to English and back keeps the ticks and the status lines, no Spanish text is left in English mode, and
+  all 15 pages render; the mobile top bar fits the selector.
 - Claude: **the guides say the way back can go through NME too.** Besides Clavia's own 3.03b updater, NME's *Device >
   Update Synth OS* installs Clavia's original OS image (a `.bin`; NME does not read the updater's `.exe`) the way
   it installs ours. `docs/INSTALL.md` (what you need) and `docs/RECOVERY.md` (step 3) say so, and where to get the

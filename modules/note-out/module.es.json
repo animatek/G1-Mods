@@ -1,0 +1,16 @@
+{
+  "fullname": "Note Out, una gate y una nota al MIDI OUT",
+  "summary": "Una gate y una nota por el MIDI OUT del G1, como el NoteSend del G2: Chan, Vel, Gate thru.",
+  "about": [
+    "Envía una nota MIDI por el MIDI OUT del G1, a imagen del NoteSend del G2. Dale un nivel de nota y una gate: un flanco de subida de la gate empieza la nota y su caída la termina. Chan fija el canal MIDI y Vel la velocidad. Gate thru deja pasar la gate.",
+    "El DSP no envía MIDI por sí mismo: deja una palabra para el 68k, que la lee en el bucle principal del OS y pone la nota en la cola del MIDI OUT."
+  ],
+  "usage": [
+    "Conecta la nota y la gate de un secuenciador para tocar un sinte externo desde un patch.",
+    "Elige el canal que coincida con el instrumento."
+  ],
+  "notes": "La nota es el semitono más cercano, limitado a 0-127, con 0 unidades como nota 64 (un Mi, la Note out del teclado).",
+  "patch_notes": {
+    "noteout-lfo.pch": "El cuadrado de un LFO abre la gate del Note Out, que envía notas por el MIDI OUT del G1."
+  }
+}

@@ -5,7 +5,15 @@ const ROM_SIZE = 512 * 1024;
 const ROM_SHA256 = "d9b199f2";   // as tools/g1rom.py
 let py = null, bundle = null, rom = null, built = [];
 
-function status(el, text, kind) { el.textContent = text; el.className = "status " + kind; }
+// A status line is a template (see lang.js: tx) and its values, kept on the element so a change of
+// language can say it again.
+function status(el, en, kind, ...args) {
+  el._said = [en, kind, args];
+  el.textContent = tx(en, ...args);
+  el.className = "status " + kind;
+}
+// The language of a module's own text: its Spanish, when the module has one
+const pick = (m, k) => (lang === "es" && m.es && m.es[k] != null ? m.es[k] : m[k]);
 
 async function sha256(bytes) {
   const h = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
@@ -52,10 +60,10 @@ async function refresh() {
   if (!rom || !py || !sel.length) {
     meterBox.hidden = true;
     $("meter").style.width = "0";
-    const waiting = !sel.length ? "Tick at least one module."
-      : !rom ? "Give your ROM (step 1) and this shows how much room the OS has left."
-      : "Loading the builder…";
-    status($("roomText"), `${sel.length} of ${bundle.modules.length} modules ticked. ${waiting}`, "wait");
+    const waiting = !sel.length ? tx("Tick at least one module.")
+      : !rom ? tx("Give your ROM (step 1) and this shows how much room the OS has left.")
+      : tx("Loading the builder…");
+    status($("roomText"), "%0 of %1 modules ticked. %2", "wait", sel.length, bundle.modules.length, waiting);
     return;
   }
   meterBox.hidden = false;
@@ -63,11 +71,11 @@ async function refresh() {
     const r = run(sel);
     const pct = Math.min(100, (100 * r.bytes) / bundle.room);
     $("meter").style.width = pct + "%";
-    status($("roomText"), `${sel.length} modules, ${(r.bytes / 1024).toFixed(1)} KB of the ` +
-      `${(bundle.room / 1024).toFixed(1)} KB the OS has room for.`, "ok");
+    status($("roomText"), "%0 modules, %1 KB of the %2 KB the OS has room for.", "ok",
+      sel.length, (r.bytes / 1024).toFixed(1), (bundle.room / 1024).toFixed(1));
   } catch (e) {
     $("meter").style.width = "100%";
-    status($("roomText"), message(e), "bad");
+    status($("roomText"), "%0", "bad", message(e));
   }
 }
 
@@ -97,10 +105,10 @@ async function pickRom(file) {
   const hash = await sha256(bytes);
   if (bytes.length !== ROM_SIZE || !hash.startsWith(ROM_SHA256)) {
     rom = null;
-    status($("romStatus"), `${file.name} is not the rack's 3.03 ROM (512 KB, sha256 ${ROM_SHA256}…).`, "bad");
+    status($("romStatus"), "%0 is not the rack's 3.03 ROM (512 KB, sha256 %1…).", "bad", file.name, ROM_SHA256);
   } else {
     rom = bytes;
-    status($("romStatus"), `${file.name}: the rack's 3.03 ROM. Good.`, "ok");
+    status($("romStatus"), "%0: the rack's 3.03 ROM. Good.", "ok", file.name);
   }
   refresh();
 }
@@ -110,6 +118,20 @@ function offer(link, bytes, name) {
   link.href = URL.createObjectURL(new Blob([bytes], { type: "application/octet-stream" }));
   link.download = name;
   link.textContent = "⬇ " + name;
+}
+
+// What the two download boxes say depends on whether there is an update image: with one, the ROM is
+// the spare for G1-Emu; without (too many modules, or a module only G1-Emu has) it is all there is.
+let lastBuild = { os: true, emuOnly: [], noOs: "" };
+function paintDownloads() {
+  const b = lastBuild;
+  $("romTitle").textContent = tx("ROM: for G1-Emu only");
+  $("romWhy").innerHTML = b.os
+    ? tx("The same OS inside a whole 512 KB ROM. It loads in G1-Emu alone, from <i>Settings &gt; ROM &gt; Choose...</i> (it restarts with it); a real G1 cannot take it, and NME's Update Synth OS refuses it.")
+    : tx("There is no OS update for these modules, so this ROM is all there is. It loads in G1-Emu alone, from Settings > ROM > Choose... (it restarts with it).");
+  $("noOs").textContent = b.os ? "" : b.emuOnly.length
+    ? tx("No OS update with %0: it is for G1-Emu only for now. Untick it to get one.", b.emuOnly.join(", "))
+    : tx("No OS update with these modules: %0", b.noOs);
 }
 
 function doBuild() {
@@ -124,19 +146,14 @@ function doBuild() {
     // Two files, two ways of loading them, and the page says both: the OS update goes in through update
     // mode, on G1-Emu and on a real G1; the ROM is G1-Emu's alone. Without an update image (too many
     // modules, or a module only G1-Emu has) the ROM is all there is, and the page says why.
-    const why = $("romWhy");
-    if (why.dataset.usual === undefined) why.dataset.usual = why.innerHTML;
     $("osBox").hidden = !os;
-    if (os) why.innerHTML = why.dataset.usual;
-    else why.textContent = "There is no OS update for these modules, so this ROM is all there is. It loads in G1-Emu alone, from Settings > ROM > Choose... (it restarts with it).";
-    $("noOs").textContent = os ? "" : emuOnly.length
-      ? `No OS update with ${emuOnly.join(", ")}: it is for G1-Emu only for now. Untick it to get one.`
-      : "No OS update with these modules: " + r.noOs;
+    lastBuild = { os: !!os, emuOnly, noOs: r.noOs };
+    paintDownloads();
     $("downloads").classList.add("show");
-    status($("buildStatus"), `Built: types ${r.types.join(", ")}. Version 3.09 on connecting.`, "ok");
+    status($("buildStatus"), "Built: types %0. Version 3.09 on connecting.", "ok", r.types.join(", "));
   } catch (e) {
     $("downloads").classList.remove("show");
-    status($("buildStatus"), message(e), "bad");
+    status($("buildStatus"), "%0", "bad", message(e));
   }
 }
 
@@ -201,8 +218,8 @@ function route() {
   if (isMod) renderModulePage(decodeURIComponent(r.slice(7)));
   document.querySelectorAll("section.view").forEach((v) => v.classList.toggle("on", v.dataset.view === name));
   document.querySelectorAll("#nav a").forEach((a) => a.classList.toggle("on", (a.dataset.route === (NAV_OF[name] || name)) || (isMod && a.dataset.route === "modules")));
-  $("crumb").textContent = isMod ? "Module" : ROUTES[name];
-  if (!isMod) setMeta(name === "" ? "G1-Mods · modules for the Nord Modular G1" : `${ROUTES[name]} · G1-Mods`, DESCRIPTIONS[name] || BASE_DESC);
+  $("crumb").textContent = isMod ? tx("Module") : tx(ROUTES[name]);
+  if (!isMod) setMeta(name === "" ? tx("G1-Mods · modules for the Nord Modular G1") : `${tx(ROUTES[name])} · G1-Mods`, tx(DESCRIPTIONS[name] || BASE_DESC));
   window.scrollTo(0, 0);
 }
 
@@ -228,7 +245,7 @@ function renderLibrary() {
   const q = $("q").value.trim().toLowerCase();
   const list = bundle.modules.filter((m) =>
     (kindFilter === "all" || m.kind === kindFilter) &&
-    (!q || [m.name, m.fullname, m.summary, m.kind, String(m.type)].join(" ").toLowerCase().includes(q)));
+    (!q || [m.name, pick(m, "fullname"), pick(m, "summary"), m.kind, String(m.type)].join(" ").toLowerCase().includes(q)));
   $("mcards").innerHTML = "";
   for (const m of list.slice().sort((a, b) => a.type - b.type)) {
     const c = document.createElement("article");
@@ -242,8 +259,8 @@ function renderLibrary() {
     if (m.images.length) c.querySelector(".art img").src = m.images[0];
     c.querySelector(".n").textContent = m.name;
     c.querySelector("h3 small").textContent = "v" + m.version;
-    c.querySelector(".full").textContent = m.fullname;
-    c.querySelector(".sum").textContent = m.summary;
+    c.querySelector(".full").textContent = pick(m, "fullname");
+    c.querySelector(".sum").textContent = pick(m, "summary");
     c.querySelector(".by").innerHTML = `<span class="pill ${m.real_g1 ? "warn" : m.kind}"></span>`;
     c.querySelector(".pill").textContent = m.real_g1 ? "G1-Emu only" : m.author;
     c.querySelector("a").href = "#/module/" + m.folder;
@@ -253,7 +270,7 @@ function renderLibrary() {
       const on = box && box.checked;
       add.textContent = on ? "✓" : "+";
       add.classList.toggle("on", on);
-      add.title = on ? "In your build: press to remove" : "Add to your build";
+      add.title = tx(on ? "In your build: press to remove" : "Add to your build");
       add.setAttribute("aria-pressed", on ? "true" : "false");
       add.setAttribute("aria-label", (on ? "Remove " : "Add ") + m.name);
       c.classList.toggle("in", on);
@@ -274,10 +291,10 @@ function syncBuildUI() {
   if (ma) {
     const box = document.querySelector(`#grid input[value="${ma.dataset.folder}"]`);
     const on = box && box.checked;
-    ma.textContent = on ? "✓ In my build" : "+ Add to my build";
+    ma.textContent = tx(on ? "✓ In my build" : "+ Add to my build");
     ma.setAttribute("aria-pressed", on ? "true" : "false");
   }
-  $("mbText").textContent = `My build · ${n} of ${bundle.modules.length} modules`;
+  $("mbText").textContent = tx("My build · %0 of %1 modules", n, bundle.modules.length);
   document.querySelectorAll("#mcards .mcard").forEach((c) => {   // the library only: the compare view wears the class too
     const add = c.querySelector(".add");
     const folder = c.querySelector("a").href.split("/").pop();
@@ -326,7 +343,8 @@ function renderLinks() {
 // the guide pages (install, recovery, …) are rendered from docs/*.md by make_bundle.py and
 // live in bundle.guides; the sections in index.html are empty until they are filled here.
 function renderGuides() {
-  for (const [key, html] of Object.entries(bundle.guides || {})) {
+  const guides = lang === "es" && bundle.guides_es ? { ...bundle.guides, ...bundle.guides_es } : bundle.guides || {};
+  for (const [key, html] of Object.entries(guides)) {
     const el = document.querySelector(`.guide[data-guide="${key}"]`);
     if (el) el.innerHTML = html;
   }
@@ -361,7 +379,7 @@ function renderModulePage(folder) {
   const root = $("modpage"); root.innerHTML = "";
   const m = bundle && bundle.modules.find((x) => x.folder === folder);
   if (!m) { root.append(el("p", "empty", bundle ? "No such module." : "Loading…")); return; }
-  setMeta(`${m.name} · G1-Mods`, m.summary);
+  setMeta(`${m.name} · G1-Mods`, pick(m, "summary"));
   const back = el("a", "back", "← All modules"); back.href = "#/modules"; root.append(back);
 
   const head = el("div", "mhead"); const l = el("div");
@@ -369,7 +387,7 @@ function renderModulePage(folder) {
   tags.append(el("span", "pill " + m.kind, m.kind), el("span", "pill", "type " + m.type), el("span", "pill", "v" + m.version));
   if (m.category) tags.append(el("span", "pill", m.category));
   if (m.real_g1) tags.append(el("span", "pill warn", "G1-Emu only"));
-  l.append(tags, el("h1", null, m.name), el("p", "lead", m.fullname));
+  l.append(tags, el("h1", null, m.name), el("p", "lead", pick(m, "fullname")));
   head.append(l);
   const act = el("div", "cta");
   const b = el("button", "btn primary"); b.type = "button"; b.id = "modAdd"; b.dataset.folder = m.folder;
@@ -385,7 +403,7 @@ function renderModulePage(folder) {
   const shot = el("div", "shot"); left.append(shot);
   if (m.images.length) {
     const big = el("img"); big.src = m.images[0]; big.alt = m.name + " panel"; shot.append(big);
-    const caps = m.image_captions || [];
+    const caps = pick(m, "image_captions") || [];
     const cap = el("div", "cap"); cap.textContent = caps[0] || ""; cap.hidden = !caps[0]; shot.append(cap);
     if (m.images.length > 1) {
       const th = el("div", "thumbs");
@@ -408,12 +426,12 @@ function renderModulePage(folder) {
     left.append(v);
   }
   const [about, aIn] = section("About", true);
-  (m.about ? paras(m.about) : [el("p", null, m.summary)]).forEach((p) => aIn.append(p));
-  if (m.credits) paras(m.credits).forEach((p) => aIn.append(p));
+  (pick(m, "about") ? paras(pick(m, "about")) : [el("p", null, pick(m, "summary"))]).forEach((p) => aIn.append(p));
+  if (pick(m, "credits")) paras(pick(m, "credits")).forEach((p) => aIn.append(p));
   left.append(about);
-  if (m.usage) {
+  if (pick(m, "usage")) {
     const [u, uIn] = section("How to use it", true);
-    const ol = el("ol"); (Array.isArray(m.usage) ? m.usage : [m.usage]).forEach((t) => ol.append(el("li", null, t))); uIn.append(ol); left.append(u);
+    const ol = el("ol"); (Array.isArray(pick(m, "usage")) ? pick(m, "usage") : [pick(m, "usage")]).forEach((t) => ol.append(el("li", null, t))); uIn.append(ol); left.append(u);
   }
   const [pt, ptIn] = section(`Ports & lights`, true);
   const cols = el("div", "portcols");
@@ -429,7 +447,7 @@ function renderModulePage(folder) {
     }
     const w = el("div", "tablewrap"); w.append(t); csIn.append(w); left.append(cs);
   }
-  if (m.notes) { const [n, nIn] = section("Notes & limits", false); paras(m.notes).forEach((p) => nIn.append(p)); left.append(n); }
+  if (pick(m, "notes")) { const [n, nIn] = section("Notes & limits", false); paras(pick(m, "notes")).forEach((p) => nIn.append(p)); left.append(n); }
 
   // right: the data sheet
   const right = el("div"); lay.append(right);
@@ -440,7 +458,7 @@ function renderModulePage(folder) {
   row("Type", String(m.type)); row("Kind", m.kind + (m.kind === "audio" ? " rate" : " rate")); row("Version", m.version);
   row("Author", m.author); row("Licence", m.licence);
   row("Real G1", m.real_g1 ? "Not yet: " + m.real_g1 : "Played on a real G1");
-  if (m.status) row("Status", m.status);
+  if (m.status) row("Status", pick(m, "status"));
   sheet.append(dl);
   const ld = m.load || {};
   const meters = [["cycles", "DSP cycles"], ["prog-mem", "Program memory"], ["x-mem", "X memory"]].filter(([k]) => ld[k] != null);
@@ -462,7 +480,7 @@ function renderModulePage(folder) {
     for (const p of m.patches) {
       const li = el("li"), a = el("a", null, p);
       a.href = `https://raw.githubusercontent.com/animatek/G1-Mods/main/modules/${m.folder}/${p}`; a.download = p; li.append(a);
-      const note = (m.patch_notes || {})[p];
+      const note = (pick(m, "patch_notes") || {})[p];
       if (note) li.append(el("span", "pnote", " — " + note));
       ul.append(li);
     }
@@ -497,7 +515,7 @@ function compareCard(m) {
   body.append(head);
   const tags = el("div", "tags");
   tags.append(el("span", "pill " + m.kind, m.kind), el("span", "pill", "type " + m.type), el("span", "pill", "v" + m.version));
-  body.append(tags, el("div", "sum", m.summary));
+  body.append(tags, el("div", "sum", pick(m, "summary")));
   const ports = el("div", "portcols");
   ports.append(portList("Inputs", m.inputs || []), portList("Outputs", m.outputs || []));
   body.append(ports);
@@ -519,9 +537,13 @@ function renderCompare() {
   const selA = $("cmpA"), selB = $("cmpB");
   const sorted = bundle.modules.slice().sort((a, b) => a.type - b.type);
   if (!selA.options.length) {
-    for (const m of sorted) selA.add(new Option(`${m.name} · type ${m.type}`, m.folder));
-    for (const m of sorted) selB.add(new Option(`${m.name} · type ${m.type}`, m.folder));
+    for (const m of sorted) selA.add(new Option(m.name, m.folder));
+    for (const m of sorted) selB.add(new Option(m.name, m.folder));
     selB.selectedIndex = Math.min(1, sorted.length - 1);
+  }
+  for (const sel of [selA, selB]) for (const o of sel.options) {
+    const mm = bundle.modules.find((x) => x.folder === o.value);
+    if (mm) o.text = tx("%0 · type %1", mm.name, mm.type);
   }
   const mA = bundle.modules.find((m) => m.folder === selA.value);
   const mB = bundle.modules.find((m) => m.folder === selB.value);
@@ -534,7 +556,7 @@ function renderCompare() {
 function applyTheme(t) {
   try { localStorage.setItem("g1mods-theme", t); } catch (e) {}
   document.documentElement.dataset.theme = t;
-  $("theme").title = $("theme").ariaLabel = t === "dark" ? "Switch to light" : "Switch to dark";
+  $("theme").title = $("theme").ariaLabel = tx(t === "dark" ? "Switch to light" : "Switch to dark");
 }
 
 window.addEventListener("hashchange", route);
@@ -545,6 +567,22 @@ $("q").addEventListener("input", () => {
   if (bundle) renderLibrary();
 });
 $("theme").addEventListener("click", () => applyTheme(darkNow() ? "light" : "dark"));
+$("lang").addEventListener("change", (e) => setLang(e.target.value));
+
+// Called by lang.js when the language changes, to draw again what the code drew in the old one
+function langChanged() {
+  $("theme").title = $("theme").ariaLabel = tx(darkNow() ? "Switch to light" : "Switch to dark");
+  if (!bundle) return;
+  paintFigures();
+  paintDownloads();
+  renderFilters();
+  renderLibrary();
+  renderGuides();
+  renderCompare();
+  route();
+  syncBuildUI();
+  document.querySelectorAll(".status").forEach((e) => { if (e._said) status(e, ...e._said.slice(0, 2), ...e._said[2]); });
+}
 $("cmpA").addEventListener("change", renderCompare);
 $("cmpB").addEventListener("change", renderCompare);
 {
@@ -555,18 +593,23 @@ $("cmpB").addEventListener("change", renderCompare);
 renderLinks();
 route();
 
+// Counted from the modules, so the overview follows the library: a module is "played on a real G1"
+// unless its module.json says (real_g1) that it is for G1-Emu only. Said in the language in use.
+function paintFigures() {
+  if (!bundle) return;
+  const real = bundle.modules.filter((m) => !m.real_g1).length, all = bundle.modules.length;
+  $("sReal").textContent = `${real}/${all}`;
+  const played = real === all ? tx("all %0 modules", all) : tx("%0 of %1 modules", real, all);
+  $("riskNotice").innerHTML = tx("<strong>Experimental on a real G1.</strong> On one real Nord Modular G1, %0 have played in one build. A modified OS may lose your patches and may leave your synth unusable. Recovery is not guaranteed. You use it entirely at your own risk.", played);
+  const free = bundle.free || [];
+  $("freeNote").innerHTML = tx("%0 type numbers are still free (%1), so the catalogue grows by families: one type, several panels in NME. What is left of each module, and the G2's modules still to port, is in <a href=\"https://github.com/animatek/G1-Mods/blob/main/PORTING.md\" target=\"_blank\" rel=\"noopener\">PORTING.md</a>.", free.length, free.join(", "));
+}
+
 async function init() {
   bundle = await (await fetch("bundle.json")).json();
   $("navCount").textContent = bundle.modules.length;
   $("sMods").textContent = bundle.modules.length;
-  // Counted from the modules, so the overview follows the library: a module is "played on a real G1"
-  // unless its module.json says (real_g1) that it is for G1-Emu only.
-  const real = bundle.modules.filter((m) => !m.real_g1).length, all = bundle.modules.length;
-  $("sReal").textContent = `${real}/${all}`;
-  $("nReal").textContent = real === all ? `all ${all} modules` : `${real} of ${all} modules`;
-  const free = bundle.free || [];
-  $("nFree").textContent = String(free.length);
-  $("freeList").textContent = free.join(", ");
+  paintFigures();
   renderModules();
   renderFilters();
   renderLibrary();
@@ -612,4 +655,5 @@ function gate() {
 $("agree").addEventListener("change", gate);
 gate();
 $("go").addEventListener("click", doBuild);
-init().catch((e) => status($("buildStatus"), "The builder did not load: " + message(e), "bad"));
+setLang(firstLang(), false);
+init().catch((e) => status($("buildStatus"), "The builder did not load: %0", "bad", message(e)));

@@ -1,0 +1,17 @@
+{
+  "fullname": "Osc String, una cuerda pulsada (Karplus-Strong)",
+  "summary": "Una cuerda pulsada (Karplus-Strong), el primer módulo de tasa de audio.",
+  "about": [
+    "Una cuerda pulsada, con el método Karplus-Strong, a imagen de la del G2. Una línea de retardo tan larga como el periodo de la nota se realimenta a sí misma a través de un paso bajo (Damp) y una ganancia (Decay). Un flanco de subida en Trig la pulsa, metiendo un periodo de ruido en la línea. Exc le suma cualquier señal.",
+    "Es el primer módulo de tasa de audio de G1-Mods. Note y Pitch fijan la nota de la cuerda."
+  ],
+  "usage": [
+    "Manda una gate a Trig y un tono a Pitch (la Note out de un teclado): una nota pulsada con cada tecla.",
+    "Conecta otro oscilador o ruido a Exc para excitar la cuerda con tu propio sonido.",
+    "Baja Damp para una cuerda más apagada, sube Decay para una resonancia más larga."
+  ],
+  "notes": "La nota más grave es de unos 94 Hz, con una línea de 1.024 palabras. Más grave pediría hacer correr la línea a la mitad o a un cuarto de la tasa. Javier la tocó el 17 de octubre de 2026: funciona. Es el código más grande de G1-Mods.",
+  "patch_notes": {
+    "string.pch": "Una pulsación dispara la cuerda Karplus-Strong, fijada por su nota."
+  }
+}

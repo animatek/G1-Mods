@@ -24,6 +24,7 @@ From nothing to your first module playing in the emulator: about an hour, most o
 ```
 modules/<name>/
   module.json       type, names, author, licence, version
+  module.es.json    optional: the same texts (summary, about, usage, notes…) in Spanish, for the web
   build.py          how its type is put into the OS
   <name>.asm        its DSP56300 code, written new
   nme-modules.xml   its entry in NME's module list

@@ -1,0 +1,18 @@
+{
+  "fullname": "Secuenciador de 5 pasos, un pomo por paso",
+  "summary": "Cinco pomos bipolares, uno por paso, con LED de paso.",
+  "about": [
+    "Un secuenciador de cinco pasos con un pomo bipolar para cada paso, a imagen de los secuenciadores de cinco etapas de Buchla. Cada flanco de subida de Clk pasa al paso siguiente y el quinto vuelve al primero. Out es el valor del paso actual, de -64 a +63, y cinco LED muestran dónde está.",
+    "Rst funciona como el de los secuenciadores propios del G1: su flanco arma el módulo y el siguiente reloj va al paso 1. Empieza en el último paso, así que el primer reloj toca el paso 1. Eso lo mantiene a compás con un CtrlSeq con el mismo reloj y reset."
+  ],
+  "usage": [
+    "Manda un reloj a Clk y Out al tono de un oscilador, o al cutoff de un filtro.",
+    "Ajusta cada pomo al valor que quieras para ese paso.",
+    "Conecta el mismo reloj y reset a un CtrlSeq: los dos se quedan juntos."
+  ],
+  "notes": "Tasa de control. Los cinco pasos son fijos; usa dos seguidos con un contador para patrones más largos.",
+  "patch_notes": {
+    "seq5-ctrlseq.pch": "Un ClkGen marca el reloj de un 5-Step Seq y de un CtrlSeq; un LFO reinicia los dos, manteniéndolos a compás.",
+    "seq5.pch": "ClkGen marca el reloj del 5-Step Seq; sus cinco pomos fijan los pasos."
+  }
+}

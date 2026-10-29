@@ -1,0 +1,18 @@
+{
+  "fullname": "Random, con reloj, con Seed, Poly, Step, Edge, Prob, Length y Uni/Bi",
+  "summary": "Los aleatorios del G2 en uno: Seed, Poly, Step, Edge, Prob, Length, Uni/Bi.",
+  "about": [
+    "Los generadores aleatorios del G2 en un solo módulo con reloj, con lo que les falta a los del G1: una Seed que se repite, Poly (cada voz con sus propios valores), Edge (deslizarse entre valores) y una probabilidad por reloj.",
+    "En cada flanco de subida de Clk se saca un número aleatorio nuevo. Out se mueve hacia él en pasos de Step (127 salta del todo, los valores bajos divagan), deslizándose con Edge. Trig está alta en los relojes en que un segundo sorteo cae por debajo de Prob. Seed hace que vuelvan los mismos valores; Length (1-16) los repite en bucle, 0 es libre. Uni hace la salida positiva, lo que va bien para un filtro o una resonancia."
+  ],
+  "usage": [
+    "Dale reloj y manda Out a un cutoff: Step alto para un valor nuevo en cada reloj, bajo para una divagación lenta.",
+    "Fija una Seed y una Length para obtener un patrón aleatorio corto que se repite, y cambia la Seed para encontrar otro.",
+    "Usa Trig como una gate probabilística."
+  ],
+  "notes": "Poly se comprobó de oído (17 de octubre de 2026): las voces tocan secuencias distintas. Tasa de control.",
+  "credits": "Javier pidió la opción positiva (Uni), para filtros y resonancia.",
+  "patch_notes": {
+    "random.pch": "ClkGen marca el reloj del Random; Out, Trig, el reloj y un LFO están en las salidas."
+  }
+}

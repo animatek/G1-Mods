@@ -1,0 +1,18 @@
+{
+  "fullname": "Flip-Flop D/RS",
+  "summary": "Flip-flop de tipo D y de tipo RS: Clk, In, Rst, Q y NotQ.",
+  "about": [
+    "Un flip-flop recuerda un bit. Tiene dos tipos, que se eligen con el botón Type: tipo D y tipo RS. Q es el bit guardado y NotQ su contrario.",
+    "Tipo D: en cada flanco de subida de Clk, Q toma lo que valga In en ese momento. Tipo RS: un flanco de subida en In pone Q a 1; con In baja, cada flanco de subida de Clk cambia Q. Rst, cuando está alta, pone Q a 0 en los dos tipos y gana a todo lo demás."
+  ],
+  "usage": [
+    "Marca el reloj de uno de tipo D desde un LFO o la gate de un secuenciador y alimenta In con otra gate: Q la muestrea en cada reloj.",
+    "Elige RS y deja In sin conectar: cada flanco de reloj cambia Q, así que divide el reloj entre dos.",
+    "Usa Rst para volver a poner varios flip-flops a compás al principio de un compás."
+  ],
+  "notes": "Tasa de control: bueno para gates y lógica lenta, no para audio. El patch de ejemplo flipflop-lfo.pch le marca el reloj desde un LFO.",
+  "patch_notes": {
+    "flipflop-lfo.pch": "ClkGen marca el reloj de un flip-flop de tipo D que muestrea un LFO; Q, el LFO, el reloj y NotQ están en las salidas.",
+    "flipflop-neighbour.pch": "Un flip-flop RS que cambia, con un Constant justo detrás: Q y NotQ conservan cada uno su propia palabra."
+  }
+}

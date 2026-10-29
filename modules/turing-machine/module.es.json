@@ -1,0 +1,17 @@
+{
+  "fullname": "Turing Machine, un registro de desplazamiento aleatorio en bucle con ocho gates",
+  "summary": "Un registro de desplazamiento aleatorio en bucle: CV, ocho gates, Prob, Length 1–16, Lock, Scale, LED.",
+  "about": [
+    "Un registro de desplazamiento aleatorio en bucle, a imagen de la Turing Machine de Music Thing Modular. El registro tiene 16 bits. En cada reloj mueve un bit, y el bit que sale del bucle vuelve a entrar, cambiado al azar salvo que Lock esté activo. El resultado es un patrón que se repite y que puedes dejar a la deriva.",
+    "Prob funciona como el pomo grande del original: a la derecha (127), o con Lock activo, el patrón se repite cada Length relojes. En el centro cambia la mitad de los bits. A la izquierda cambia casi todos, así que el patrón se repite invertido, cada 2 x Length relojes. CV son los 8 bits bajos del registro como un nivel, escalado por Scale. Las ocho salidas de gate son los bits del registro, y ocho LED los muestran."
+  ],
+  "usage": [
+    "Dale reloj desde una gate constante y manda CV al tono de un oscilador (añade un Scale Quantizer para mantenerlo musical).",
+    "Gira Prob a la derecha para fijar un patrón que te guste, y luego al centro para dejarlo evolucionar.",
+    "Usa las salidas de gate para disparar percusión, envolventes o cualquier otra cosa: los unos seguidos dan gates separadas."
+  ],
+  "notes": "Falta: una entrada Rst, y las gates mezcladas del expansor (1+2, 2+4, 4+7, 1+2+4+7). Tasa de control.",
+  "patch_notes": {
+    "turing.pch": "ClkGen marca el reloj de la Turing Machine; su CV y la gate 1 están en las salidas."
+  }
+}

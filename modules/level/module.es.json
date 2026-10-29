@@ -1,0 +1,17 @@
+{
+  "fullname": "Level: ModAmt, MinMax, Track and Hold, Window",
+  "summary": "ModAmt, MinMax, Track and Hold, Window.",
+  "about": [
+    "El ModAmt, el MinMax, el T&H y el WindSw del G2 en un solo módulo, con un selector Mode. Dos entradas, A y B, y dos salidas.",
+    "ModAmt: B fija cuánto de A pasa, según Amount. Out 2 es el resto. MinMax: Out 1 es el menor de A y B, Out 2 el mayor. T&H: Out 1 sigue a A mientras B está alta y la mantiene mientras está baja; Out 2 hace lo contrario. Window: Out 1 es A mientras B está entre Lo y Hi, y 0 si no; Out 2 está alta mientras lo está."
+  ],
+  "usage": [
+    "Usa ModAmt con Amount en 127 como un VCA para señales de control.",
+    "Usa T&H con un reloj en B para muestrear una señal: un sample-and-hold.",
+    "Usa Window para abrir un camino solo cuando otra señal está dentro de un rango."
+  ],
+  "notes": "Tasa de control, para niveles y gates.",
+  "patch_notes": {
+    "level.pch": "Dos LFO y un reloj mueven el Level por sus modos (ModAmt, MinMax, T&H); Out 1, Out 2, A y B están en las salidas."
+  }
+}

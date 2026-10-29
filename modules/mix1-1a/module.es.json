@@ -1,0 +1,17 @@
+{
+  "fullname": "Mezclador en cadena de 1 entrada",
+  "summary": "Mezclador en cadena de una entrada, como el del G2 (le faltan aún sus curvas Lin/dB/Exp).",
+  "about": [
+    "Un canal de mezclador con un nivel, un botón On y una entrada de cadena. La salida es la cadena más la entrada multiplicada por el nivel, así que puedes encadenar varios para hacer un mezclador más grande.",
+    "Basado en el Mixer 1-1 A del G2."
+  ],
+  "usage": [
+    "Conecta una fuente a In y ajusta Level.",
+    "Conecta la Out de otro Mix1-1A a Chain para sumar su señal: cada módulo es un canal del mezclador.",
+    "Apaga On para silenciar el canal sin desconectarlo. La cadena sigue pasando."
+  ],
+  "notes": "Falta: las curvas de nivel Lin / dB / Exp de los mezcladores del G2. Por ahora el nivel sigue la curva propia del Mixer del G1.",
+  "patch_notes": {
+    "mix1-1a-chain.pch": "OscA a través de dos canales Mix1-1A encadenados: cada uno es un canal de mezclador, y B suma la salida de A."
+  }
+}
