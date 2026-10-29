@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **fix: the web builder did not load** ("can't access property textContent, add is null"). The compare
+  view, added earlier today, reuses the `mcard` class, and the sync of the "+" buttons walked every `.mcard`
+  expecting each to have one; the compare cards have none, so `init()` died before the builder was ready. It now
+  walks only the library's cards (`#mcards .mcard`). Checked: headless Chromium on `#/builder` went from "The
+  builder did not load" to "The builder is ready."
 - Claude: **a Discord link** to the G1-Mods channel, in the sidebar's Community group and on the Links page
   (the same `https://discord.gg/CMw5mbWe58`).
 - Claude: **a changelog page and a compare view**. The changelog (`#/changelog`) renders `CHANGELOG.md` like the

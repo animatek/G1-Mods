@@ -258,7 +258,7 @@ function syncBuildUI() {
     ma.setAttribute("aria-pressed", on ? "true" : "false");
   }
   $("mbText").textContent = `My build · ${n} of ${bundle.modules.length} modules`;
-  document.querySelectorAll(".mcard").forEach((c) => {
+  document.querySelectorAll("#mcards .mcard").forEach((c) => {   // the library only: the compare view wears the class too
     const add = c.querySelector(".add");
     const folder = c.querySelector("a").href.split("/").pop();
     const box = document.querySelector(`#grid input[value="${folder}"]`);
