@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the whole-ROM download is back** (Javier: the ROM does work in G1-Emu: it shows the MOD badge once G1-Emu
+  restarts with it; I had taken it out on a wrong reading). The page again gives the OS update first and the ROM
+  second, with where each goes (the ROM: G1-Emu's *Settings > ROM > Choose...*, which now restarts with it,
+  `G1-Emu` 958713f; not for NME's Update Synth OS). `ROADMAP.md` keeps only the G1-Emu build with more modules and
+  expanded memory. Checked: the page loads.
 - Claude: **the web builder gives only the OS update.** The whole-ROM download is gone from the page: it only booted
   G1-Emu, it was the file that got mixed up with the OS update, and a G1-Emu build with more modules and an
   expanded memory is not built yet. That is now `ROADMAP.md`. When there is no update image the page says why and

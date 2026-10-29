@@ -29,8 +29,10 @@ On the builder page (on the live site, or `web/serve.sh` from a clone):
 3. Tick that you have read the risks, and press **Build my OS**.
 4. You get **one file, the OS update** (`g1mods-...-os.bin`), and it serves for both: install
    it into G1-Emu (put in update mode) or into a real G1's flash, the same way, with NME's
-   *Device > Update Synth OS*. If the page does not offer it, it says why (too many modules, or a
-   module that works only in G1-Emu for now; a build for G1-Emu alone is on the [roadmap](../ROADMAP.md)).
+   *Device > Update Synth OS*. The page also gives the whole ROM (`g1mods-...-rom.bin`), for G1-Emu
+   only: NME refuses it as too big for an update. If there is no OS update (too many modules, or a
+   module that works only in G1-Emu for now; a build for G1-Emu alone is on the [roadmap](../ROADMAP.md)),
+   the page says why and the ROM is the only file.
 
 From a clone of this repo the same is `tools/patch_rom.py` and `tools/g1update.py fromrom`
 (README, "Where the builds are").
@@ -44,10 +46,14 @@ shared. Anyone with their own ROM builds the same OS from the same list.
 (*Settings > OS... > Update mode*), then in NME *Device > Update Synth OS*, pick the `…-os.bin`
 and start. When it ends, G1-Emu keeps that OS. Then go on with "Either way" below.
 
-**Or, from a clone of this repo, booting from a ROM file** (what the web page no longer hands out):
-`./run-g1emu.sh` builds the ROM from your own and starts G1-Emu with it and **a flash of its own**, so
-your usual patches are not touched. If G1-Emu's settings name an OS file (`os =`) it starts that empty
-(`G1_OS=`): that OS would boot instead of the one in the ROM, and the modules would not be there.
+**Or with the ROM** (`g1mods-...-rom.bin`): in G1-Emu, *Settings > ROM > Choose...*; it offers to
+restart with it (a G1-Emu older than 2026-10-29 only writes it down: close and open it again). Your
+usual flash is then the one it uses, so patches that name a new module are best kept for a flash of
+its own. From a clone, `./run-g1emu.sh` builds the ROM and starts G1-Emu with it and **a flash of its own**.
+
+If G1-Emu's settings name an OS file (`os =`, left by an earlier update), that OS boots instead of the
+one in the ROM and the modules are not there: *Settings > OS... > The ROM's own OS* clears it
+(`./run-g1emu.sh` starts with `G1_OS=` empty for the same reason).
 
 Either way:
 
