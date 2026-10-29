@@ -970,3 +970,12 @@ four outputs and do not apply as they are: **the Micro OS puts a patch's Out 3/4
   between builds, and the Micro's one file is the OS update (it has no ROM to give back). The result is byte for byte the
   command line's, checked in headless Chromium for both targets, one after the other in the same page.
 - **NME**: a Micro that says 3.09 should get the modules offered by the same rule as a rack; not tried.
+
+**How a real Micro updates its OS** (read in the texts of Clavia's own Micro updater, 2026-10-29; not tried on a Micro):
+pull out the power cord, **hold Shift and plug it in again**: the display reads **"Ud"** (update mode, in the boot ROM,
+which the updater does not carry and G1-Emu does not have). The updater then sends the OS through the PC Port MIDI; at the
+end the display **flashes "St"**: one of the **program-select buttons** (right of the display) stores it, **Shift** cancels.
+Then it is restarted. The rack's is Shift + Store at power-on and "Update flash? Store = yes". What is not known is whether the
+Micro's stream is the rack's (`g1update.py`'s, which NME's Update Synth OS sends) or differs, and which flash sectors its
+update erases: that is why a G1-Mods OS for the Micro is emulator-only, and why G1-Emu has no update mode for its Micro.
+
