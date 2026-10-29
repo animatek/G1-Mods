@@ -7,8 +7,8 @@ walks through starting G1-Emu with a G1-Mods OS and connecting **Animatek NME** 
 
 - A build: the web builder's ROM, or `tools/patch_rom.py` (see the install guide).
 - **G1-Emu**, built (this repo's test bench).
-- **Animatek NME** with the G1-Mods layer: it offers the new modules to a synth whose OS reports
-  3.09 on connecting.
+- **Animatek NME 0.25 or later** (the first with the G1-Mods layer): it offers the new modules to a
+  synth whose OS reports 3.09 on connecting.
 
 ## 1. Start G1-Emu with the build
 

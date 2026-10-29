@@ -15,7 +15,7 @@ From nothing to your first module playing in the emulator: about an hour, most o
 - **Your own 3.03 ROM** (`NORD-MODULAR-RACK-VER-3.03.BIN`). Nothing of Clavia's is ever in the repository or in a
   pull request.
 - **G1-Emu**, built from source next to the `G1-Mods` folder (`../G1-Emu`): it is the test bench.
-- **Animatek NME** with G1-Mods support, to see the module's panel and play it.
+- **Animatek NME 0.25 or later** (the first with G1-Mods support), to see the module's panel and play it.
 - A 68k cross toolchain only if your module needs 68k code of its own (as Note Out does). Its assembled bytes
   are kept in the repository, so building and testing never need it.
 

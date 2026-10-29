@@ -18,7 +18,7 @@ folder of its own.
 
 **Status: a work in progress.** Thirteen module types play in G1-Emu. On a real
 G1, all 13 in one build have played (2026-10-26)
-(`NOTES.md`, "The first real G1"). NME installs an OS into a G1 (its
+(`NOTES.md`, "The first real G1"). NME (0.25 or later) installs an OS into a G1 (its
 *Device > Update Synth OS*), and the web builder is live at
 <https://animatek.github.io/G1-Mods/> (`web/`).
 

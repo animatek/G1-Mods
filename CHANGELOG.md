@@ -5,6 +5,10 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the guides and the page say the minimum is Animatek NME 0.25.** The first version with the G1-Mods layer
+  (it is in NME's `main` since 2026-10-29; `Update Synth OS` is older, the modules it offers are not). Said in
+  `docs/INSTALL.md` (what you need), `docs/NME-G1EMU.md`, `docs/MODULAR.md`, `CONTRIBUTING.md`, the README, the
+  overview's "How it works" and the builder's step 4. NME's version number is still 0.24.0 until 0.25 is released.
 - Claude: **the builder is locked until the risk is accepted.** The "I have read it" box moves from step 3 up to the
   warning at the top of the page, and steps 1 to 4 (the ROM, the modules, the build, the downloads) are dimmed and
   inert (no click, no keyboard, no file drop) until it is ticked; unticking locks them again. Its text also no

@@ -24,8 +24,9 @@ If you are unsure, use the OS update: it works on both. The ROM is only a shortc
 
 - **The rack's 3.03 ROM**, the file G1-Emu boots (`NORD-MODULAR-RACK-VER-3.03.BIN`, 512 KB). We
   do not give it: it is Clavia's. The modules are built into your own copy.
-- **Animatek NME** with G1-Mods support: it shows the new modules when a synth has them, and has
-  *Device > Update Synth OS* to install an OS over MIDI.
+- **Animatek NME 0.25 or later**: the first version with G1-Mods support. It shows the new modules
+  when a synth has them, and has *Device > Update Synth OS* to install an OS over MIDI. Older
+  versions do not know the new modules: with one, a G1-Mods OS connects but the modules are not offered.
 - **G1-Emu**, to try a build before a real synth.
 - For a real G1: a MIDI interface connected to the G1's **PC port** (both ways), as for editing.
 - For the way back on a real G1: **Clavia's OS 3.03b updater** (Windows `.exe`, or the Mac

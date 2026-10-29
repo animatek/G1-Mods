@@ -50,6 +50,6 @@ laid out, you can add one. That is what this project does, with code written new
 ## Tools around it
 
 - [Animatek NME](https://github.com/animatek/Animatek-NME) — the modern editor for the G1, with
-  support for modified OSes.
+  support for modified OSes from version 0.25.
 - [G1-Emu](https://github.com/animatek/G1-Emu) — the G1 running its own OS, as a plugin or
   standalone. The test bench here.
