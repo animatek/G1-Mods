@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the builder's room meter.** It looked broken twice over. (1) Before a ROM is given the bar stayed empty
+  with only "13 of 13 modules ticked"; it is now hidden and the line says what it waits for (the ROM, or the
+  builder loading). (2) With a ROM it compared the modules' size *before* packing (14.6 KB) with the room for the
+  *packed* package (7.9 KB), so a build that fits showed a full bar and "14.6 KB of the 7.9 KB"; `web/builder.py`
+  now reads the packed size when the log gives one, so all 13 modules read **5.6 KB of the 7.9 KB**. Checked with
+  the real rack ROM in headless Chromium: the ROM is accepted, the meter is at 71%, and a full build gives both the
+  OS update and the ROM download.
 - Claude: **the builder's module cards are minimal.** Each one in step 2 had the type, kind, author, version and the
   whole summary, a screenful of text to pick from. It is now the tick, the name, the author and a "Page →" link to the
   module's own page, where the rest is; the "G1-Emu only" warning stays on the card because it changes what the build

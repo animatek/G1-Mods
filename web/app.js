@@ -46,11 +46,19 @@ async function refresh() {
   const sel = ticked();
   syncBuildUI();
   canBuild();
+  // The bar measures a real build, which needs the ROM and the builder: an empty bar before that
+  // looked like a broken one, so it is hidden and the line says what it is waiting for.
+  const meterBox = $("meter").parentElement;
   if (!rom || !py || !sel.length) {
+    meterBox.hidden = true;
     $("meter").style.width = "0";
-    status($("roomText"), `${sel.length} of ${bundle.modules.length} modules ticked.`, "wait");
+    const waiting = !sel.length ? "Tick at least one module."
+      : !rom ? "Give your ROM (step 1) and this shows how much room the OS has left."
+      : "Loading the builder…";
+    status($("roomText"), `${sel.length} of ${bundle.modules.length} modules ticked. ${waiting}`, "wait");
     return;
   }
+  meterBox.hidden = false;
   try {
     const r = run(sel);
     const pct = Math.min(100, (100 * r.bytes) / bundle.room);

@@ -34,6 +34,8 @@ def build(rom, folders):
         image = g1update.from_rom(out)      # only if it fits what an update erases
     except SystemExit as e:
         no_os = str(e)
-    used = re.search(r"(\d+) bytes", log.getvalue())
+    # What the update has to hold is the packed size when the package goes packed ("packed, 5758 bytes"),
+    # not the 14944 the modules come to before packing: the meter reads this against the room.
+    used = re.search(r"packed, (\d+) bytes", log.getvalue()) or re.search(r"(\d+) bytes", log.getvalue())
     return {"rom": out, "os": image, "log": log.getvalue().strip(),
             "bytes": int(used[1]) if used else 0, "types": [m.type for m in chosen], "no_os": no_os}
