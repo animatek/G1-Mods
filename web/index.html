@@ -181,6 +181,7 @@ ol li, ul li { margin-bottom: 8px; }
 .mod { align-items: center; }
 .mod > span { flex: 1; min-width: 0; }
 .mod .more { flex: none; font-size: 15px; font-weight: 700; text-decoration: none; }
+.mod.off { opacity: .45; cursor: not-allowed; }
 .mod .warnline { font-size: 15px; margin-top: 6px; color: var(--warn); font-weight: 600; }
 .room { margin-top: 16px; }
 .meter { height: 14px; border-radius: 7px; background: var(--line); overflow: hidden; }
@@ -449,10 +450,12 @@ details.sec .in { padding: 0 18px 16px; }
   <div class="gate locked" id="gate" inert>
   <h2 class="step"><span class="n">1</span>Your ROM</h2>
   <p class="lead">The rack's 3.03 ROM, the one G1-Emu boots (<code>NORD-MODULAR-RACK-VER-3.03.BIN</code>, 512 KB).
-    We do not give it: it is Clavia's. A Micro Modular runs another OS: this page does not build for it yet (see the install guide).</p>
+    We do not give it: it is Clavia's.</p>
+  <p class="lead">For a <b>Micro Modular</b>, which has no ROM to give, its OS: Clavia's updater (<code>Nord Micro Modular OS v3.03b Update.exe</code>, or the zip that holds it).
+    This is <b>experimental</b>: it runs in G1-Emu's Micro model, and nobody has tried it on a real Micro.</p>
   <label class="drop" id="drop">
     <input type="file" id="file">
-    <span>Drop the ROM here, or click to pick it</span>
+    <span>Drop the ROM or the Micro updater here, or click to pick it</span>
   </label>
   <div class="status wait" id="romStatus">No ROM yet.</div>
 
@@ -471,8 +474,8 @@ details.sec .in { padding: 0 18px 16px; }
   <button class="btn primary big" id="go" disabled type="button">Build my OS</button>
   <div class="status wait" id="buildStatus">Loading the builder…</div>
   <div class="downloads" id="downloads">
-    <div class="dl" id="osBox"><b>OS update: for G1-Emu and for a real G1</b>
-      <p>The OS alone, as an update image. It loads <b>only through update mode</b>, the same on both: NME's <i>Device &gt; Update Synth OS</i>, with the G1 in update mode (G1-Emu: <i>Settings &gt; OS... &gt; Update mode</i>; a real G1: Shift + Store held at power-on).</p>
+    <div class="dl" id="osBox"><b id="osTitle"></b>
+      <p id="osWhy"></p>
       <a id="dlOs" download>⬇ OS update</a></div>
     <div class="dl" id="romBox"><b id="romTitle"></b>
       <p id="romWhy"></p>

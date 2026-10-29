@@ -127,6 +127,35 @@ def from_capture(stream):
     return unscramble(bytes(data))
 
 
+TAG = b"Clavia OS update file V1.0\0"
+
+
+def extract_updater(data):
+    """The OS image inside one of Clavia's Windows updaters (the `.exe`): (model, major, minor, image).
+    The payload is XORed with 0x11 * (i + 1) and has its adjacent bit pairs swapped (G1-Emu's
+    Roms/Micro/extract-os.py, NOTES.md "The official OS update")."""
+    start = None
+    at = data.find(TAG)
+    while at >= 0:                     # the updater's own code has the tag too, with nothing after it
+        if data[at + len(TAG)] != 0:
+            start = at + len(TAG)
+            break
+        at = data.find(TAG, at + 1)
+    if start is None:
+        raise ValueError("no Clavia OS update inside it")
+    model_end = data.index(b"\0", start)
+    model = data[start:model_end].decode("ascii")
+    h = model_end + 1
+    major, minor = data[h], data[h + 1]
+    length = int.from_bytes(data[h + 4:h + 8], "little")
+    image = data[h + 8:h + 8 + length]
+    if len(image) != length:
+        raise ValueError("the update is cut short")
+    swap = bytes(((b & 0xAA) >> 1) | ((b & 0x55) << 1) for b in range(256))
+    plain = bytes(image[i] ^ ((0x11 * (i + 1)) & 0xFF) for i in range(length)).translate(swap)
+    return model, major, minor, plain
+
+
 def from_rom(rom):
     """The factory OS a ROM carries, as an update image: patch_rom.py's modules included.
 

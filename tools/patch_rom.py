@@ -3,7 +3,7 @@
 
     tools/patch_rom.py all ../G1-Emu/Roms/NORD-MODULAR-RACK-VER-3.03.BIN Roms/rom-all.bin
     tools/patch_rom.py flipflop,mux8 <rom> Roms/rom-mine.bin     # just these modules
-    tools/patch_rom.py --micro flipflop <Micro 3.03b OS image> Roms/os-micro.bin   # the Micro Modular's OS
+    tools/patch_rom.py all <Micro updater .exe, or its extracted image> Roms/os-micro.bin   # the Micro Modular's OS
     tools/patch_rom.py --list
 
 Each module is a folder in modules/ (its module.json, its build.py, its DSP code and its tests);
@@ -20,15 +20,10 @@ import json
 import os
 import sys
 
-# --micro builds into the Micro Modular's OS image instead of the rack's ROM; g1rom reads the target when it
-# is imported, so it is decided here, first.
-if "--micro" in sys.argv:
-    sys.argv.remove("--micro")
-    os.environ["G1MODS_TARGET"] = "micro"
-
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from g1rom import (MICRO_OS_SHA256, MICRO_OS_SIZE, ROM_SHA256, ROM_SIZE, ROOM, RUN, STAGE,  # noqa: E402,F401
-                   TARGET, VERSION_MARK, Build, Param, audio_type, ram_to_rom)
+import g1rom as G  # noqa: E402  (the target, the package's place and its room change with what is brought)
+import g1update  # noqa: E402
+from g1rom import Build, Param, audio_type, ram_to_rom  # noqa: E402,F401
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 MODULES = os.path.join(ROOT, "modules")
@@ -90,10 +85,9 @@ EXPERIMENTS = {
 
 
 def _all():
-    mods = modules()
-    if TARGET == "micro":      # the ones that are on the Micro (a module's "micro": false in its module.json)
-        mods = [m for m in mods if m.meta.get("micro", True)]
-    EXPERIMENTS["all"] = ("every module in modules/" + (" that is on the Micro" if TARGET == "micro" else "") + ": " +
+    """Every module, or on the Micro the ones that are on it (a module's "micro": false in its module.json)."""
+    mods = [m for m in modules() if G.TARGET == "rack" or m.meta.get("micro", True)]
+    EXPERIMENTS["all"] = ("every module in modules/" + (" that is on the Micro" if G.TARGET == "micro" else "") + ": " +
                           ", ".join(f"{m.type} ({m.meta['name']})" for m in mods), [m.add for m in mods], [])
 
 
@@ -104,22 +98,52 @@ class BuildError(Exception):
     """A ROM the build cannot go into: not the 3.03, or not as expected where it writes."""
 
 
+def identify(src):
+    """What was brought: ("rack", the 512 KB ROM) or ("micro", the Micro's 3.03b OS image). The Micro has
+    no ROM to bring: its OS is Clavia's update image, which can come as it is, extracted from the updater
+    (`Nord Micro Modular OS v3.03b Update.exe`), or in a .zip that holds the updater."""
+    data = bytes(src)
+    if data[:2] == b"PK":                                  # a zip: the updater inside it
+        import io
+        import zipfile
+        try:
+            z = zipfile.ZipFile(io.BytesIO(data))
+            names = [n for n in z.namelist() if n.lower().endswith(".exe")]
+            data = z.read(names[0]) if names else b""
+        except zipfile.BadZipFile:
+            data = b""
+        if not data:
+            raise BuildError("that zip has no Clavia updater (.exe) in it")
+    if data[:2] == b"MZ":                                  # an updater: its payload is the OS
+        try:
+            model, major, minor, image = g1update.extract_updater(data)
+        except ValueError as e:
+            raise BuildError(f"that program has no Clavia OS update in it ({e})")
+        if "micro" not in model.lower():
+            raise BuildError(f"that is the updater of the {model}'s OS: for a rack the builder takes the 3.03 ROM, "
+                             "for a Micro Modular its updater")
+        data = image
+    if len(data) == G.ROM_SIZE and hashlib.sha256(data).hexdigest().startswith(G.ROM_SHA256):
+        return "rack", data
+    if len(data) == G.MICRO_OS_SIZE and hashlib.sha256(data).hexdigest().startswith(G.MICRO_OS_SHA256):
+        return "micro", data
+    raise BuildError("not the rack OS 3.03 ROM, nor the Micro Modular's 3.03b OS (its updater, or the image)")
+
+
 def patch(src, types, in_place=()):
-    """The user's ROM (bytes) with these types (callables given the Build) and in-place words;
-    the new ROM, as bytes. What the command line and the web builder (web/) both call."""
-    if TARGET == "micro":
-        # The Micro has no ROM of its own to bring: its OS is the update image (Clavia's updater, extracted).
-        # It is put where the rack ROM keeps its OS, so every address below works as it does for the rack.
-        if len(src) != MICRO_OS_SIZE or not hashlib.sha256(src).hexdigest().startswith(MICRO_OS_SHA256):
-            raise BuildError("not the Micro Modular's 3.03b OS image (354,016 bytes)")
-        rom = bytearray(b"\xff" * ROM_SIZE)
-        rom[ram_to_rom(0x100000):ram_to_rom(0x100000) + len(src)] = src
+    """What was brought (identify) with these types (callables given the Build) and in-place words; the new
+    ROM as bytes (for the Micro, a ROM-shaped buffer holding its OS: g1update.from_rom turns it into the image).
+    What the command line and the web builder (web/) both call."""
+    target, data = identify(src)
+    G.set_target(target)
+    if target == "micro":
+        # Put where the rack ROM keeps its OS, so every address below works as it does for the rack.
+        rom = bytearray(b"\xff" * G.ROM_SIZE)
+        rom[ram_to_rom(0x100000):ram_to_rom(0x100000) + len(data)] = data
     else:
-        rom = bytearray(src)
-        if len(rom) != ROM_SIZE or not hashlib.sha256(rom).hexdigest().startswith(ROM_SHA256):
-            raise BuildError("not the rack OS 3.03 ROM")
+        rom = bytearray(data)
     if types:
-        in_place = list(in_place) + [VERSION_MARK]   # an OS with modules says so (3.09)
+        in_place = list(in_place) + [G.VERSION_MARK]   # an OS with modules says so (3.09)
     for addr, old, new in in_place:
         o = ram_to_rom(addr)
         if rom[o:o + 4] != old.to_bytes(4, "big"):
@@ -144,11 +168,11 @@ def patch(src, types, in_place=()):
             if rom[o - 2:o] != b"\x4e\xb9" or rom[o:o + 4] != old:
                 raise BuildError(f"unexpected call at ${addr - 2:06X}: {rom[o - 2:o + 4].hex()}")
             rom[o:o + 4] = new
-        packed = installable and blocks[0][0] == STAGE and len(blocks[0][1]) < b.at - RUN
-        where = (f"stored at ${STAGE:06X}{' packed, ' + str(len(blocks[0][1])) + ' bytes' if packed else ''}"
+        packed = installable and blocks[0][0] == G.STAGE and len(blocks[0][1]) < b.at - G.RUN
+        where = (f"stored at ${G.STAGE:06X}{' packed, ' + str(len(blocks[0][1])) + ' bytes' if packed else ''}"
                  ": fits an OS update" if installable else
-                 f"too big for an OS update ({ROOM} bytes): G1-Emu only")
-        print(f"new types {b.types}, {b.at - RUN} bytes, {where}, run at ${RUN:06X}")
+                 f"too big for an OS update ({G.ROOM} bytes): G1-Emu only")
+        print(f"new types {b.types}, {b.at - G.RUN} bytes, {where}, run at ${G.RUN:06X}")
     return bytes(rom)
 
 
@@ -157,20 +181,31 @@ def main():
         for name, (what, _, _) in EXPERIMENTS.items():
             print(f"{name}: {what}")
         return
+    micro = "--micro" in sys.argv         # optional: says that what is brought must be the Micro's
+    if micro:
+        sys.argv.remove("--micro")
     if len(sys.argv) != 4:
         sys.exit(__doc__)
     name, src, dst = sys.argv[1:]
+    brought = open(src, "rb").read()
+    try:
+        target = identify(brought)[0]
+    except BuildError as e:
+        sys.exit(str(e))
+    if micro and target != "micro":
+        sys.exit("--micro, but what was brought is the rack's ROM")
+    G.set_target(target)                  # "all" is every module that is on this target
+    _all()
     if name not in EXPERIMENTS:
         mods = {m.folder: m for m in modules()}
         if any(n not in mods for n in name.split(",")):
             sys.exit(f"no experiment or module '{name}' (--list)")
         EXPERIMENTS[name] = (name, [mods[n].add for n in name.split(",")], [])
     try:
-        rom = patch(open(src, "rb").read(), *EXPERIMENTS[name][1:])
+        rom = patch(brought, *EXPERIMENTS[name][1:])
     except BuildError as e:
         sys.exit(str(e))
-    if TARGET == "micro":
-        import g1update
+    if target == "micro":
         try:
             rom = g1update.from_rom(rom)     # the OS image, the Micro's modules in it
         except SystemExit as e:

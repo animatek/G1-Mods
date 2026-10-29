@@ -5,6 +5,15 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the web builder builds for the Micro Modular too.** In step 1 the file can be the rack's ROM or what a Micro has in
+  its place: Clavia's Micro updater (`.exe`, or the zip that holds it, or the extracted image). `patch_rom.identify()` says which
+  it is (or what is wrong with it) and `patch()` takes it from there; `g1rom.set_target()` replaces reading the target once at
+  import, so the page builds for either one after the other; `g1update.extract_updater()` reads the OS out of the updater (the
+  same as G1-Emu's `extract-os.py`). On the page a Micro greys out Note Out (not on the Micro), builds twelve modules, shows
+  room against the Micro's 38 KB, hides the ROM box (a Micro has none) and gives one file, `g1mods-micro-all-os.bin`, marked
+  experimental and not to be installed on a real Micro. The command line takes the same files without `--micro`. Checked in
+  headless Chromium: a junk file is refused with a reason; the Micro updater is accepted; the page's OS update equals the
+  command line's byte for byte; then the rack ROM in the same page gives `os-all.bin` and `rom-all.bin` byte for byte.
 - Claude: **the modules go into the Micro Modular's OS** (experimental; in G1-Emu's Micro model only). Javier had said a modified
   Micro could not be done for lack of its ROM; but the Micro runs the same code base as the rack, relocated, and what the
   patcher takes is the OS, not the ROM. `tools/patch_rom.py --micro all <Micro 3.03b image> out.bin` builds twelve of the

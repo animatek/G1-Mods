@@ -28,10 +28,11 @@ Si dudas, usa la actualización de OS: funciona en los dos. La ROM es solo un at
   cuando un sinte los tiene, y trae *Device > Update Synth OS* para instalar un OS por MIDI. Las versiones
   anteriores no conocen los módulos nuevos: con una, un OS de G1-Mods conecta pero los módulos no se ofrecen.
 - **G1-Emu**, para probar un build antes de un sinte real.
-- **Un G1 rack o con teclado.** La **Micro Modular** corre otro OS. Doce de los módulos se pueden construir en él
-  desde la línea de comandos (`tools/patch_rom.py --micro`) y funcionan en el modelo Micro de G1-Emu; el
-  constructor web solo toma la ROM del rack, y nadie lo ha probado en una Micro real (mira el
-  [roadmap](../ROADMAP.md) y `NOTES.md`).
+- **Un G1 rack o con teclado.** La **Micro Modular** corre otro OS y no tiene ROM: dale al constructor el
+  actualizador de la Micro de Clavia (`Nord Micro Modular OS v3.03b Update.exe`, o el zip que lo contiene) en lugar de
+  la ROM. Se construyen en él doce de los módulos (no Note Out), como una actualización de OS que funciona en el modelo
+  Micro de G1-Emu (*Settings > Micro OS*). **Experimental: nadie lo ha probado en una Micro real**, así que no lo
+  instales en una (mira el [roadmap](../ROADMAP.md) y `NOTES.md`).
 - Para un G1 real: una interfaz MIDI conectada al **puerto PC** del G1 (en los dos sentidos), como para editar.
 - Para la vuelta atrás en un G1 real, cualquiera de estas dos:
     - **El *Device > Update Synth OS* de NME** con **la imagen del OS 3.03b original de Clavia** (un `.bin`):

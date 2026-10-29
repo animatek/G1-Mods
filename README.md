@@ -136,11 +136,12 @@ tools/patch_rom.py all ../G1-Emu/Roms/NORD-MODULAR-RACK-VER-3.03.BIN Roms/rom-al
 tools/g1update.py fromrom Roms/rom-all.bin Roms/os-all.bin
 ```
 
-**The Micro Modular** (experimental, in G1-Emu's Micro model only): it has no ROM to bring, its OS is the update
-image from Clavia's Micro updater (`G1-Emu/Roms/Micro/extract-os.py` extracts it), and twelve of the modules go into it:
+**The Micro Modular** (experimental, in G1-Emu's Micro model only): it has no ROM to bring, so what you give is its OS,
+Clavia's Micro updater (the `.exe`, or a zip with it, or the image extracted from it), and twelve of the modules go
+into it. On the web builder, drop that file where the ROM goes. By hand:
 
 ```sh
-tools/patch_rom.py --micro all ../G1-Emu/Roms/Micro/micro-os.bin Roms/os-micro-all.bin
+tools/patch_rom.py all "Nord Micro Modular OS v3.03b Update.exe" Roms/os-micro-all.bin
 tests/check_micro.py        # boots it in G1-Emu's Micro model and plays every module's patch
 ```
 

@@ -14,13 +14,11 @@ Today the ROM the builder hands out is the same OS as the update image, in a who
 
 ## The Micro Modular
 
-**Done, in the emulator, from the command line** (2026-10-29): `tools/patch_rom.py --micro all <Micro 3.03b OS image> out.bin`
+**Done, in the emulator, from the command line and in the web builder** (2026-10-29): `tools/patch_rom.py all <Micro updater or 3.03b OS image> out.bin`
 puts twelve of the thirteen modules into the Micro's OS, and G1-Emu's Micro model boots it and plays their patches
 (`tests/check_micro.py`; NOTES.md, "The Micro Modular"). To try it: G1-Emu's *Settings > Micro OS* takes that image.
 
 Still to do, in order of how much it matters:
 - **Someone with a real Micro**, and its updater for the way back, to try the update. Until then it is emulator-only.
-- **The web builder for the Micro**: the user drops Clavia's Micro updater (`.exe`), the page extracts the image
-  (a few lines of Python, which Pyodide runs) and builds. Not started.
 - **Note Out on the Micro**: its two hooks in the OS main loop are not where the rack's are.
 - **NME's side**: check that a Micro that says 3.09 is offered the modules.

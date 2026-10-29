@@ -96,6 +96,19 @@ def osa(addr):
 VERSION_MARK = (osa(0x10B288), 0x157C0003, 0x157C0000 | MODS_VERSION_LOW)   # move.b #9,(8,a2)
 
 
+def set_target(name):
+    """Builds for the rack's ROM or the Micro's OS from here on. The web builder calls it before each build
+    (one running program builds for either); the command line sets it once, from G1MODS_TARGET. Everything
+    that depends on the target is recomputed: where the package is stored, its room, the version's address."""
+    global TARGET, STAGE, BOOT, ROOM, VERSION_MARK
+    assert name in ("rack", "micro"), "the target is rack or micro"
+    TARGET = name
+    STAGE = 0x15DFE0 if TARGET == "rack" else 0x1566E0
+    BOOT = STAGE_END - BOOT_LEN
+    ROOM = BOOT - STAGE
+    VERSION_MARK = (osa(0x10B288), 0x157C0003, 0x157C0000 | MODS_VERSION_LOW)
+
+
 # The types the OS leaves free: its table has 128 (0-127, and a patch keeps a type in 7 bits, so
 # there can be no more), and these are the ones without a module (unregistered entries in a RAM
 # dump after boot, none in NME's modules.xml). 0 is left out, as "no module" may be read into it.

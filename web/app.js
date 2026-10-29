@@ -3,7 +3,8 @@
 const $ = (id) => document.getElementById(id);
 const ROM_SIZE = 512 * 1024;
 const ROM_SHA256 = "d9b199f2";   // as tools/g1rom.py
-let py = null, bundle = null, rom = null, built = [];
+let py = null, bundle = null, rom = null, romKind = null, built = [];
+let pyReady; const pyPromise = new Promise((resolve) => { pyReady = resolve; });   // Pyodide and the builder, loaded
 
 // A status line is a template (see lang.js: tx) and its values, kept on the element so a change of
 // language can say it again.
@@ -69,10 +70,10 @@ async function refresh() {
   meterBox.hidden = false;
   try {
     const r = run(sel);
-    const pct = Math.min(100, (100 * r.bytes) / bundle.room);
+    const pct = Math.min(100, (100 * r.bytes) / r.room);
     $("meter").style.width = pct + "%";
     status($("roomText"), "%0 modules, %1 KB of the %2 KB the OS has room for.", "ok",
-      sel.length, (r.bytes / 1024).toFixed(1), (bundle.room / 1024).toFixed(1));
+      sel.length, (r.bytes / 1024).toFixed(1), (r.room / 1024).toFixed(1));
   } catch (e) {
     $("meter").style.width = "100%";
     status($("roomText"), "%0", "bad", message(e));
@@ -88,8 +89,9 @@ function run(sel) {
   const build = py.globals.get("builder").build;
   const r = build(py.toPy(rom), py.toPy(sel));
   const out = {
-    rom: r.get("rom").toJs(), os: r.get("os") ? r.get("os").toJs() : null, noOs: r.get("no_os"),
-    bytes: r.get("bytes"),
+    target: r.get("target"), rom: r.get("rom") ? r.get("rom").toJs() : null,
+    os: r.get("os") ? r.get("os").toJs() : null, noOs: r.get("no_os"),
+    bytes: r.get("bytes"), room: r.get("room"),
     types: r.get("types").toJs(),
   };
   r.destroy();
@@ -100,17 +102,45 @@ function canBuild() {
   $("go").disabled = !(py && rom && ticked().length && $("agree").checked);
 }
 
+// What the page takes in step 1: the rack's ROM (known by its size and hash, here), or what a Micro
+// Modular has instead of one (its OS: Clavia's updater, a zip with it, or the extracted image), which the
+// builder's Python reads and says what it is, or what is wrong with it.
 async function pickRom(file) {
   const bytes = new Uint8Array(await file.arrayBuffer());
-  const hash = await sha256(bytes);
-  if (bytes.length !== ROM_SIZE || !hash.startsWith(ROM_SHA256)) {
-    rom = null;
-    status($("romStatus"), "%0 is not the rack's 3.03 ROM (512 KB, sha256 %1…).", "bad", file.name, ROM_SHA256);
+  let kind = null;
+  if (bytes.length === ROM_SIZE && (await sha256(bytes)).startsWith(ROM_SHA256)) {
+    kind = "rack";
   } else {
-    rom = bytes;
-    status($("romStatus"), "%0: the rack's 3.03 ROM. Good.", "ok", file.name);
+    status($("romStatus"), "Reading %0…", "wait", file.name);
+    await pyPromise;
+    try {
+      kind = String(py.globals.get("builder").identify(py.toPy(bytes)));
+    } catch (e) {
+      rom = null; romKind = null;
+      status($("romStatus"), "%0: %1", "bad", file.name, message(e));
+      applyTarget();
+      refresh();
+      return;
+    }
   }
+  rom = bytes; romKind = kind;
+  status($("romStatus"), kind === "micro" ? "%0: the Micro Modular's 3.03b OS. Good." : "%0: the rack's 3.03 ROM. Good.", "ok", file.name);
+  applyTarget();
   refresh();
+}
+
+// A Micro has no Note Out yet (a module's "micro": false): it cannot be ticked while the Micro is what was brought
+function applyTarget() {
+  const micro = romKind === "micro";
+  for (const m of bundle.modules) {
+    const box = document.querySelector(`#grid input[value="${m.folder}"]`);
+    if (!box) continue;
+    const off = micro && m.micro === false;
+    box.disabled = off;
+    if (off) box.checked = false;
+    box.closest("label").classList.toggle("off", off);
+    box.title = off ? tx("Not on the Micro yet") : "";
+  }
 }
 
 function offer(link, bytes, name) {
@@ -122,9 +152,14 @@ function offer(link, bytes, name) {
 
 // What the two download boxes say depends on whether there is an update image: with one, the ROM is
 // the spare for G1-Emu; without (too many modules, or a module only G1-Emu has) it is all there is.
-let lastBuild = { os: true, emuOnly: [], noOs: "" };
+let lastBuild = { os: true, emuOnly: [], noOs: "", micro: false };
 function paintDownloads() {
   const b = lastBuild;
+  $("osTitle").textContent = tx(b.micro ? "Micro OS update: for G1-Emu's Micro model" : "OS update: for G1-Emu and for a real G1");
+  $("osWhy").innerHTML = b.micro
+    ? tx("The Micro Modular's OS with the modules, as an update image. <b>Experimental</b>: try it in G1-Emu, <i>Settings &gt; Micro OS &gt; Choose...</i> (the Micro model). Nobody has tried it on a real Micro: do not install it on one.")
+    : tx("The OS alone, as an update image. It loads <b>only through update mode</b>, the same on both: NME's <i>Device &gt; Update Synth OS</i>, with the G1 in update mode (G1-Emu: <i>Settings &gt; OS... &gt; Update mode</i>; a real G1: Shift + Store held at power-on).");
+  $("romBox").hidden = b.micro;       // a Micro has no ROM to give back
   $("romTitle").textContent = tx("ROM: for G1-Emu only");
   $("romWhy").innerHTML = b.os
     ? tx("The same OS inside a whole 512 KB ROM. It loads in G1-Emu alone, from <i>Settings &gt; ROM &gt; Choose...</i> (it restarts with it); a real G1 cannot take it, and NME's Update Synth OS refuses it.")
@@ -138,16 +173,17 @@ function doBuild() {
   const sel = ticked();
   try {
     const r = run(sel);
-    const tag = sel.length === bundle.modules.length ? "all" : `${sel.length}mods`;
-    offer($("dlRom"), r.rom, `g1mods-${tag}-rom.bin`);
+    const there = bundle.modules.filter((m) => !(r.target === "micro" && m.micro === false)).length;   // those this target has
+    const tag = sel.length === there ? "all" : `${sel.length}mods`;
+    if (r.rom) offer($("dlRom"), r.rom, `g1mods-${tag}-rom.bin`);
     const emuOnly = bundle.modules.filter((m) => m.real_g1 && sel.includes(m.folder)).map((m) => m.name);
     const os = r.os && !emuOnly.length ? r.os : null;
-    if (os) offer($("dlOs"), os, `g1mods-${tag}-os.bin`);
+    if (os) offer($("dlOs"), os, `g1mods-${r.target === "micro" ? "micro-" : ""}${tag}-os.bin`);
     // Two files, two ways of loading them, and the page says both: the OS update goes in through update
     // mode, on G1-Emu and on a real G1; the ROM is G1-Emu's alone. Without an update image (too many
     // modules, or a module only G1-Emu has) the ROM is all there is, and the page says why.
     $("osBox").hidden = !os;
-    lastBuild = { os: !!os, emuOnly, noOs: r.noOs };
+    lastBuild = { os: !!os, emuOnly, noOs: r.noOs, micro: r.target === "micro" };
     paintDownloads();
     $("downloads").classList.add("show");
     status($("buildStatus"), "Built: types %0. Version 3.09 on connecting.", "ok", r.types.join(", "));
@@ -560,7 +596,7 @@ function applyTheme(t) {
 }
 
 window.addEventListener("hashchange", route);
-$("barAll").addEventListener("click", () => { document.querySelectorAll("#grid input").forEach((i) => (i.checked = true)); refresh(); });
+$("barAll").addEventListener("click", () => { document.querySelectorAll("#grid input:not(:disabled)").forEach((i) => (i.checked = true)); refresh(); });
 $("barNone").addEventListener("click", () => { document.querySelectorAll("#grid input").forEach((i) => (i.checked = false)); refresh(); });
 $("q").addEventListener("input", () => {
   if (bundle && location.hash !== "#/modules") location.hash = "#/modules";
@@ -629,6 +665,7 @@ import sys
 sys.path[:0] = ["/g1mods/tools", "/g1mods/web"]
 import builder
 `);
+  pyReady();
   status($("buildStatus"), "The builder is ready.", "wait");
   refresh();
 }
@@ -641,7 +678,7 @@ drop.addEventListener("drop", (e) => {
   e.preventDefault(); drop.classList.remove("over");
   if (e.dataTransfer.files[0]) pickRom(e.dataTransfer.files[0]);
 });
-$("all").addEventListener("click", () => { document.querySelectorAll("#grid input").forEach((i) => (i.checked = true)); refresh(); });
+$("all").addEventListener("click", () => { document.querySelectorAll("#grid input:not(:disabled)").forEach((i) => (i.checked = true)); refresh(); });
 $("none").addEventListener("click", () => { document.querySelectorAll("#grid input").forEach((i) => (i.checked = false)); refresh(); });
 // Nothing of the builder works until the risk is accepted: the steps are inert (no click, no keyboard,
 // no drop) and dimmed until the box is ticked, and ticking it off locks them again.

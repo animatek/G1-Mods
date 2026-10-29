@@ -965,6 +965,8 @@ four outputs and do not apply as they are: **the Micro OS puts a patch's Out 3/4
 - **Nothing here has touched a real Micro**, and nobody has one to try: an update to a Micro's flash is the rack's
   procedure, assumed to erase the same sectors 0-5 (the image ends in sector 5, as the rack's does). Treat it as
   emulator-only until someone with a Micro and a way back (its updater) has done it.
-- **The web builder takes the rack's ROM only.** The Micro's image comes out of Clavia's updater (`.exe`): its
-  extraction is a dozen lines (G1-Emu's `extract-os.py`), and could run in the browser too.
+- **The web builder takes the Micro too** (2026-10-29): the file is the rack's ROM or the Micro's OS (Clavia's updater `.exe`,
+  a zip with it, or the extracted image), `patch_rom.identify()` says which, `g1rom.set_target()` switches the target
+  between builds, and the Micro's one file is the OS update (it has no ROM to give back). The result is byte for byte the
+  command line's, checked in headless Chromium for both targets, one after the other in the same page.
 - **NME**: a Micro that says 3.09 should get the modules offered by the same rule as a rack; not tried.
