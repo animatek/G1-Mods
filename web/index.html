@@ -472,11 +472,13 @@ details.sec .in { padding: 0 18px 16px; }
   <button class="btn primary big" id="go" disabled type="button">Build my OS</button>
   <div class="status wait" id="buildStatus">Loading the builder…</div>
   <div class="downloads" id="downloads">
-    <div class="dl" id="osBox"><b>Your OS: for a real G1, and for G1-Emu</b><br>The OS alone, as an update image.
-      Install it with NME's <i>Device &gt; Update Synth OS</i>: a real G1 and G1-Emu (put in update mode) take it the same way.<br>
+    <div class="dl" id="osBox"><b>OS update: for G1-Emu and for a real G1</b><br>The OS alone, as an update image.
+      It loads <b>only through update mode</b>, the same on both: NME's <i>Device &gt; Update Synth OS</i>, with the G1
+      in update mode (G1-Emu: <i>Settings &gt; OS... &gt; Update mode</i>; a real G1: Shift + Store held at power-on).<br>
       <a id="dlOs" download>⬇ OS update</a></div>
-    <div class="dl" id="romBox"><b id="romTitle">The whole ROM, for G1-Emu</b><br><span id="romWhy">The same OS inside a whole 512 KB ROM.
-      In G1-Emu: <i>Settings &gt; ROM &gt; Choose...</i>, and it restarts with it. <b>Not</b> for Update Synth OS: NME refuses it as too big.</span><br>
+    <div class="dl" id="romBox"><b id="romTitle">ROM: for G1-Emu only</b><br><span id="romWhy">The same OS inside a whole 512 KB ROM.
+      It loads in G1-Emu alone, from <i>Settings &gt; ROM &gt; Choose...</i> (it restarts with it); a real G1 cannot take it, and NME's
+      Update Synth OS refuses it.</span><br>
       <a id="dlRom" download>⬇ ROM</a><div class="status bad" id="noOs"></div></div>
   </div>
 

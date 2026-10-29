@@ -110,14 +110,14 @@ function doBuild() {
     const emuOnly = bundle.modules.filter((m) => m.real_g1 && sel.includes(m.folder)).map((m) => m.name);
     const os = r.os && !emuOnly.length ? r.os : null;
     if (os) offer($("dlOs"), os, `g1mods-${tag}-os.bin`);
-    // With an update image, that is the one file for G1-Emu and a real G1, and the ROM is the
-    // spare for booting G1-Emu from a file. Without one (too many modules, or a module only
-    // G1-Emu has) the ROM is all there is, and the page says why.
+    // Two files, two ways of loading them, and the page says both: the OS update goes in through update
+    // mode, on G1-Emu and on a real G1; the ROM is G1-Emu's alone. Without an update image (too many
+    // modules, or a module only G1-Emu has) the ROM is all there is, and the page says why.
+    const why = $("romWhy");
+    if (why.dataset.usual === undefined) why.dataset.usual = why.innerHTML;
     $("osBox").hidden = !os;
-    $("romTitle").textContent = os ? "The whole ROM, for G1-Emu" : "The whole ROM, for G1-Emu";
-    $("romWhy").textContent = os
-      ? "The same OS inside a whole 512 KB ROM. In G1-Emu: Settings > ROM > Choose..., and it restarts with it. Not for Update Synth OS: NME refuses it as too big."
-      : "There is no OS update for these modules, so this ROM, for G1-Emu, is all there is.";
+    if (os) why.innerHTML = why.dataset.usual;
+    else why.textContent = "There is no OS update for these modules, so this ROM is all there is. It loads in G1-Emu alone, from Settings > ROM > Choose... (it restarts with it).";
     $("noOs").textContent = os ? "" : emuOnly.length
       ? `No OS update with ${emuOnly.join(", ")}: it is for G1-Emu only for now. Untick it to get one.`
       : "No OS update with these modules: " + r.noOs;

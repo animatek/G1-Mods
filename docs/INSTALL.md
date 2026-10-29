@@ -9,6 +9,17 @@ touch a real synth.
 > your patches or leave your G1 unusable, and recovery is not guaranteed. You do it at your own
 > risk; you are responsible for your instrument. Try everything in G1-Emu first.
 
+## Two files, two ways in
+
+The builder gives two files. They are **not interchangeable**; this is the whole difference:
+
+| File | For | How it loads |
+| --- | --- | --- |
+| **OS update** (`g1mods-...-os.bin`) | **G1-Emu and a real G1** | **Only through update mode**, the same on both: put the synth in update mode, then NME's *Device > Update Synth OS*. In G1-Emu: *Settings > OS... > Update mode*. On a real G1: Shift + Store held at power-on. |
+| **ROM** (`g1mods-...-rom.bin`) | **G1-Emu only** | In G1-Emu's *Settings > ROM > Choose...*; it offers to restart with it. A real G1 cannot take it, and NME's Update Synth OS refuses it (it is 512 KB, an update has room for 393,184 bytes). |
+
+If you are unsure, use the OS update: it works on both. The ROM is only a shortcut for the emulator.
+
 ## What you need
 
 - **The rack's 3.03 ROM**, the file G1-Emu boots (`NORD-MODULAR-RACK-VER-3.03.BIN`, 512 KB). We

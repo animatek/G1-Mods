@@ -88,7 +88,7 @@ Close your usual G1-Emu first: both take the same MIDI ports. Your usual flash i
 ## The web builder
 
 `web/` is the builder as a web page: you pick your ROM, tick the modules, and it gives you the
-ROM for G1-Emu and the OS update for a G1's flash. It runs **in your browser** (the same Python
+OS update, which both G1-Emu and a real G1 take through update mode, and a ROM, for G1-Emu alone. It runs **in your browser** (the same Python
 as `tools/patch_rom.py`, through Pyodide), so nothing is uploaded and the result is byte for byte
 the command line's.
 

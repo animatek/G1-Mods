@@ -34,8 +34,8 @@ works well, it can be merged.
 - NME support for a new module is its folder's `nme-modules.xml` and `nme-theme.xml`;
   `tools/make_nme_data.py --layer ../Nomad2026/data` writes them into NME's layer files
   (`data/mods-modules.xml`, `data/mods-theme.xml`), which NME offers only to a synth whose
-  OS says it has them (its IAm says 3.09: `VERSION_MARK` in `tools/g1rom.py`). That lives in NME's `mods-layer` branch, local,
-  until Javier decides to publish G1-Mods: NME is public.
+  OS says it has them (its IAm says 3.09: `VERSION_MARK` in `tools/g1rom.py`). That layer is in NME's `main` since 2026-10-29
+  (merged from `mods-layer-2`).
 - Everything in this repo is in **English** (code, notes, changelog, commits), like G1-Emu, so
   a merge stays easy. On GitHub as `animatek/G1-Mods`, public since 2026-10-27.
 

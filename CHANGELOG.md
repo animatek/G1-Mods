@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the page and the install guide say which file is for what.** The OS update is for G1-Emu and a real G1
+  and loads only through update mode (G1-Emu: Settings > OS... > Update mode; a real G1: Shift + Store at power-on,
+  then NME's Update Synth OS); the ROM is for G1-Emu alone and loads from Settings > ROM > Choose... A table at the
+  top of `docs/INSTALL.md` (which the site renders) and the two download boxes spell it out; the README follows.
+  `CLAUDE.md` no longer says NME's layer is local: it is in NME's `main`. Checked: the page loads.
 - Claude: **the whole-ROM download is back** (Javier: the ROM does work in G1-Emu: it shows the MOD badge once G1-Emu
   restarts with it; I had taken it out on a wrong reading). The page again gives the OS update first and the ROM
   second, with where each goes (the ROM: G1-Emu's *Settings > ROM > Choose...*, which now restarts with it,
