@@ -74,11 +74,10 @@ catalogue grows by families: one type, several panels in NME.
 ## Trying it
 
 You need a G1-Emu built from source next to this folder (`../G1-Emu`), with your own 3.03 ROM in
-its `Roms/`, and NME built from its `mods-layer` branch (`run-nme.sh` says how).
+its `Roms/`, and **Animatek NME 0.25 or later** (the G1-Mods layer is in its `main`).
 
 ```sh
 ./run-g1emu.sh             # G1-Emu with every new module, on a flash of its own
-./run-nme.sh               # NME, which offers them to that synth
 python3 tests/run_all.py   # every module's test in G1-Emu
 tools/patch_rom.py flipflop,mux8 <your 3.03 ROM> Roms/rom-mine.bin   # only some modules
 ```

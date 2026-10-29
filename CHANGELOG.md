@@ -5,6 +5,10 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **`run-nme.sh` is gone.** It started a special NME built from the `mods-layer` branch (a binary kept outside the
+  repo), which is not needed since the layer is in NME's `main` (0.25): any NME from `main` offers the modules to a synth that
+  says 3.09, and a stale copy of that binary was what made a modified Micro look unrecognised. The README says to use NME
+  0.25 or later. `run-g1emu.sh` stays (it builds the ROM and starts G1-Emu with it and a flash of its own).
 - Claude: **the web builder builds for the Micro Modular too.** In step 1 the file can be the rack's ROM or what a Micro has in
   its place: Clavia's Micro updater (`.exe`, or the zip that holds it, or the extracted image). `patch_rom.identify()` says which
   it is (or what is wrong with it) and `patch()` takes it from there; `g1rom.set_target()` replaces reading the target once at
