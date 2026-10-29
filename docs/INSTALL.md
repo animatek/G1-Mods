@@ -29,10 +29,8 @@ On the builder page (on the live site, or `web/serve.sh` from a clone):
 3. Tick that you have read the risks, and press **Build my OS**.
 4. You get **one file, the OS update** (`g1mods-...-os.bin`), and it serves for both: install
    it into G1-Emu (put in update mode) or into a real G1's flash, the same way, with NME's
-   *Device > Update Synth OS*. The page also keeps a whole ROM (`g1mods-...-rom.bin`) for booting
-   G1-Emu straight from a file; NME refuses it as too big for an update. When there is **no** OS
-   update (too many modules, or a module only G1-Emu has) the page says why, and the ROM is then
-   the only file.
+   *Device > Update Synth OS*. If the page does not offer it, it says why (too many modules, or a
+   module that works only in G1-Emu for now; a build for G1-Emu alone is on the [roadmap](../ROADMAP.md)).
 
 From a clone of this repo the same is `tools/patch_rom.py` and `tools/g1update.py fromrom`
 (README, "Where the builds are").
@@ -44,18 +42,18 @@ shared. Anyone with their own ROM builds the same OS from the same list.
 
 **With the OS update (the usual way, the same as a real G1):** put G1-Emu in update mode
 (*Settings > OS... > Update mode*), then in NME *Device > Update Synth OS*, pick the `…-os.bin`
-and start. When it ends, G1-Emu keeps that OS. Then go on from step 4 below.
+and start. When it ends, G1-Emu keeps that OS. Then go on with "Either way" below.
 
-**Or booting from the ROM file:**
+**Or, from a clone of this repo, booting from a ROM file** (what the web page no longer hands out):
+`./run-g1emu.sh` builds the ROM from your own and starts G1-Emu with it and **a flash of its own**, so
+your usual patches are not touched. If G1-Emu's settings name an OS file (`os =`) it starts that empty
+(`G1_OS=`): that OS would boot instead of the one in the ROM, and the modules would not be there.
 
-1. Close G1-Emu if it is running.
-2. Start it with the ROM you built and **a flash of its own**, so your usual patches are not
-   touched: `G1-Emu g1mods-rom.bin g1mods-flash.bin`.
-3. If G1-Emu's settings name an OS file (`os =`), start it with that empty (`G1_OS=`): that OS
-   would boot instead of the one in your ROM, and the modules would not be there.
-4. Connect NME. It says **MODDED OS** in its status bar, the synth reports version **3.09**, and
+Either way:
+
+1. Connect NME. It says **MODDED OS** in its status bar, the synth reports version **3.09**, and
    the new modules are in the module palette.
-5. Load a patch that uses them (each module's folder has one, `modules/<name>/*.pch`).
+2. Load a patch that uses them (each module's folder has one, `modules/<name>/*.pch`).
 
 ## 3. Install it on a real G1
 

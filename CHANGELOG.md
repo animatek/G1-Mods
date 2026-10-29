@@ -5,7 +5,12 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
-- Claude: **one file for G1-Emu and a real G1.** The builder now offers the OS update (`…-os.bin`) as *the*
+- Claude: **the web builder gives only the OS update.** The whole-ROM download is gone from the page: it only booted
+  G1-Emu, it was the file that got mixed up with the OS update, and a G1-Emu build with more modules and an
+  expanded memory is not built yet. That is now `ROADMAP.md`. When there is no update image the page says why and
+  offers nothing; `docs/INSTALL.md` follows (G1-Emu in update mode takes the same file as a real G1; the ROM way
+  is `./run-g1emu.sh` from a clone). Checked: the page loads.
+- Claude: **(earlier today) one file for G1-Emu and a real G1.** The builder now offers the OS update (`…-os.bin`) as *the*
   download: G1-Emu put in update mode takes it through NME's Update Synth OS exactly like a real G1, so a ROM of
   its own was only a second file to mix up (it was: a whole ROM went into Update Synth OS and was refused). The
   whole ROM stays, folded away as "only if you boot G1-Emu from a ROM file", and becomes the main download only
