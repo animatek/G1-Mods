@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the guides say the way back can go through NME too.** Besides Clavia's own 3.03b updater, NME's *Device >
+  Update Synth OS* installs Clavia's original OS image (a `.bin`; NME does not read the updater's `.exe`) the way
+  it installs ours. `docs/INSTALL.md` (what you need) and `docs/RECOVERY.md` (step 3) say so, and where to get the
+  image before flashing anything: the `os` folder of G1-Emu after Clavia's update, or `tools/g1update.py unpack`
+  of a recorded `.syx`. It is Clavia's, so never shared. Checked: NME's file chooser takes `*.bin` only.
 - Claude: **the changelog page is gone from the site.** It rendered this file into a long page that only the people
   working on the project read, and its link sat in About. The page, its route, its link and its copy in the bundle
   are removed (the bundle goes from 313 to 261 KB); `CHANGELOG.md` stays in the repository, where GitHub shows

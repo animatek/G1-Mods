@@ -29,8 +29,10 @@ If you are unsure, use the OS update: it works on both. The ROM is only a shortc
   versions do not know the new modules: with one, a G1-Mods OS connects but the modules are not offered.
 - **G1-Emu**, to try a build before a real synth.
 - For a real G1: a MIDI interface connected to the G1's **PC port** (both ways), as for editing.
-- For the way back on a real G1: **Clavia's OS 3.03b updater** (Windows `.exe`, or the Mac
-  version; on Linux it runs in Wine).
+- For the way back on a real G1, either of these:
+    - **NME's *Device > Update Synth OS*** with **Clavia's own 3.03b OS image** (a `.bin`): the same
+      way you installed yours, with the G1 in update mode. Keep that image before you start (below);
+    - or **Clavia's OS 3.03b updater** (Windows `.exe`, or the Mac version; on Linux it runs in Wine).
 
 ## 1. Build your OS
 

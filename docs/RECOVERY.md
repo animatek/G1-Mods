@@ -7,7 +7,13 @@ holds, **Shift + Store** at power-on reaches it.
 
 1. Delete or overwrite the stored patches that use new modules (see the install guide).
 2. Switch the G1 off. **Hold Shift + Store and switch it on.**
-3. Run **Clavia's 3.03b updater**, at its safe (slower) speed, through the same MIDI interface.
+3. Install Clavia's OS, at the safe (slower) speed, through the same MIDI interface, by either of:
+    - **NME's *Device > Update Synth OS***, choosing **Clavia's 3.03b OS image** (a `.bin`, which NME
+      needs: it does not read Clavia's updater). Get it before you flash anything: G1-Emu keeps the
+      OS it receives in its `os` folder after you run Clavia's updater on it, and
+      `tools/g1update.py unpack` turns a recorded update (`.syx`) into the same image. Keep it
+      with your backups: it is Clavia's, so never share it.
+    - **Clavia's 3.03b updater** itself (Windows `.exe`, or the Mac version; on Linux it runs in Wine).
 4. Press **Store** at "Update flash?", wait for *Update completed*, switch it off and on.
 
 **Shift + Patch/Load** at power-on starts the ROM's factory OS, never the one in the flash: a way
