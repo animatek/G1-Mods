@@ -145,21 +145,23 @@ const LINKS = [
 ];
 
 const ROUTES = {
-  "": "Overview", modules: "All modules", builder: "Build your OS", install: "Install guide",
+  "": "Overview", modules: "All modules", builder: "Build your OS", compare: "Compare", install: "Install guide",
   recovery: "Going back & fixes", "turing-scale": "First patch", "nme-g1emu": "Connect NME to G1-Emu",
-  "clock-reset": "Clock & reset", modular: "Nord Modular G1", links: "Links", contribute: "Contribute", about: "About & legal",
+  "clock-reset": "Clock & reset", modular: "Nord Modular G1", changelog: "Changelog", links: "Links", contribute: "Contribute", about: "About & legal",
 };
 const BASE_DESC = "New module types for the Nord Modular G1, built into your own copy of its OS. Module library, web builder, guides and links.";
 const DESCRIPTIONS = {
   "": BASE_DESC,
   modules: "Every G1-Mods module: its picture, ports, controls and example patches.",
   builder: "Build your own G1 OS with the modules you want, right in the browser.",
+  compare: "Two modules side by side: their ports, controls and data.",
   install: "Installing G1-Mods: build your OS, try it in G1-Emu, install it on a real G1.",
   recovery: "Going back to Clavia's OS, and what to do when something goes wrong.",
   "turing-scale": "First patch: the Turing Machine and the Scale Quantizer into an oscillator.",
   "nme-g1emu": "Connect Animatek NME to G1-Emu — the safe way in before a real G1.",
   "clock-reset": "Clock & reset: how the sequencers, the 5-Step Seq and the 8Counter stay in step.",
   modular: "The Nord Modular G1: its history, its three models, and how a patch runs on its DSPs.",
+  changelog: "What has changed in G1-Mods, newest first.",
   links: "The code, the editor, the emulator and the people behind G1-Mods.",
   contribute: "Help build G1-Mods: how a module is made, tested in G1-Emu first.",
   about: "About G1-Mods and the legal bits.",
@@ -456,6 +458,58 @@ function renderModulePage(folder) {
   syncBuildUI();
 }
 
+// ---------- compare two modules side by side ----------
+function compareCard(m) {
+  const card = el("div", "mcard");
+  const art = el("div", "art");
+  if (m.images.length) {
+    const img = el("img"); img.src = m.images[0]; img.alt = m.name + " panel";
+    img.style = "width:100%;height:96px;object-fit:contain;display:block"; art.append(img);
+  } else {
+    art.innerHTML = panelSvg(m.type);
+  }
+  card.append(art);
+  const body = el("div", "body");
+  const head = el("div", "head");
+  head.append(el("h3", null, m.name));
+  const open = el("a", "open", "Page →"); open.href = "#/module/" + m.folder; head.append(open);
+  body.append(head);
+  const tags = el("div", "tags");
+  tags.append(el("span", "pill " + m.kind, m.kind), el("span", "pill", "type " + m.type), el("span", "pill", "v" + m.version));
+  body.append(tags, el("div", "sum", m.summary));
+  const ports = el("div", "portcols");
+  ports.append(portList("Inputs", m.inputs || []), portList("Outputs", m.outputs || []));
+  body.append(ports);
+  if ((m.controls || []).length) {
+    const tbl = el("table");
+    tbl.innerHTML = "<tr><th>Control</th><th>Range</th><th>Default</th></tr>";
+    for (const c of m.controls) {
+      const r = el("tr"); r.append(el("td", "mono", c.name), el("td", "mono", rangeOf(c)), el("td", "mono", c.defaultValue ?? "0"));
+      tbl.append(r);
+    }
+    const w = el("div", "tablewrap"); w.append(tbl); body.append(w);
+  }
+  card.append(body);
+  return card;
+}
+
+function renderCompare() {
+  if (!bundle) return;
+  const selA = $("cmpA"), selB = $("cmpB");
+  const sorted = bundle.modules.slice().sort((a, b) => a.type - b.type);
+  if (!selA.options.length) {
+    for (const m of sorted) selA.add(new Option(`${m.name} · type ${m.type}`, m.folder));
+    for (const m of sorted) selB.add(new Option(`${m.name} · type ${m.type}`, m.folder));
+    selB.selectedIndex = Math.min(1, sorted.length - 1);
+  }
+  const mA = bundle.modules.find((m) => m.folder === selA.value);
+  const mB = bundle.modules.find((m) => m.folder === selB.value);
+  const pa = $("cmpA_pane"), pb = $("cmpB_pane");
+  pa.innerHTML = ""; pb.innerHTML = "";
+  if (mA) pa.append(compareCard(mA));
+  if (mB) pb.append(compareCard(mB));
+}
+
 function applyTheme(t) {
   try { localStorage.setItem("g1mods-theme", t); } catch (e) {}
   document.documentElement.dataset.theme = t;
@@ -470,6 +524,8 @@ $("q").addEventListener("input", () => {
   if (bundle) renderLibrary();
 });
 $("theme").addEventListener("click", () => applyTheme(darkNow() ? "light" : "dark"));
+$("cmpA").addEventListener("change", renderCompare);
+$("cmpB").addEventListener("change", renderCompare);
 {
   let t = null;
   try { t = localStorage.getItem("g1mods-theme"); } catch (e) {}
@@ -486,6 +542,7 @@ async function init() {
   renderFilters();
   renderLibrary();
   renderGuides();
+  renderCompare();
   route();
   syncBuildUI();
   refresh();

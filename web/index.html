@@ -106,6 +106,7 @@ ol li, ul li { margin-bottom: 8px; }
 .notice strong { color: var(--warn); }
 .guide blockquote { border: 1px solid color-mix(in srgb, var(--warn) 55%, var(--line)); border-left: 4px solid var(--warn);
   border-radius: 12px; padding: 14px 18px; background: var(--card); margin: 22px 0; max-width: 80ch; }
+.guide { overflow-wrap: anywhere; }
 .guide blockquote p { margin: 0; }
 .guide blockquote strong { color: var(--warn); }
 .hero { padding: 34px 32px; border-radius: 18px; border: 1px solid var(--line); position: relative; overflow: hidden;
@@ -196,6 +197,12 @@ ol li, ul li { margin-bottom: 8px; }
 .add.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .mcard.in { border-color: var(--accent); }
 .mcard .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.mcard .tags { display: flex; gap: 8px; flex-wrap: wrap; margin: 2px 0 6px; }
+.compbar { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin: 18px 0; }
+.compbar select { font: inherit; font-size: 16px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); max-width: 100%; }
+.compbar .vs { color: var(--muted); font-family: var(--mono); }
+.compgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+@media (max-width: 880px) { .compgrid { grid-template-columns: 1fr; } }
 .buildbar { position: sticky; bottom: 14px; margin-top: 22px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
   background: var(--card); border: 1px solid var(--accent); border-radius: 14px; padding: 12px 16px;
   box-shadow: 0 6px 24px rgba(0,0,0,.18); }
@@ -274,7 +281,7 @@ details.sec .in { padding: 0 18px 16px; }
 
 /* ---------- small screens: the menu goes up, as a strip ---------- */
 @media (max-width: 880px) {
-  .shell { grid-template-columns: 1fr; }
+  .shell { grid-template-columns: minmax(0, 1fr); }
   aside { position: sticky; top: 0; z-index: 6; height: auto; flex-direction: row; align-items: center; gap: 4px;
     overflow-x: auto; overflow-y: hidden; padding: 8px 10px; border-right: 0; border-bottom: 1px solid var(--line); }
   .brand { padding: 0 10px 0 0; flex: none; } .brand small, .brand .tag, .group { display: none; }
@@ -309,6 +316,8 @@ details.sec .in { padding: 0 18px 16px; }
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>All modules<span class="count" id="navCount"></span></a>
     <a href="#/builder" data-route="builder">
       <svg viewBox="0 0 24 24"><path d="M14 7l3-3 3 3-3 3z"/><path d="M4 20l10-10"/><path d="M4 14v6h6"/></svg>Build your OS</a>
+    <a href="#/compare" data-route="compare">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="16" rx="1.5"/><rect x="14" y="4" width="7" height="16" rx="1.5"/></svg>Compare</a>
     <div class="group">Learn</div>
     <a href="#/install" data-route="install">
       <svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>Install guide</a>
@@ -327,6 +336,8 @@ details.sec .in { padding: 0 18px 16px; }
       <svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.6 0l3-3a4 4 0 0 0-5.6-5.6l-1 1"/><path d="M14 10a4 4 0 0 0-5.6 0l-3 3a4 4 0 0 0 5.6 5.6l1-1"/></svg>Links</a>
     <a href="#/contribute" data-route="contribute">
       <svg viewBox="0 0 24 24"><path d="M8 9l-4 3 4 3"/><path d="M16 9l4 3-4 3"/><path d="M14 5l-4 14"/></svg>Contribute</a>
+    <a href="#/changelog" data-route="changelog">
+      <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Changelog</a>
     <a href="#/about" data-route="about">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.5v.1"/></svg>About &amp; legal</a>
   </nav>
@@ -497,6 +508,26 @@ details.sec .in { padding: 0 18px 16px; }
 <!-- ============ NORD MODULAR ============ -->
 <section class="view" data-view="modular">
   <div class="guide" data-guide="modular"></div>
+</section>
+
+<!-- ============ COMPARE ============ -->
+<section class="view" data-view="compare">
+  <h1>Compare modules</h1>
+  <p class="lead">Two modules side by side: their ports, controls and data.</p>
+  <div class="compbar">
+    <select id="cmpA" aria-label="First module"></select>
+    <span class="vs">vs</span>
+    <select id="cmpB" aria-label="Second module"></select>
+  </div>
+  <div class="compgrid">
+    <div id="cmpA_pane"></div>
+    <div id="cmpB_pane"></div>
+  </div>
+</section>
+
+<!-- ============ CHANGELOG ============ -->
+<section class="view" data-view="changelog">
+  <div class="guide" data-guide="changelog"></div>
 </section>
 
 <!-- ============ LINKS ============ -->
