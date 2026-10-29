@@ -166,10 +166,10 @@ const LINKS = [
 const ROUTES = {
   "": "Overview", modules: "All modules", builder: "Build your OS", compare: "Compare", install: "Install guide", guides: "Guides",
   recovery: "Going back & fixes", "turing-scale": "First patch", "nme-g1emu": "Connect NME to G1-Emu",
-  "clock-reset": "Clock & reset", modular: "Nord Modular G1", changelog: "Changelog", links: "Links", contribute: "Contribute", about: "About & legal",
+  "clock-reset": "Clock & reset", modular: "Nord Modular G1", links: "Links", contribute: "Contribute", about: "About & legal",
 };
 // pages that live under another entry of the sidebar light that entry up
-const NAV_OF = { compare: "modules", "turing-scale": "guides", "nme-g1emu": "guides", "clock-reset": "guides", modular: "guides", changelog: "about" };
+const NAV_OF = { compare: "modules", "turing-scale": "guides", "nme-g1emu": "guides", "clock-reset": "guides", modular: "guides" };
 const BASE_DESC = "New module types for the Nord Modular G1, built into your own copy of its OS. Module library, web builder, guides and links.";
 const DESCRIPTIONS = {
   "": BASE_DESC,
@@ -183,7 +183,6 @@ const DESCRIPTIONS = {
   "nme-g1emu": "Connect Animatek NME to G1-Emu — the safe way in before a real G1.",
   "clock-reset": "Clock & reset: how the sequencers, the 5-Step Seq and the 8Counter stay in step.",
   modular: "The Nord Modular G1: its history, its three models, and how a patch runs on its DSPs.",
-  changelog: "What has changed in G1-Mods, newest first.",
   links: "The code, the editor, the emulator and the people behind G1-Mods.",
   contribute: "Help build G1-Mods: how a module is made, tested in G1-Emu first.",
   about: "About G1-Mods and the legal bits.",

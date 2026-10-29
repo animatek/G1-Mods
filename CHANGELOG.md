@@ -5,6 +5,11 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **the changelog page is gone from the site.** It rendered this file into a long page that only the people
+  working on the project read, and its link sat in About. The page, its route, its link and its copy in the bundle
+  are removed (the bundle goes from 313 to 261 KB); `CHANGELOG.md` stays in the repository, where GitHub shows
+  it. An old `#/changelog` address opens the overview. Checked: About, Contribute and the old address load and the
+  builder is ready.
 - Claude: **the guides and the page say the minimum is Animatek NME 0.25.** The first version with the G1-Mods layer
   (it is in NME's `main` since 2026-10-29; `Update Synth OS` is older, the modules it offers are not). Said in
   `docs/INSTALL.md` (what you need), `docs/NME-G1EMU.md`, `docs/MODULAR.md`, `CONTRIBUTING.md`, the README, the

@@ -87,7 +87,6 @@ def main():
                                                  "author", "licence", "version", "real_g1") + OPTIONAL}
                        | {"folder": folder, "images": pics, "patches": patches} | sheet(d))
     guides = {name: render_guide(os.path.join(ROOT, "docs", name.upper() + ".md")) for name in GUIDES}
-    guides["changelog"] = render_guide(os.path.join(ROOT, "CHANGELOG.md"))
     bundle = {
         "modules": modules,
         "guides": guides,
