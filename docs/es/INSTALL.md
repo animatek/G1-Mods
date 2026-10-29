@@ -31,7 +31,12 @@ Si dudas, usa la actualización de OS: funciona en los dos. La ROM es solo un at
 - **Un G1 rack o con teclado.** La **Micro Modular** corre otro OS y no tiene ROM: dale al constructor el
   actualizador de la Micro de Clavia (`Nord Micro Modular OS v3.03b Update.exe`, o el zip que lo contiene) en lugar de
   la ROM. Se construyen en él doce de los módulos (no Note Out), como una actualización de OS que funciona en el modelo
-  Micro de G1-Emu (*Settings > Micro OS*). **Experimental: nadie lo ha probado en una Micro real**, así que no lo
+  Micro de G1-Emu. Dos maneras de meterlo, las dos en el emulador: *Settings > Micro OS > Choose...* (o elegir el archivo
+  en la caja de la ROM y responder *Use it as the Micro OS*), o, como en un sinte real, **en G1-Emu *Settings > OS... >
+  Update mode (test)*** (la pantalla dice `Ud`) y *Device > Update Synth OS* de NME: cuando la pantalla parpadee `St`,
+  pulsa un botón de patch; pone `rd` y el siguiente arranque lo ejecuta. Ese modo update es un sustituto, no la ROM de
+  arranque de la Micro (que nadie tiene): el actualizador de la Micro de Clavia manda el mismo flujo (comprobado,
+  `NOTES.md`). **Experimental: nadie lo ha probado en una Micro real**, así que no lo
   instales en una (mira el [roadmap](../ROADMAP.md) y `NOTES.md`).
 - Para un G1 real: una interfaz MIDI conectada al **puerto PC** del G1 (en los dos sentidos), como para editar.
 - Para la vuelta atrás en un G1 real, cualquiera de estas dos:

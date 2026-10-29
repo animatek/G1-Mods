@@ -5,6 +5,7 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- [Docs] Claude: the install guides (English and Spanish) and the web builder's Micro text now give the second way into G1-Emu's Micro: *Update mode (test)* (`Ud`) with NME's *Update Synth OS*, a patch button at `St`, `rd` at the end; said to be a stand-in, with Clavia's own updater sending the same stream. Checked: JSON valid, the Spanish key matches `app.js`; the page not opened.
 - [Docs] Claude: NOTES.md records the capture of Clavia's Micro updater against G1-Emu's Micro update-mode stand-in: same stream as the rack's, identical to `g1update.py build` but for the last block's padding. Checked: compared 3,164 messages.
 - Claude: **`run-nme.sh` is gone.** It started a special NME built from the `mods-layer` branch (a binary kept outside the
   repo), which is not needed since the layer is in NME's `main` (0.25): any NME from `main` offers the modules to a synth that

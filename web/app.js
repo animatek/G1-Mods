@@ -157,7 +157,7 @@ function paintDownloads() {
   const b = lastBuild;
   $("osTitle").textContent = tx(b.micro ? "Micro OS update: for G1-Emu's Micro model" : "OS update: for G1-Emu and for a real G1");
   $("osWhy").innerHTML = b.micro
-    ? tx("The Micro Modular's OS with the modules, as an update image. <b>Experimental</b>: try it in G1-Emu, <i>Settings &gt; Micro OS &gt; Choose...</i> (the Micro model). Nobody has tried it on a real Micro: do not install it on one.")
+    ? tx("The Micro Modular's OS with the modules, as an update image. <b>Experimental</b>: try it in G1-Emu, <i>Settings &gt; Micro OS &gt; Choose...</i> (the Micro model), or with NME's <i>Update Synth OS</i> while G1-Emu's <i>Update mode (test)</i> shows <code>Ud</code> (press a patch button at <code>St</code>). Nobody has tried it on a real Micro: do not install it on one.")
     : tx("The OS alone, as an update image. It loads <b>only through update mode</b>, the same on both: NME's <i>Device &gt; Update Synth OS</i>, with the G1 in update mode (G1-Emu: <i>Settings &gt; OS... &gt; Update mode</i>; a real G1: Shift + Store held at power-on).");
   $("romBox").hidden = b.micro;       // a Micro has no ROM to give back
   $("romTitle").textContent = tx("ROM: for G1-Emu only");
