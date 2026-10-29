@@ -3,13 +3,16 @@
 Everything that changes in G1-Mods, newest first. Every change that goes into the repo gets its
 line here, in the same commit (see `CLAUDE.md`).
 
-## 2026-10-28
+## 2026-10-29
 
 - Claude: **a changelog page and a compare view**. The changelog (`#/changelog`) renders `CHANGELOG.md` like the
   guides; the compare view (`#/compare`) shows any two modules side by side (picture, tags, summary, ports, controls).
   Both are in the nav. Rendering the long changelog at 360 px exposed a 15 px overflow, fixed by letting `.shell`'s
   column shrink (`minmax(0, 1fr)`) and `.guide` break long tokens (`overflow-wrap: anywhere`). The Spanish version
   stays a separate, later job. Checked in headless Chromium at 360 px.
+
+## 2026-10-28
+
 - Claude: **sharing and finding**. Open Graph and Twitter cards with a 1200×630 preview image (`web/og.png`,
   made with the site's colours), page titles and descriptions that follow the route (a module's name and summary, a
   guide's own title), and a fuller LINKS page: Animatek's **YouTube** and the **Nord Modular Editor**, the
