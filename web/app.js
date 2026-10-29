@@ -105,6 +105,10 @@ function canBuild() {
 // What the page takes in step 1: the rack's ROM (known by its size and hash, here), or what a Micro
 // Modular has instead of one (its OS: Clavia's updater, a zip with it, or the extracted image), which the
 // builder's Python reads and says what it is, or what is wrong with it.
+// The Micro Modular's OS builds and runs in G1-Emu's Micro model, but nobody knows what a real Micro does with
+// an OS update, so the page does not offer it (2026-10-29). true shows it again.
+const MICRO_ENABLED = false;
+
 async function pickRom(file) {
   const bytes = new Uint8Array(await file.arrayBuffer());
   let kind = null;
@@ -122,6 +126,13 @@ async function pickRom(file) {
       refresh();
       return;
     }
+  }
+  if (kind === "micro" && !MICRO_ENABLED) {
+    rom = null; romKind = null;
+    status($("romStatus"), "%0: that is the Micro Modular's OS. The Micro Modular is not supported yet: give the rack's 3.03 ROM.", "bad", file.name);
+    applyTarget();
+    refresh();
+    return;
   }
   rom = bytes; romKind = kind;
   status($("romStatus"), kind === "micro" ? "%0: the Micro Modular's 3.03b OS. Good." : "%0: the rack's 3.03 ROM. Good.", "ok", file.name);

@@ -451,11 +451,13 @@ details.sec .in { padding: 0 18px 16px; }
   <h2 class="step"><span class="n">1</span>Your ROM</h2>
   <p class="lead">The rack's 3.03 ROM, the one G1-Emu boots (<code>NORD-MODULAR-RACK-VER-3.03.BIN</code>, 512 KB).
     We do not give it: it is Clavia's.</p>
+  <!-- The Micro Modular is not offered (app.js, MICRO_ENABLED), so its lead stays out of the page:
   <p class="lead">For a <b>Micro Modular</b>, which has no ROM to give, its OS: Clavia's updater (<code>Nord Micro Modular OS v3.03b Update.exe</code>, or the zip that holds it).
     This is <b>experimental</b>: it runs in G1-Emu's Micro model, and nobody has tried it on a real Micro.</p>
+  -->
   <label class="drop" id="drop">
     <input type="file" id="file">
-    <span>Drop the ROM or the Micro updater here, or click to pick it</span>
+    <span>Drop the ROM here, or click to pick it</span>
   </label>
   <div class="status wait" id="romStatus">No ROM yet.</div>
 

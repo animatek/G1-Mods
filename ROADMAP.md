@@ -14,6 +14,8 @@ Today the ROM the builder hands out is the same OS as the update image, in a who
 
 ## The Micro Modular
 
+**Not offered publicly** (decided 2026-10-29): the web builder refuses a Micro OS (`MICRO_ENABLED = false` in `web/app.js`) and the README and guides do not mention it, because what a real Micro does with an OS update is unknown. The work below stays, for the emulator and the command line.
+
 **Done, in the emulator, from the command line and in the web builder** (2026-10-29): `tools/patch_rom.py all <Micro updater or 3.03b OS image> out.bin`
 puts twelve of the thirteen modules into the Micro's OS, and G1-Emu's Micro model boots it and plays their patches
 (`tests/check_micro.py`; NOTES.md, "The Micro Modular"). To try it: G1-Emu's *Settings > Micro OS* takes that image.

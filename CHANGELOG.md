@@ -5,6 +5,7 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- [Web/Docs] Claude: **the Micro Modular is no longer offered** (Javier: nobody knows what a real Micro does with an OS update, so nothing public for it). The web builder refuses a Micro OS with a message (`MICRO_ENABLED = false` in `web/app.js`; its lead and drop text are gone from the page), README and both INSTALL guides say it is not supported, the ROADMAP says why. The tools, `tests/check_micro.py`, NOTES.md and G1-Emu's Micro model stay. Checked: JSON valid; page not opened.
 - [Docs] Claude: the install guides (English and Spanish) and the web builder's Micro text now give the second way into G1-Emu's Micro: *Update mode (test)* (`Ud`) with NME's *Update Synth OS*, a patch button at `St`, `rd` at the end; said to be a stand-in, with Clavia's own updater sending the same stream. Checked: JSON valid, the Spanish key matches `app.js`; the page not opened.
 - [Docs] Claude: NOTES.md records the capture of Clavia's Micro updater against G1-Emu's Micro update-mode stand-in: same stream as the rack's, identical to `g1update.py build` but for the last block's padding. Checked: compared 3,164 messages.
 - Claude: **`run-nme.sh` is gone.** It started a special NME built from the `mods-layer` branch (a binary kept outside the
