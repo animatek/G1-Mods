@@ -136,6 +136,7 @@ const LINKS = [
     { name: "Patreon", url: "https://www.patreon.com/c/animatek", note: "Guides, videos and the making of. The software stays open.", ic: "P" },
     { name: "Donate (PayPal)", url: "https://www.paypal.com/donate/?hosted_button_id=YATW56VC46ENE", note: "A one-off donation to keep the project going.", ic: "$" },
     { name: "Animatek", url: "https://animatek.net", note: "Courses, articles and the rest of the work.", ic: "A" },
+    { name: "Discord", url: "https://discord.gg/CMw5mbWe58", note: "Chat with others building and using G1-Mods.", ic: "DC" },
     { name: "YouTube", url: "https://www.youtube.com/@animatek", note: "Guides, demos and the making of, on video.", ic: "YT" },
     { name: "Nord Modular Editor", url: "https://nordmodulareditor.com", note: "The online editor and patch archive for the G1 and G2: browse and share patches.", ic: "NM" },
   ]},

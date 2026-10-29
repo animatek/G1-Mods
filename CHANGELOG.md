@@ -5,6 +5,8 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **a Discord link** to the G1-Mods channel, in the sidebar's Community group and on the Links page
+  (the same `https://discord.gg/CMw5mbWe58`).
 - Claude: **a changelog page and a compare view**. The changelog (`#/changelog`) renders `CHANGELOG.md` like the
   guides; the compare view (`#/compare`) shows any two modules side by side (picture, tags, summary, ports, controls).
   Both are in the nav. Rendering the long changelog at 360 px exposed a 15 px overflow, fixed by letting `.shell`'s
