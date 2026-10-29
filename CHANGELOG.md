@@ -5,6 +5,13 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-29
 
+- Claude: **one file for G1-Emu and a real G1.** The builder now offers the OS update (`…-os.bin`) as *the*
+  download: G1-Emu put in update mode takes it through NME's Update Synth OS exactly like a real G1, so a ROM of
+  its own was only a second file to mix up (it was: a whole ROM went into Update Synth OS and was refused). The
+  whole ROM stays, folded away as "only if you boot G1-Emu from a ROM file", and becomes the main download only
+  when there is no update image (too many modules, or a module only G1-Emu has), with the reason beside it.
+  `docs/INSTALL.md` says the same. Checked: the page loads ("The builder is ready"); the show/hide logic was
+  not clicked through by an automated run.
 - Claude: **the builder's two downloads say which is which.** A whole ROM (512 KB, `…-rom.bin`) went into NME's
   Update Synth OS instead of the OS update (`…-os.bin`) and was refused as too big: the page listed the ROM
   first and gave no hint where each file goes. The OS update (for a real G1, what NME's Update Synth OS takes)

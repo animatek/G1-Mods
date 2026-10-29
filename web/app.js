@@ -110,10 +110,17 @@ function doBuild() {
     const emuOnly = bundle.modules.filter((m) => m.real_g1 && sel.includes(m.folder)).map((m) => m.name);
     const os = r.os && !emuOnly.length ? r.os : null;
     if (os) offer($("dlOs"), os, `g1mods-${tag}-os.bin`);
-    $("dlOs").hidden = !os;
+    // With an update image, that is the one file for G1-Emu and a real G1, and the ROM is the
+    // spare for booting G1-Emu from a file. Without one (too many modules, or a module only
+    // G1-Emu has) the ROM is all there is, and the page says why.
+    $("osBox").hidden = !os;
+    $("romTitle").textContent = os ? "Only if you boot G1-Emu from a ROM file" : "The whole ROM, for G1-Emu";
+    $("romWhy").textContent = os
+      ? "The same OS inside a whole 512 KB ROM. Not for Update Synth OS: NME refuses it as too big."
+      : "There is no OS update for these modules, so this ROM, for G1-Emu, is all there is.";
     $("noOs").textContent = os ? "" : emuOnly.length
-      ? `Not with ${emuOnly.join(", ")}: it is for G1-Emu only for now. Untick it to get one.`
-      : "Not with these modules: " + r.noOs;
+      ? `No OS update with ${emuOnly.join(", ")}: it is for G1-Emu only for now. Untick it to get one.`
+      : "No OS update with these modules: " + r.noOs;
     $("downloads").classList.add("show");
     status($("buildStatus"), `Built: types ${r.types.join(", ")}. Version 3.09 on connecting.`, "ok");
   } catch (e) {

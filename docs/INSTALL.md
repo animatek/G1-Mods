@@ -27,10 +27,12 @@ On the builder page (on the live site, or `web/serve.sh` from a clone):
 1. Drop your 3.03 ROM on it. It checks it is the right one. Nothing is uploaded.
 2. Tick the modules you want.
 3. Tick that you have read the risks, and press **Build my OS**.
-4. You get two files:
-    - **the ROM** (`g1mods-...-rom.bin`): for G1-Emu;
-    - **the OS update** (`g1mods-...-os.bin`): for a real G1's flash. If the page does not offer
-      it, it says why (too many modules, or a module not ready for a real G1).
+4. You get **one file, the OS update** (`g1mods-...-os.bin`), and it serves for both: install
+   it into G1-Emu (put in update mode) or into a real G1's flash, the same way, with NME's
+   *Device > Update Synth OS*. The page also keeps a whole ROM (`g1mods-...-rom.bin`) for booting
+   G1-Emu straight from a file; NME refuses it as too big for an update. When there is **no** OS
+   update (too many modules, or a module only G1-Emu has) the page says why, and the ROM is then
+   the only file.
 
 From a clone of this repo the same is `tools/patch_rom.py` and `tools/g1update.py fromrom`
 (README, "Where the builds are").
@@ -39,6 +41,12 @@ Keep your list of modules, not the files: the files contain Clavia's firmware an
 shared. Anyone with their own ROM builds the same OS from the same list.
 
 ## 2. Try it in G1-Emu
+
+**With the OS update (the usual way, the same as a real G1):** put G1-Emu in update mode
+(*Settings > OS... > Update mode*), then in NME *Device > Update Synth OS*, pick the `…-os.bin`
+and start. When it ends, G1-Emu keeps that OS. Then go on from step 4 below.
+
+**Or booting from the ROM file:**
 
 1. Close G1-Emu if it is running.
 2. Start it with the ROM you built and **a flash of its own**, so your usual patches are not
