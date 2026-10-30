@@ -100,6 +100,15 @@ def main():
         "free": reg["free"],   # type numbers still unclaimed, for the overview and the library
         "files": {k: base64.b64encode(open(v, "rb").read()).decode() for k, v in sorted(files.items())},
     }
+    # the panel designer's templates: each module's own theme and data (ours only, nothing of Clavia's)
+    templates = {}
+    for folder in reg["build"]:
+        d = os.path.join(ROOT, "modules", folder)
+        if os.path.exists(os.path.join(d, "nme-theme.xml")):
+            templates[folder] = {"name": json.load(open(os.path.join(d, "module.json")))["name"],
+                                 "theme": open(os.path.join(d, "nme-theme.xml"), encoding="utf-8").read(),
+                                 "data": open(os.path.join(d, "nme-modules.xml"), encoding="utf-8").read()}
+    json.dump(templates, open(os.path.join(WEB, "designer-templates.json"), "w"))
     out = os.path.join(WEB, "bundle.json")
     json.dump(bundle, open(out + ".tmp", "w"))
     os.replace(out + ".tmp", out)

@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G1-Mods · panel designer</title>
+<meta name="description" content="Lay out a Nord Modular G1 module's panel by dragging its knobs, buttons and connectors. Saves the theme XML Animatek NME reads.">
+<link rel="icon" href="logo-animatek.webp" type="image/webp">
+<style>
+:root {
+  --bg: #f4f5f7; --card: #ffffff; --card2: #f0f2f6; --ink: #14161b; --muted: #596273; --line: #dde1e8;
+  --accent: #2c7fff; --accent-ink: #ffffff; --accent-soft: #e6f0ff; --bad: #b91c1c;
+  --panel: #7d8dab; --panel-ink: #101420; --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1014; --card: #181c23; --card2: #1f242d; --ink: #eef0f4; --muted: #9aa3b2; --line: #2a303b;
+    --accent: #4d96ff; --accent-ink: #0b1220; --accent-soft: #172640; --bad: #f87171; --panel: #4a5873; --panel-ink: #eef0f4;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.4 system-ui, sans-serif; }
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--card); }
+header h1 { font-size: 16px; margin: 0; }
+header a { color: var(--accent); }
+main { display: grid; grid-template-columns: 170px minmax(0, 1fr) 280px; gap: 12px; padding: 12px 16px; align-items: start; }
+@media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
+section { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 0 0 8px; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { background: var(--card2); border: 1px solid var(--line); border-radius: 6px; padding: 5px 9px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.pal { display: grid; gap: 6px; }
+.pal button { text-align: left; }
+.row { display: grid; grid-template-columns: 90px 1fr; gap: 6px; align-items: center; margin-bottom: 6px; }
+.row input, .row select { width: 100%; padding: 4px 6px; background: var(--card); border: 1px solid var(--line); border-radius: 5px; }
+.hint { color: var(--muted); font-size: 12px; }
+#stage { overflow: auto; background: var(--card2); border-radius: 6px; padding: 14px; }
+#panel { position: relative; background: var(--panel); border-radius: 3px; box-shadow: 0 0 0 1px rgba(0,0,0,.3); transform-origin: 0 0; user-select: none; touch-action: none;
+  background-image: linear-gradient(to bottom, rgba(255,255,255,.12) 1px, transparent 1px); background-size: 100% 15px; }
+.el { position: absolute; cursor: move; color: var(--panel-ink); font-size: 10px; display: flex; align-items: center; justify-content: center; }
+.el.sel { outline: 1.5px solid #ffd400; outline-offset: 1px; z-index: 5; }
+.el.conn { border-radius: 50%; border: 2px solid #111; }
+.el.knob { border-radius: 50%; background: #3a4150; border: 2px solid #9aa3b4; }
+.el.knob::after { content: ""; width: 2px; height: 35%; background: #fff; position: absolute; top: 12%; }
+.el.label { justify-content: flex-start; white-space: nowrap; font-weight: 600; }
+.el.disp { background: #14182a; color: #fff; border: 1px solid #f0a090; font-weight: 700; }
+.el.btn { background: #3a4150; color: #fff; border: 1px solid #9aa3b4; border-radius: 2px; font-weight: 700; }
+.el.led { gap: 0; justify-content: space-around; }
+.el.led i { width: 5px; height: 5px; border-radius: 50%; background: #20242e; display: block; }
+.el.other { border: 1px dashed var(--panel-ink); opacity: .7; }
+#title { position: absolute; left: 6px; top: 1px; font-weight: 700; font-size: 11px; color: var(--panel-ink); pointer-events: none; }
+textarea#out { width: 100%; height: 220px; font: 11px/1.3 var(--mono); background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 6px; }
+.bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>G1-Mods · panel designer</h1>
+  <label>Start from <select id="tpl"></select></label>
+  <button id="load">Load XML…</button>
+  <span class="hint">A module's panel is 255 px wide, rows of 15 px. Drag; arrows nudge (Shift = 5 px); Delete removes.</span>
+  <a href="./">← G1-Mods</a>
+</header>
+<main>
+  <section>
+    <h2>Add</h2>
+    <div class="pal" id="pal"></div>
+    <h2 style="margin-top:14px">Module</h2>
+    <div class="row"><label>Name</label><input id="mname"></div>
+    <div class="row"><label>Rows (15 px)</label><input id="mrows" type="number" min="1" max="20"></div>
+    <div class="row"><label>Zoom</label><select id="zoom"><option>2</option><option selected>3</option><option>4</option></select></div>
+  </section>
+  <section>
+    <div id="stage"><div id="panel"><div id="title"></div></div></div>
+    <div class="bar"><span class="hint" id="pos"></span></div>
+  </section>
+  <section>
+    <h2>Selected</h2>
+    <div id="props"><span class="hint">Click an element.</span></div>
+    <h2 style="margin-top:14px">Theme XML</h2>
+    <textarea id="out" readonly></textarea>
+    <div class="bar">
+      <button class="primary" id="copy">Copy</button>
+      <button id="dl">Download</button>
+      <span class="hint" id="msg"></span>
+    </div>
+    <p class="hint">Send the XML (and say which module) to Claude, or save it as the module's <code>nme-theme.xml</code>. Layout only: a new knob or connector still needs its parameter or port in the module's data and DSP.</p>
+  </section>
+</main>
+<datalist id="ids"></datalist>
+<script>
+"use strict";
+const W = 255;
+let doc = null;            // the <module> element being edited
+let sel = null;            // the selected element (a child of doc)
+let zoom = 3;
+let dataIds = [];          // ids (and names) the module's data offers, for the pickers
+const $ = id => document.getElementById(id);
+const panel = $("panel");
+
+// ---- the palette: what Add puts in, with its children
+const PALETTE = {
+  "Knob":        '<knob x="20" y="20" size="21"><parameter component-id="" alt="" /></knob>',
+  "Button":      '<button x="20" y="20" width="30" height="16" cyclic="true" landscape="false"><parameter component-id="" alt="" /><btn index="0">Off</btn><btn index="1">On</btn></button>',
+  "Rnd button":  '<button x="78" y="5" width="22" height="14" cyclic="true" landscape="true"><call method="randomize" /><btn index="0">Rnd</btn><btn index="1">Rnd</btn></button>',
+  "Clr button":  '<button x="100" y="5" width="22" height="14" cyclic="true" landscape="true"><call method="clear" /><btn index="0">Clr</btn><btn index="1">Clr</btn></button>',
+  "Logic in/out":   '<connector x="20" y="20" size="13" class="cLOGIC"><connector component-id="" alt="" /></connector>',
+  "Control in/out": '<connector x="20" y="20" size="13" class="cCONTROL"><connector component-id="" alt="" /></connector>',
+  "Audio in/out":   '<connector x="20" y="20" size="13" class="cAUDIO"><connector component-id="" alt="" /></connector>',
+  "Label":       '<label x="20" y="20">Label</label>',
+  "Number display": '<textDisplay x="20" y="20" width="22" height="14"><parameter component-id="" alt="" /></textDisplay>',
+  "LED row":     '<light component-id="" type="led-array" steps="8" x="20" y="20" width="160" height="6" />',
+};
+for (const name of Object.keys(PALETTE)) {
+  const b = document.createElement("button");
+  b.textContent = "+ " + name;
+  b.onclick = () => addElement(PALETTE[name]);
+  $("pal").appendChild(b);
+}
+
+// ---- reading and writing the XML
+function parseTheme(text) {
+  const x = new DOMParser().parseFromString("<root>" + text + "</root>", "application/xml");
+  if (x.querySelector("parsererror")) throw new Error("not valid XML");
+  const m = x.documentElement.querySelector("module");
+  if (!m) throw new Error("no <module> in it");
+  return m;
+}
+function pretty(el, depth) {
+  const pad = "\t".repeat(depth);
+  const attrs = [...el.attributes].map(a => ` ${a.name}="${a.value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;")}"`).join("");
+  const kids = [...el.children];
+  const text = [...el.childNodes].filter(n => n.nodeType === 3).map(n => n.textContent).join("").trim();
+  if (!kids.length && !text) return `${pad}<${el.tagName}${attrs} />`;
+  if (!kids.length) return `${pad}<${el.tagName}${attrs}>${text.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</${el.tagName}>`;
+  return `${pad}<${el.tagName}${attrs}>\n${kids.map(k => pretty(k, depth + 1)).join("\n")}\n${pad}</${el.tagName}>`;
+}
+function refreshOut() { $("out").value = doc ? pretty(doc, 1).replace(/^\t/, "\t") + "\n" : ""; }
+
+// ---- drawing
+const num = (el, a, d = 0) => parseFloat(el.getAttribute(a) ?? d) || d;
+function rows() { return Math.max(1, Math.round(num(doc, "height", 30) / 15)); }
+function elBox(el) {
+  const t = el.tagName;
+  const x = num(el, "x"), y = num(el, "y");
+  if (t === "connector" || t === "knob") { const s = num(el, "size", 13); return [x, y, s, s]; }
+  if (t === "label") { const w = num(el, "width", 0) || (el.textContent.trim().length * 6 + 4); return [x, y, w, num(el, "height", 11)]; }
+  return [x, y, num(el, "width", 20), num(el, "height", 14)];
+}
+function draw() {
+  panel.querySelectorAll(".el").forEach(n => n.remove());
+  if (!doc) return;
+  const h = rows() * 15;
+  panel.style.width = W + "px"; panel.style.height = h + "px"; panel.style.transform = `scale(${zoom})`;
+  $("stage").style.height = h * zoom + 28 + "px";
+  panel.style.marginBottom = "0";
+  $("title").textContent = (doc.querySelector(":scope > name") || {}).textContent || "";
+  for (const el of doc.children) {
+    if (el.tagName === "name") continue;
+    const [x, y, w, h2] = elBox(el);
+    const d = document.createElement("div");
+    d.className = "el";
+    d.style.left = x + "px"; d.style.top = y + "px"; d.style.width = w + "px"; d.style.height = h2 + "px";
+    const t = el.tagName;
+    const cls = el.getAttribute("class") || "";
+    if (t === "connector") {
+      d.classList.add("conn");
+      d.style.background = cls === "cLOGIC" ? "#e8d84a" : cls === "cCONTROL" ? "#7a7ae0" : cls === "cAUDIO" ? "#e05a5a" : "#aaa";
+    } else if (t === "knob") d.classList.add("knob");
+    else if (t === "label") { d.classList.add("label"); d.textContent = el.textContent.trim(); }
+    else if (t === "textDisplay") { d.classList.add("disp"); d.textContent = "0"; }
+    else if (t === "button") { d.classList.add("btn"); const b = el.querySelector("btn"); d.textContent = b ? b.textContent.trim() : "▢"; }
+    else if (t === "light") { d.classList.add("led"); for (let i = 0; i < Math.min(16, num(el, "steps", 8)); i++) d.appendChild(document.createElement("i")); }
+    else { d.classList.add("other"); d.textContent = t; }
+    if (el === sel) d.classList.add("sel");
+    d.onpointerdown = e => startDrag(e, el);
+    panel.appendChild(d);
+  }
+  refreshOut();
+}
+
+// ---- selecting and moving
+let drag = null;
+function startDrag(e, el) {
+  e.preventDefault(); e.stopPropagation();
+  sel = el; showProps(); draw();
+  drag = { el, sx: e.clientX, sy: e.clientY, ox: num(el, "x"), oy: num(el, "y") };
+  window.onpointermove = ev => {
+    if (!drag) return;
+    const snap = ev.altKey ? 1 : 1;
+    const nx = Math.round(drag.ox + (ev.clientX - drag.sx) / zoom / snap) * snap;
+    const ny = Math.round(drag.oy + (ev.clientY - drag.sy) / zoom / snap) * snap;
+    el.setAttribute("x", Math.max(0, Math.min(W - 4, nx))); el.setAttribute("y", Math.max(0, ny));
+    draw(); showPos();
+  };
+  window.onpointerup = () => { drag = null; window.onpointermove = null; showProps(); };
+}
+panel.onpointerdown = () => { sel = null; showProps(); draw(); };
+document.onkeydown = e => {
+  if (!sel || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+  const step = e.shiftKey ? 5 : 1;
+  const d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
+  if (d) { e.preventDefault(); sel.setAttribute("x", num(sel, "x") + d[0]); sel.setAttribute("y", num(sel, "y") + d[1]); draw(); showProps(); }
+  else if (e.key === "Delete" || e.key === "Backspace") { sel.remove(); sel = null; draw(); showProps(); }
+};
+function showPos() { $("pos").textContent = sel ? `${sel.tagName}  x ${num(sel, "x")}  y ${num(sel, "y")}` : ""; }
+
+// ---- properties
+function field(label, value, onchange, list) {
+  const row = document.createElement("div"); row.className = "row";
+  const l = document.createElement("label"); l.textContent = label;
+  const i = document.createElement("input"); i.value = value;
+  if (list) i.setAttribute("list", "ids");
+  i.onchange = () => { onchange(i.value); draw(); showPos(); };
+  row.append(l, i); $("props").appendChild(row);
+}
+function showProps() {
+  const box = $("props"); box.innerHTML = ""; showPos();
+  if (!sel) { box.innerHTML = '<span class="hint">Click an element.</span>'; return; }
+  const t = sel.tagName;
+  const h = document.createElement("div"); h.className = "hint"; h.textContent = t + (sel.getAttribute("class") ? " · " + sel.getAttribute("class") : ""); box.appendChild(h);
+  field("x", num(sel, "x"), v => sel.setAttribute("x", parseInt(v) || 0));
+  field("y", num(sel, "y"), v => sel.setAttribute("y", parseInt(v) || 0));
+  if (sel.hasAttribute("size")) field("size", num(sel, "size"), v => sel.setAttribute("size", parseInt(v) || 13));
+  if (sel.hasAttribute("width")) field("width", num(sel, "width"), v => sel.setAttribute("width", parseInt(v) || 10));
+  if (sel.hasAttribute("height")) field("height", num(sel, "height"), v => sel.setAttribute("height", parseInt(v) || 10));
+  if (t === "label") field("text", sel.textContent.trim(), v => { sel.textContent = v; });
+  if (sel.hasAttribute("steps")) field("steps", num(sel, "steps"), v => sel.setAttribute("steps", parseInt(v) || 8));
+  if (t === "light") field("component-id", sel.getAttribute("component-id") || "", v => sel.setAttribute("component-id", v), true);
+  const inner = sel.querySelector(":scope > parameter, :scope > connector");
+  if (inner) {
+    field("component-id", inner.getAttribute("component-id") || "", v => inner.setAttribute("component-id", v), true);
+    field("alt (name)", inner.getAttribute("alt") || "", v => inner.setAttribute("alt", v), true);
+  }
+  if (t === "button") {
+    sel.querySelectorAll("btn").forEach((b, i) => field("btn " + i, b.textContent.trim(), v => { b.textContent = v; }));
+  }
+  const del = document.createElement("button"); del.textContent = "Delete"; del.onclick = () => { sel.remove(); sel = null; draw(); showProps(); };
+  const dup = document.createElement("button"); dup.textContent = "Duplicate";
+  dup.onclick = () => { const c = sel.cloneNode(true); c.setAttribute("x", num(sel, "x") + 10); c.setAttribute("y", num(sel, "y") + 10); sel.after(c); sel = c; draw(); showProps(); };
+  const bar = document.createElement("div"); bar.className = "bar"; bar.append(dup, del); box.appendChild(bar);
+}
+function addElement(xml) {
+  if (!doc) return;
+  const holder = new DOMParser().parseFromString("<root>" + xml + "</root>", "application/xml").documentElement.firstElementChild;
+  doc.appendChild(doc.ownerDocument.importNode(holder, true));
+  sel = doc.lastElementChild; draw(); showProps();
+}
+
+// ---- module-level fields
+$("mname").onchange = () => { let n = doc.querySelector(":scope > name"); if (!n) { n = doc.ownerDocument.createElement("name"); doc.prepend(n); } n.textContent = $("mname").value; draw(); };
+$("mrows").onchange = () => { doc.setAttribute("height", String(Math.max(1, parseInt($("mrows").value) || 1) * 15)); draw(); };
+$("zoom").onchange = () => { zoom = parseInt($("zoom").value); draw(); };
+
+function open(text, dataText) {
+  doc = parseTheme(text); sel = null;
+  dataIds = [];
+  if (dataText) {
+    const dx = new DOMParser().parseFromString("<root>" + dataText + "</root>", "application/xml");
+    dx.querySelectorAll("module > connector, module > parameter").forEach(n => {
+      if (n.getAttribute("class") === "morph") return;
+      dataIds.push([n.getAttribute("component-id"), n.getAttribute("name")]);
+    });
+  }
+  $("ids").innerHTML = dataIds.map(([id, n]) => `<option value="${id}">${n}</option>`).join("");
+  const nm = doc.querySelector(":scope > name"); $("mname").value = nm ? nm.textContent : "";
+  $("mrows").value = rows();
+  draw(); showProps();
+}
+
+// ---- templates, loading, saving
+let templates = {};
+fetch("designer-templates.json").then(r => r.json()).then(t => {
+  templates = t;
+  $("tpl").innerHTML = '<option value="">— choose —</option><option value="_blank">Blank module</option>' +
+    Object.entries(t).map(([k, v]) => `<option value="${k}">${v.name}</option>`).join("");
+}).catch(() => { $("tpl").innerHTML = '<option value="">(templates not found: open from the site)</option><option value="_blank">Blank module</option>'; });
+$("tpl").onchange = () => {
+  const k = $("tpl").value;
+  if (k === "_blank") open('<module component-id="m0" width="255" height="45"><name>New module</name></module>');
+  else if (templates[k]) open(templates[k].theme, templates[k].data);
+};
+$("load").onclick = () => {
+  const f = document.createElement("input"); f.type = "file"; f.accept = ".xml,text/xml";
+  f.onchange = async () => { try { open(await f.files[0].text()); } catch (e) { $("msg").textContent = e.message; } };
+  f.click();
+};
+$("copy").onclick = async () => { try { await navigator.clipboard.writeText($("out").value); $("msg").textContent = "Copied"; } catch { $("out").select(); $("msg").textContent = "Select and copy"; } };
+$("dl").onclick = () => {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([$("out").value], { type: "text/xml" }));
+  a.download = "nme-theme.xml"; a.click();
+};
+</script>
+</body>
+</html>

@@ -12,9 +12,9 @@ only, with its own file (a whole ROM, which is what G1-Emu boots).
 Today the ROM the builder hands out is the same OS as the update image, in a whole ROM for G1-Emu (its
 *Settings > ROM > Choose...*). A bigger OS would be a second, different build with its own file.
 
-## Panel designer (idea, 2026-10-30)
+## Panel designer (phase 1 done 2026-10-30)
 
-A web tool (`tools/panel-designer/`, one HTML file) to lay a module's panel out by dragging: 255 px wide, rows of 15 px, a palette (knob, button, connector, label, number display, LED array, slider, Rnd/Clr), a properties panel, any existing module (ours or Clavia's) as a template, saved as the `nme-theme.xml` NME reads. Phase 1: open, move, resize, add, delete, save. Phase 2: a module from scratch (its connectors and parameters in `nme-modules.xml`; the DSP stays by hand). Phase 3, maybe: lines and decoration, which the theme format does not have (a change in NME's theme reader). The preview is an approximation of NME's drawing, not the same.
+`web/designer.html`, linked from the site's sidebar: lay a module's panel out by dragging (255 px wide, rows of 15 px; arrows nudge, Delete removes), with a palette (knob, button, Rnd/Clr, connectors, label, number display, LED row), a properties panel, each of our modules as a template (`web/designer-templates.json`, made by `make_bundle.py`) and the theme XML out to copy or download: send it to Claude or save it as the module's `nme-theme.xml`. It keeps every attribute it does not know, so a template comes back out the same (checked for the 14 modules). Not done: a module from scratch with its connectors and parameters in `nme-modules.xml` (phase 2); lines and decoration, which the theme format does not have (phase 3, a change in NME's theme reader). The preview is boxes at the real size, not NME's drawing. Only our own modules are templates: Clavia's layouts stay out of the repo.
 
 ## CCOut (done 2026-10-30)
 

@@ -18,3 +18,4 @@ __pycache__/
 /web/bundle.json
 # ...and the pictures it copies from modules/<name>/images/
 /web/modules/
+web/designer-templates.json
