@@ -1,5 +1,5 @@
 {
-  "fullname": "Ctrl Send, un cambio de controlador al MIDI OUT",
+  "fullname": "CC Out, un cambio de controlador al MIDI OUT",
   "summary": "Un control change por el MIDI OUT del G1, como el CtrlSend del G2: Ctrl, Value, Chan, In y Send.",
   "about": [
     "Envía un control change (CC) MIDI por el MIDI OUT del G1, a imagen del CtrlSend del G2. El valor es In más el pomo Value, limitado a 0-127: sin nada en In, solo el pomo; con un LFO bipolar en In y Value 64, todo el rango. Sale un CC cada vez que el valor cambia, y cada vez que Send sube. Ctrl es el número de controlador, Chan el canal MIDI. In thru deja pasar In.",

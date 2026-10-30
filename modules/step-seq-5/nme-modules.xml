@@ -1,4 +1,4 @@
-  <module component-id="m123" index="123" name="AddrSeq" fullname="Address Sequencer, eight knobs and a start step (G1-Mods)" category="Sequencer (mods)">
+  <module component-id="m123" index="123" name="8Steps" fullname="8Steps, an eight-step sequencer with Steps, Start and Reverse (G1-Mods)" category="Sequencer (mods)">
     <image type="screenshot" src="img/modules/module-91.png" width="256" height="105" />
     <image type="icon16x16" src="img/icons/16x16/module-id-91.png" width="16" height="16" />
     <image type="icon32x32" src="img/icons/32x32/module-id-91.png" width="32" height="32" />
@@ -15,8 +15,8 @@
     <parameter component-id="p7" index="6" name="step 7" class="parameter" defaultValue="64" formatter="value-64" extension="m7" />
     <parameter component-id="p8" index="7" name="step 8" class="parameter" defaultValue="64" formatter="value-64" extension="m8" />
     <parameter component-id="p9" index="8" name="steps" class="parameter" maxValue="7" defaultValue="7" formatter="value+1" extension="m9" />
-    <parameter component-id="p10" index="9" name="start" class="parameter" maxValue="7" formatter="value+1" extension="m10" />
-    <parameter component-id="p11" index="10" name="reverse" class="parameter" maxValue="1" formatter="fmtOffOn" extension="m11" />
+    <parameter component-id="p10" index="9" name="start" class="parameter" maxValue="7" defaultValue="0" formatter="value+1" extension="m10" />
+    <parameter component-id="p11" index="10" name="reverse" class="parameter" maxValue="1" defaultValue="0" formatter="fmtOffOn" extension="m11" />
     <parameter component-id="m1" index="0" name="morph:step 1" class="morph" role="morph"  minValue="-127" maxValue="127" />
     <parameter component-id="m2" index="1" name="morph:step 2" class="morph" role="morph"  minValue="-127" maxValue="127" />
     <parameter component-id="m3" index="2" name="morph:step 3" class="morph" role="morph"  minValue="-127" maxValue="127" />
@@ -36,6 +36,6 @@
     <attribute name="prog-mem" type="double" value="1.2" />
     <attribute name="dyn-mem" type="double" value="0.5" />
     <attribute name="zero-page" type="double" value="1.875" />
-    <attribute name="height" type="integer" value="5" />
+    <attribute name="height" type="integer" value="8" />
     <attribute name="background" value="#e5babf" />
   </module>

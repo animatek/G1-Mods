@@ -1,7 +1,7 @@
 {
   "type": 122,
-  "name": "CtrlSend",
-  "fullname": "Ctrl Send, a controller change to the MIDI OUT",
+  "name": "CCOut",
+  "fullname": "CC Out, a controller change to the MIDI OUT",
   "summary": "A control change out of the G1's MIDI OUT, as the G2's CtrlSend: Ctrl, Value, Chan, In and Send.",
   "kind": "control",
   "author": "Animatek",

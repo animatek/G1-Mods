@@ -86,14 +86,14 @@ def main():
         report("Send: the knob's value on each rising edge",
                len(msgs) >= 3 and all(m == (0xB0, 7, 32) for m in msgs), msgs)
 
-        gone = base.replace("2 122 2 8 \n", "").replace(PARAMS, "").replace(LFO_TO_IN, "").replace("2 CtrlSend\n", "")
+        gone = base.replace("2 122 2 8 \n", "").replace(PARAMS, "").replace(LFO_TO_IN, "").replace("2 CCOut\n", "")
         msgs = midi_out(rom, xml, gone, tmp, "none")
         report("no Ctrl Send", msgs == [], msgs)
 
         both = (base.replace("2 122 2 8 \n", "2 122 2 8 \n3 60 2 14 \n")
                 .replace(LFO_TO_IN, LFO_TO_SEND + "0 3 1 0 1 1 1 \n")
                 .replace(PARAMS, PARAMS + "3 60 2 0 100 \n")
-                .replace("2 CtrlSend\n", "2 CtrlSend\n3 NoteOut\n"))
+                .replace("2 CCOut\n", "2 CCOut\n3 NoteOut\n"))
         msgs = midi_out(rom, xml, both, tmp, "both")
         notes = [m for m in msgs if m[0] in (0x90, 0x80)]
         report("with a Note Out too: notes and CCs",

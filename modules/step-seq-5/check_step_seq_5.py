@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Checks the Address Sequencer (type 123, once the 5-Step Seq) in G1-Emu with the G1-Mods ROM.
+"""Checks the 8Steps (type 123, once the 5-Step Seq) in G1-Emu with the G1-Mods ROM.
 
     modules/step-seq-5/check_step_seq_5.py
 

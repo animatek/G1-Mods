@@ -1,5 +1,5 @@
 {
-  "fullname": "Secuenciador de direcciones, ocho pomos y un paso de inicio",
+  "fullname": "8Steps, un secuenciador de ocho pasos",
   "summary": "Ocho pomos bipolares, uno por paso, con Steps, Start, Reverse y LED de paso.",
   "about": [
     "Un secuenciador de ocho pasos con un pomo bipolar para cada paso, a imagen del ADDR-SEQ de Bogaudio (era el 5-Step Seq, con el mismo tipo). Cada flanco de subida de Clk avanza un paso y el último vuelve al primero. Out es el valor del paso actual, de -64 a +63, y ocho LED muestran dónde está.",
@@ -14,7 +14,7 @@
   ],
   "notes": "Tasa de control. Un parche guardado con el 5-Step Seq conserva sus cinco pomos; Steps, Start y Reverse toman sus valores por defecto (8 pasos, Start 1, hacia delante), así que hay que poner Steps a 5.",
   "patch_notes": {
-    "seq5-ctrlseq.pch": "Un ClkGen marca el reloj de un Address Sequencer (Steps 5) y de un CtrlSeq; un LFO reinicia los dos, manteniéndolos a compás.",
-    "seq5.pch": "ClkGen marca el reloj del Address Sequencer (Steps 5); sus pomos fijan los pasos."
+    "seq5-ctrlseq.pch": "Un ClkGen marca el reloj de un 8Steps (Steps 5) y de un CtrlSeq; un LFO reinicia los dos, manteniéndolos a compás.",
+    "seq5.pch": "ClkGen marca el reloj del 8Steps (Steps 5); sus pomos fijan los pasos."
   }
 }

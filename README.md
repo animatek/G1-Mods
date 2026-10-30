@@ -41,7 +41,7 @@ connects to a 3.09.
 | --- | --- | --- |
 | 120 | FlipFlop | D-type and RS-type flip-flop: Clk, In, Rst, Q and NotQ. |
 | 121 | Mix1-1A | One-input chain mixer, as the G2's (its Lin/dB/Exp curves still missing). |
-| 123 | AddrSeq | Address sequencer, after Bogaudio's ADDR-SEQ: eight bipolar knobs, Steps, Start, Reverse, step LEDs. It was the 5-Step Seq. |
+| 123 | 8Steps | Address sequencer, after Bogaudio's ADDR-SEQ: eight bipolar knobs, Steps, Start, Reverse, step LEDs. It was the 5-Step Seq. |
 | 124 | Turing Machine | A looping random shift register: CV, eight gates, Prob, Length 1–16, Lock, Scale, LEDs. |
 | 125 | Scale Quantizer | A pitch to the nearest note of one of 16 scales, with Root and Octave. |
 | 126 | 8Counter | Eight outputs, one high a step, with Rst and LEDs. |
@@ -52,7 +52,7 @@ connects to a 3.09.
 | 55 | Envelope | ADDSR, or one shot (D, H, AHD). |
 | 56 | Osc String | A plucked string (Karplus-Strong), the first audio-rate module. |
 | 60 | Note Out | A gate and a note out of the G1's MIDI OUT, as the G2's NoteSend: Chan, Vel, Gate thru. |
-| 122 | CtrlSend | A control change out of the G1's MIDI OUT, as the G2's CtrlSend: Ctrl, Value, Chan, In and Send. |
+| 122 | CCOut | A control change out of the G1's MIDI OUT, as the G2's CtrlSend: Ctrl, Value, Chan, In and Send. |
 
 Each has a test that plays it in G1-Emu. What is left of each, and the G2's modules still to port,
 are in [`PORTING.md`](PORTING.md). Four types are still free (93, 109, 116, 119), so the

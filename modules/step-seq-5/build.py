@@ -1,4 +1,4 @@
-"""step-seq-5 (the Address Sequencer, once the 5-Step Seq): how the module is built into the OS. tools/patch_rom.py calls build(b, type)
+"""step-seq-5 (the 8Steps, once the 5-Step Seq): how the module is built into the OS. tools/patch_rom.py calls build(b, type)
 with the type module.json gives it."""
 import os
 
@@ -8,7 +8,7 @@ ASM = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seq5.asm")
 
 
 def build(b, new_type):
-    """Address Sequencer: Clk and Rst in, Out, eight bipolar knobs (-64..+63 units), Steps (the
+    """8Steps: Clk and Rst in, Out, eight bipolar knobs (-64..+63 units), Steps (the
     last step, 0-7), Start (the step an armed clock goes to) and Reverse, the step's LEDs."""
     # value v = 0..127: (v - 64) control units, a unit being $8000
     #   move.l d2,d0 / subi.l #64,d0 / moveq #15,d1 / asl.l d1,d0

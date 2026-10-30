@@ -43,4 +43,4 @@ ClkGen ─clock─▶ TuringMachine ─cv─▶ ScaleQuant ─pitch─▶ OscA �
 
 The oscillator drones and steps through scale notes as the pattern shifts. To make it play like an
 instrument, add the keyboard's Note to OscA (or gate an AD envelope with a Turing gate). The
-**8Counter** and **Address Sequencer** are the next step: see the Clock & reset guide.
+**8Counter** and **8Steps** are the next step: see the Clock & reset guide.

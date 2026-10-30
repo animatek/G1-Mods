@@ -1,7 +1,7 @@
 {
   "type": 123,
-  "name": "AddrSeq",
-  "fullname": "Address Sequencer, eight knobs and a start step",
+  "name": "8Steps",
+  "fullname": "8Steps, an eight-step sequencer",
   "summary": "Eight bipolar knobs, one a step, with Steps, Start, Reverse and step LEDs.",
   "kind": "control",
   "author": "Animatek",
@@ -24,7 +24,7 @@
   ],
   "notes": "Control rate. A patch saved with the 5-Step Seq keeps its five knobs; Steps, Start and Reverse take their defaults (8 steps, Start 1, forwards), so set Steps to 5 there.",
   "patch_notes": {
-    "seq5-ctrlseq.pch": "One ClkGen clocks an Address Sequencer (Steps 5) and a CtrlSeq; one LFO resets both, keeping them in step.",
-    "seq5.pch": "ClkGen clocks the Address Sequencer (Steps 5); its knobs set the steps."
+    "seq5-ctrlseq.pch": "One ClkGen clocks an 8Steps (Steps 5) and a CtrlSeq; one LFO resets both, keeping them in step.",
+    "seq5.pch": "ClkGen clocks the 8Steps (Steps 5); its knobs set the steps."
   }
 }

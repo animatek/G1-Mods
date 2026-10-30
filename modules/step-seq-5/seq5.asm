@@ -1,4 +1,4 @@
-; Address Sequencer (G1-Mods type 123), after Bogaudio's ADDR-SEQ: eight knobs, a length, a
+; 8Steps (G1-Mods type 123), after Bogaudio's ADDR-SEQ: eight knobs, a length, a
 ; first step and a direction. It was the 5-Step Seq; the type is the same.
 ;   inputs 0 Clk, 1 Rst        output 0 Out
 ;   parameters 0-7 the steps' values (-64..+63), 8 Steps (the last step, 0-7), 9 Start, 10 Reverse

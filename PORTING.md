@@ -67,7 +67,7 @@ outputs of all its variants and each panel shows its own.
 | --- | --- | --- | --- |
 | Mixer 1-1 A (Mix1-1A) | 121 | 🟡 | Level, Ch 1 button and chain work (checked). Missing: the Lin / dB / Exp curves (needs a 68k routine of our own; see `NOTES.md`). |
 | FlipFlop | 120 | ✅ | D-type and RS-type, Clk, In, Rst, Q and NotQ (`modules/flipflop/flipflop.asm`; `modules/flipflop/check_flipflop.py`). |
-| Address Sequencer (our own, ex 5-Step Seq) | 123 | ✅ | Clk, Rst, Out, eight bipolar knobs, Steps, Start, Reverse and a row of eight step LEDs (`modules/step-seq-5/seq5.asm`, `modules/step-seq-5/check_step_seq_5.py`). |
+| 8Steps (our own, ex 5-Step Seq) | 123 | ✅ | Clk, Rst, Out, eight bipolar knobs, Steps, Start, Reverse and a row of eight step LEDs (`modules/step-seq-5/seq5.asm`, `modules/step-seq-5/check_step_seq_5.py`). |
 | Turing Machine (our own) | 124 | ✅ | Clk, CV, 8 gates (bits 0–7), Prob (bipolar, as the original's big knob), Length 1–16, Lock, Scale and 8 LEDs (`modules/turing-machine/turing.asm`, `modules/turing-machine/check_turing_machine.py`). Missing: a Rst, and the expander's mixes (1+2, 2+4, 4+7, 1+2+4+7). |
 | Scale Quantizer (our own) | 125 | ✅ | In, Out, Root, Scale (16 by name) and Octave, after JW-Modules' Quantizer (`modules/scale-quantizer/quant.asm`, `modules/scale-quantizer/check_scale_quantizer.py`). Missing: CV inputs for Root and Scale. |
 | 8Counter | 126 | ✅ | Clk, Rst (as the G1's sequencers'), eight outputs, one high a step, and eight step LEDs (`modules/counter8/counter8.asm`, `modules/counter8/check_counter8.py`). |
@@ -204,7 +204,7 @@ the editor (NME writes the parameters), with nothing in the OS.
 
 | Module | DSP words | Feasible | Status | Notes |
 | --- | --- | --- | --- | --- |
-| CtrlSend, PCSend, NoteSend | 20–26 | Hard | CtrlSend ✅ (122), NoteSend ✅ (Note Out, 60), PCSend ⬜ | The DSP part is small; the 68k must read it and send MIDI. Also needs the MIDI OUT path that G1-Emu does not have yet. |
+| CtrlSend, PCSend, NoteSend | 20–26 | Hard | CCOut ✅ (122, the G2's CtrlSend), NoteSend ✅ (Note Out, 60), PCSend ⬜ | The DSP part is small; the 68k must read it and send MIDI. Also needs the MIDI OUT path that G1-Emu does not have yet. |
 | CtrlRcv, NoteRcv | 4–5 | Hard | ⬜ | The 68k must route incoming MIDI into the module. |
 | Automate | 1 | Hard | ⬜ | |
 
