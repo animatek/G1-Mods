@@ -1,36 +1,36 @@
 	<module component-id="m122" width="255" height="45">
 		<name>CC Out</name>
-		<label x="6" y="17">In</label>
-		<connector x="8" y="29" size="13" class="cCONTROL">
+		<label x="6" y="14">In</label>
+		<connector x="8" y="25" size="13" class="cCONTROL">
 			<connector component-id="c1" alt="in" />
 		</connector>
-		<label x="30" y="17">Send</label>
-		<connector x="34" y="29" size="13" class="cLOGIC">
+		<label x="30" y="14">Send</label>
+		<connector x="34" y="25" size="13" class="cLOGIC">
 			<connector component-id="c2" alt="send" />
 		</connector>
-		<label x="62" y="17">Ctrl</label>
-		<textDisplay x="62" y="29" width="24" height="14">
+		<label x="62" y="14">Ctrl</label>
+		<textDisplay x="62" y="25" width="24" height="14">
 			<parameter component-id="p1" alt="ctrl" />
 		</textDisplay>
-		<knob x="90" y="26" size="20">
+		<knob x="90" y="22" size="20">
 			<parameter component-id="p1" alt="ctrl" />
 		</knob>
-		<label x="116" y="17">Value</label>
-		<textDisplay x="116" y="29" width="24" height="14">
+		<label x="116" y="14">Value</label>
+		<textDisplay x="116" y="25" width="24" height="14">
 			<parameter component-id="p2" alt="value" />
 		</textDisplay>
-		<knob x="144" y="26" size="20">
+		<knob x="144" y="22" size="20">
 			<parameter component-id="p2" alt="value" />
 		</knob>
-		<label x="170" y="17">Chan</label>
-		<textDisplay x="170" y="29" width="24" height="14">
+		<label x="170" y="14">Chan</label>
+		<textDisplay x="170" y="25" width="24" height="14">
 			<parameter component-id="p3" alt="chan" />
 		</textDisplay>
-		<knob x="198" y="26" size="20">
+		<knob x="198" y="22" size="20">
 			<parameter component-id="p3" alt="chan" />
 		</knob>
-		<label x="216" y="17">Thru</label>
-		<connector x="220" y="29" size="13" class="cCONTROL">
+		<label x="216" y="14">Thru</label>
+		<connector x="220" y="25" size="13" class="cCONTROL">
 			<connector component-id="c3" alt="thru" />
 		</connector>
 	</module>

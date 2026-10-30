@@ -36,6 +36,6 @@
     <attribute name="prog-mem" type="double" value="1.2" />
     <attribute name="dyn-mem" type="double" value="0.5" />
     <attribute name="zero-page" type="double" value="1.875" />
-    <attribute name="height" type="integer" value="8" />
+    <attribute name="height" type="integer" value="6" />
     <attribute name="background" value="#e5babf" />
   </module>
