@@ -42,4 +42,4 @@ ClkGen ─clock─▶ TuringMachine ─cv─▶ ScaleQuant ─pitch─▶ OscA �
 
 El oscilador zumba y recorre notas de la escala a medida que cambia el patrón. Para que suene como un
 instrumento, añade la Note del teclado a OscA (o dispara una envolvente AD con una gate de la Turing). El
-**8Counter** y el **5-Step Seq** son el siguiente paso: mira la guía de Reloj y reset.
+**8Counter** y el **Address Sequencer** son el siguiente paso: mira la guía de Reloj y reset.

@@ -3,7 +3,7 @@
   "summary": "Ocho salidas, una alta por paso, con Rst y LED.",
   "about": [
     "Ocho salidas, una alta cada vez, que avanza con el reloj, a imagen del 8Counter del G2. Cada flanco de subida de Clk pasa al paso siguiente y el octavo vuelve al primero. Ocho LED muestran el paso.",
-    "Rst funciona como el de los secuenciadores del G1: arma el contador y el siguiente reloj va al primer paso. Empieza en el último, así que el primer reloj toca el primero. Se mantiene a compás con un CtrlSeq o un 5-Step Seq con el mismo reloj y reset."
+    "Rst funciona como el de los secuenciadores del G1: arma el contador y el siguiente reloj va al primer paso. Empieza en el último, así que el primer reloj toca el primero. Se mantiene a compás con un CtrlSeq o un Address Sequencer con el mismo reloj y reset."
   ],
   "usage": [
     "Manda un reloj a Clk y usa cada salida como la gate de una percusión o un evento distinto.",

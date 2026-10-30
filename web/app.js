@@ -245,7 +245,7 @@ const DESCRIPTIONS = {
   recovery: "Going back to Clavia's OS, and what to do when something goes wrong.",
   "turing-scale": "First patch: the Turing Machine and the Scale Quantizer into an oscillator.",
   "nme-g1emu": "Connect Animatek NME to G1-Emu — the safe way in before a real G1.",
-  "clock-reset": "Clock & reset: how the sequencers, the 5-Step Seq and the 8Counter stay in step.",
+  "clock-reset": "Clock & reset: how the sequencers, the Address Sequencer and the 8Counter stay in step.",
   modular: "The Nord Modular G1: its history, its three models, and how a patch runs on its DSPs.",
   links: "The code, the editor, the emulator and the people behind G1-Mods.",
   contribute: "Help build G1-Mods: how a module is made, tested in G1-Emu first.",

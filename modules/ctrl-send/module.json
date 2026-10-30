@@ -1,0 +1,29 @@
+{
+  "type": 122,
+  "name": "CtrlSend",
+  "fullname": "Ctrl Send, a controller change to the MIDI OUT",
+  "summary": "A control change out of the G1's MIDI OUT, as the G2's CtrlSend: Ctrl, Value, Chan, In and Send.",
+  "kind": "control",
+  "author": "Animatek",
+  "licence": "GPL-3.0-only",
+  "version": "0.1.0",
+  "nme_after": 60,
+  "tests": [
+    "check_ctrl_send.py"
+  ],
+  "about": [
+    "Sends a MIDI control change (CC) from the G1's MIDI OUT, after the G2's CtrlSend. The value is In plus the Value knob, kept to 0-127: with nothing in In the knob alone, with a bipolar LFO in In and Value 64 the whole range. A CC goes out every time the value changes, and every time Send goes high. Ctrl is the controller number, Chan the MIDI channel. In thru passes In on.",
+    "The DSP sends no MIDI itself: it leaves a word for the 68k, which reads it in the OS's main loop and queues the CC on the MIDI OUT. It shares that loop with Note Out: the two chain."
+  ],
+  "usage": [
+    "Plug an LFO or an envelope into In to move a filter on an outside synth, or a track's parameter on a Digitakt or an Octatrack.",
+    "Turn the Value knob to send a CC by hand, or plug a logic into Send to send the value again on each pulse.",
+    "Choose the controller and the channel to match the instrument."
+  ],
+  "notes": "A CC is sent when the value changes, so a still In and knob send nothing. A sweep is sent as fast as the MIDI OUT takes it (a CC waits when its queue is half full). Not on the Micro (Note Out's hooks are not found there either).",
+  "patch_notes": {
+    "ctrlsend-lfo.pch": "An LFO's square into In, Value 32: CCs of 32 and 96 in turn out of the G1's MIDI OUT."
+  },
+  "micro": false,
+  "micro_why": "its hook in the OS main loop is at another place in the Micro's OS: not found yet"
+}

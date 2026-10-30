@@ -2,12 +2,12 @@
 
 The sequencers and counters all follow the same clock, and **reset** is what keeps them on the
 same step. This guide covers the clock signal, how reset works on the G1's own sequencers and on
-G1-Mods' **5-Step Seq** and **8Counter**, and the patches that show it.
+G1-Mods' **Address Sequencer** and **8Counter**, and the patches that show it.
 
 ## The clock
 
 A clock is a regular gate. **ClkGen** makes one (its *4 pulses / beat* and *24 pulses / beat*
-outputs); the G1's sequencers, the 5-Step Seq and the 8Counter each move one step on every rising
+outputs); the G1's sequencers, the Address Sequencer and the 8Counter each move one step on every rising
 edge.
 
 ## Reset
@@ -22,10 +22,10 @@ Reset works the same on the G1's own sequencers and on G1-Mods' modules:
 So to start every bar on step 1, send one reset edge to every sequencer and counter, just before
 the first clock.
 
-## The patch: 5-Step Seq and a CtrlSeq together
+## The patch: Address Sequencer and a CtrlSeq together
 
 [`modules/step-seq-5/seq5-ctrlseq.pch`](https://raw.githubusercontent.com/animatek/G1-Mods/main/modules/step-seq-5/seq5-ctrlseq.pch)
-shows it: one ClkGen clocks a **5-Step Seq** and a G1 **CtrlSeq**, and one LFOA edge resets both.
+shows it: one ClkGen clocks an **Address Sequencer** and a G1 **CtrlSeq**, and one LFOA edge resets both.
 They stay on the same step.
 
 [`modules/counter8/counter8.pch`](https://raw.githubusercontent.com/animatek/G1-Mods/main/modules/counter8/counter8.pch)
@@ -35,7 +35,7 @@ clock and reset.
 ## What to try
 
 - Change the ClkGen's **rate** to speed everything up together.
-- Set the 5-Step Seq's five knobs and listen to the pattern.
+- Set the Address Sequencer's knobs (Steps 5) and listen to the pattern.
 - Use the 8Counter's eight outputs as the gates of eight events: each fires in turn.
 - Clock a long sequencer and a short one from the same source and reset: the short one cycles every
   bar while the long one holds the phrase.

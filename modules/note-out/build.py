@@ -26,4 +26,4 @@ def build(b, new_type):
                  # the note (an E), Chan, Vel
                  (0, 0, 0, 0x4000, 64, 0x100, 0x80, 127, 64, 0, 100),
                  [Param("Chan", 15, 9), Param("Vel", 127, 10)])
-    b.redirect_call(MAIN_LOOP_CALL, OS_FIRST, b.put(poll))
+    b.chain_call(MAIN_LOOP_CALL, OS_FIRST, poll)   # other modules (Ctrl Send) chain on the same call

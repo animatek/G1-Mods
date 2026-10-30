@@ -4,8 +4,7 @@
     93,
     109,
     116,
-    119,
-    122
+    119
   ],
   "given": {
     "120": "flipflop",
@@ -20,7 +19,8 @@
     "42": "level",
     "55": "envelope",
     "56": "osc-string",
-    "60": "note-out"
+    "60": "note-out",
+    "122": "ctrl-send"
   },
   "build": [
     "flipflop",
@@ -35,7 +35,8 @@
     "level",
     "envelope",
     "osc-string",
-    "note-out"
+    "note-out",
+    "ctrl-send"
   ],
   "nme": [
     "flipflop",
@@ -50,6 +51,7 @@
     "envelope",
     "osc-string",
     "note-out",
-    "mix1-1a"
+    "mix1-1a",
+    "ctrl-send"
   ]
 }

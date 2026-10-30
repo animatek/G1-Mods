@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Checks the 5-Step Seq (type 123) in G1-Emu with the G1-Mods ROM.
+"""Checks the Address Sequencer (type 123, once the 5-Step Seq) in G1-Emu with the G1-Mods ROM.
 
     modules/step-seq-5/check_step_seq_5.py
 
-seq5.pch: ClkGen (48 Hz) into Clk; Out on output 1, the clock on output 2. The knobs at 0,
+seq5.pch: (Steps set to 5) ClkGen (48 Hz) into Clk; Out on output 1, the clock on output 2. The knobs at 0,
 32, 64, 96 and 127, so the steps give -64, -32, 0, +32 and +63 control units. Played for 6 s:
 - Out only changes on a rising clock edge, takes the five values and goes through them in order,
   the fifth back to the first.
@@ -16,6 +16,9 @@ seq5.pch: ClkGen (48 Hz) into Clk; Out on output 1, the clock on output 2. The k
   gives +63 after it.
 - the step's LEDs: the OS's Meters messages (NMInfo $3A) on the PC Port carry the module's step,
   each of 0 to 4.
+- eight steps (Steps 8, the knobs at 0, 16 ... 127): all eight in order, the eighth back to the first.
+- Reverse: the five steps in the opposite order, the first going to the last.
+- Start 3, with the Rst of the CtrlSeq patch: every jump out of the order after a reset lands on step 3.
 Exit code 0 when all hold.
 """
 import os
@@ -32,6 +35,8 @@ BIN = os.path.join(EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", 
 SETTLE = 4800       # 50 ms at 96 kHz: the patch being set up
 UNIT = 428167 / 64  # one control unit in the recording (the logic high, 64 units, is 428167)
 STEPS = [-64, -32, 0, 32, 63]
+KNOBS = "0 32 64 96 127 64 64 64"      # the patches' step knobs, and then Steps, Start, Reverse: 4 0 0
+STEPS8 = [-64, -48, -32, -16, 0, 16, 32, 63]
 
 
 def record(rom, xml, patch, tmp, *extra):
@@ -51,9 +56,9 @@ def edges(c):
     return [i for i in range(1, len(c)) if c[i] > high and c[i - 1] <= high]
 
 
-def step_of(v):
+def step_of(v, steps=STEPS):
     """The step whose value v is (within half a unit), or None."""
-    for k, s in enumerate(STEPS):
+    for k, s in enumerate(steps):
         if abs(v / UNIT - s) < 0.5:
             return k
     return None
@@ -114,6 +119,36 @@ def main():
         after = {round(v / UNIT) for v in out[half + 4800:]}
         report("live knob", before == set(STEPS) and after == {-64, -32, 63, 32},
                f"values {sorted(before)} before, {sorted(after)} after the third knob to 127")
+
+        # eight steps
+        eight = base.replace(KNOBS + " 4 0 0", "0 16 32 48 64 80 96 127 7 0 0")
+        (out, clk, *_), _ = record(rom, xml, eight, tmp)
+        e = set(edges(clk))
+        ch = [i for i in range(SETTLE, len(out)) if out[i] != out[i - 1]]
+        steps = [step_of(out[i], STEPS8) for i in ch]
+        order = sum(1 for a, b in zip(steps, steps[1:]) if a is None or b != (a + 1) % 8)
+        report("eight steps", len(ch) > 0.9 * len(e) and not [i for i in ch if i not in e]
+               and set(steps) == set(range(8)) and order == 0,
+               f"{len(ch)} changes for {len(e)} clock edges, steps seen {sorted(set(s for s in steps if s is not None))}, "
+               f"{order} out of order")
+
+        # reverse
+        back = base.replace(KNOBS + " 4 0 0", KNOBS + " 4 0 1")
+        (out, clk, *_), _ = record(rom, xml, back, tmp)
+        ch = [i for i in range(SETTLE, len(out)) if out[i] != out[i - 1]]
+        steps = [step_of(out[i]) for i in ch]
+        order = sum(1 for a, b in zip(steps, steps[1:]) if a is None or b != (a - 1) % 5)
+        report("reverse", len(ch) > 20 and set(steps) == set(range(5)) and order == 0,
+               f"{len(ch)} changes, steps seen {sorted(set(s for s in steps if s is not None))}, {order} out of order")
+
+        # Start 3, after each reset
+        ctl = open(os.path.join(HERE, "seq5-ctrlseq.pch")).read().replace(KNOBS + " 4 0 0", KNOBS + " 4 3 0")
+        (out, clk, rst, _), _ = record(rom, xml, ctl, tmp)
+        ch = [i for i in range(SETTLE, len(out)) if out[i] != out[i - 1]]
+        steps = [step_of(out[i]) for i in ch]
+        jumps = [b for a, b in zip(steps, steps[1:]) if a is None or b != (a + 1) % 5]
+        report("Start", len(jumps) > 3 and all(j == 3 for j in jumps),
+               f"{len(jumps)} jumps out of the order, to steps {sorted(set(jumps))} (3 wanted)")
 
     print("OK" if ok else "FAILED")
     sys.exit(0 if ok else 1)

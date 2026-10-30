@@ -210,7 +210,7 @@
  "Going back to Clavia's OS, and what to do when something goes wrong.": "Volver al OS de Clavia, y qué hacer cuando algo sale mal.",
  "First patch: the Turing Machine and the Scale Quantizer into an oscillator.": "Primer patch: la Turing Machine y el Scale Quantizer hacia un oscilador.",
  "Connect Animatek NME to G1-Emu — the safe way in before a real G1.": "Conecta Animatek NME a G1-Emu: la entrada segura antes de un G1 real.",
- "Clock & reset: how the sequencers, the 5-Step Seq and the 8Counter stay in step.": "Reloj y reset: cómo se mantienen a compás los secuenciadores, el 5-Step Seq y el 8Counter.",
+ "Clock & reset: how the sequencers, the Address Sequencer and the 8Counter stay in step.": "Reloj y reset: cómo se mantienen a compás los secuenciadores, el Address Sequencer y el 8Counter.",
  "The Nord Modular G1: its history, its three models, and how a patch runs on its DSPs.": "El Nord Modular G1: su historia, sus tres modelos y cómo corre un patch en sus DSP.",
  "The code, the editor, the emulator and the people behind G1-Mods.": "El código, el editor, el emulador y las personas que hay detrás de G1-Mods.",
  "Help build G1-Mods: how a module is made, tested in G1-Emu first.": "Ayuda a construir G1-Mods: cómo se hace un módulo, probado primero en G1-Emu.",

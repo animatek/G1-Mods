@@ -36,8 +36,12 @@ def minor(rom, tmp):
                    env=dict(os.environ, G1_PCPORT_LOG=log,
                             G1_MODULES_XML=os.path.join(ROOT, "out", "nme-data", "modules.xml")))
     data = open(log, "rb").read()
+    # the bench greets twice and the first reply can be cut short by the second greeting (where
+    # depends on the boot's timing, which a bigger package moves): the first complete one counts
     at = data.find(IAM)
-    assert at >= 0 and data[at + 5] == 3, "no IAm with version 3 in the PC Port log"
+    while at >= 0 and (at + 6 >= len(data) or data[at + 6] == 0xF0):
+        at = data.find(IAM, at + 1)
+    assert at >= 0 and data[at + 5] == 3, "no complete IAm with version 3 in the PC Port log"
     return data[at + 6]
 
 

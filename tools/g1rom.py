@@ -172,6 +172,19 @@ class Build:
         assert at not in self.calls, f"the call at ${at:06X} is taken already"
         self.calls[at] = (old_target, new_target)
 
+    def chain_call(self, at, old_target, code):
+        """redirect_call for any number of modules: code (a routine whose first instruction is
+        `jsr old_target.l`, the call it replaces) goes into the package and the call at `at` is
+        pointed at it. When another module has taken the call already, this routine's first call
+        is patched to go to that one instead, so each runs in turn and the OS's own call runs
+        first of all."""
+        code = bytearray(code)
+        assert code[:2] == b"\x4e\xb9" and int.from_bytes(code[2:6], "big") == old_target, \
+            "a chained routine starts with jsr to the call it replaces"
+        if at in self.calls:
+            code[2:6] = self.calls[at][1].to_bytes(4, "big")
+        self.calls[at] = (old_target, self.put(bytes(code)))
+
     def patches(self):
         """The redirected calls, as (address, old bytes, new bytes) of each jsr's target."""
         return [(at + 2, old.to_bytes(4, "big"), new.to_bytes(4, "big"))

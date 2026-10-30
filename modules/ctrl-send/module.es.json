@@ -1,0 +1,17 @@
+{
+  "fullname": "Ctrl Send, un cambio de controlador al MIDI OUT",
+  "summary": "Un control change por el MIDI OUT del G1, como el CtrlSend del G2: Ctrl, Value, Chan, In y Send.",
+  "about": [
+    "Envía un control change (CC) MIDI por el MIDI OUT del G1, a imagen del CtrlSend del G2. El valor es In más el pomo Value, limitado a 0-127: sin nada en In, solo el pomo; con un LFO bipolar en In y Value 64, todo el rango. Sale un CC cada vez que el valor cambia, y cada vez que Send sube. Ctrl es el número de controlador, Chan el canal MIDI. In thru deja pasar In.",
+    "El DSP no envía MIDI por sí mismo: deja una palabra para el 68k, que la lee en el bucle principal del OS y pone el CC en la cola del MIDI OUT. Comparte ese bucle con Note Out: los dos se encadenan."
+  ],
+  "usage": [
+    "Conecta un LFO o una envolvente a In para mover un filtro de un sinte externo, o un parámetro de pista de una Digitakt o una Octatrack.",
+    "Gira el pomo Value para enviar un CC a mano, o conecta una lógica a Send para volver a enviar el valor en cada pulso.",
+    "Elige el controlador y el canal que coincidan con el instrumento."
+  ],
+  "notes": "Se envía un CC cuando el valor cambia, así que un In y un pomo quietos no envían nada. Un barrido sale tan rápido como el MIDI OUT lo admite (un CC espera si su cola está medio llena). No está en la Micro (los ganchos de Note Out tampoco se encuentran allí).",
+  "patch_notes": {
+    "ctrlsend-lfo.pch": "El cuadrado de un LFO en In, Value 32: salen CC de 32 y 96 por turno por el MIDI OUT del G1."
+  }
+}

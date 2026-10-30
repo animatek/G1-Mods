@@ -1,18 +1,20 @@
 {
-  "fullname": "Secuenciador de 5 pasos, un pomo por paso",
-  "summary": "Cinco pomos bipolares, uno por paso, con LED de paso.",
+  "fullname": "Secuenciador de direcciones, ocho pomos y un paso de inicio",
+  "summary": "Ocho pomos bipolares, uno por paso, con Steps, Start, Reverse y LED de paso.",
   "about": [
-    "Un secuenciador de cinco pasos con un pomo bipolar para cada paso, a imagen de los secuenciadores de cinco etapas de Buchla. Cada flanco de subida de Clk pasa al paso siguiente y el quinto vuelve al primero. Out es el valor del paso actual, de -64 a +63, y cinco LED muestran dónde está.",
-    "Rst funciona como el de los secuenciadores propios del G1: su flanco arma el módulo y el siguiente reloj va al paso 1. Empieza en el último paso, así que el primer reloj toca el paso 1. Eso lo mantiene a compás con un CtrlSeq con el mismo reloj y reset."
+    "Un secuenciador de ocho pasos con un pomo bipolar para cada paso, a imagen del ADDR-SEQ de Bogaudio (era el 5-Step Seq, con el mismo tipo). Cada flanco de subida de Clk avanza un paso y el último vuelve al primero. Out es el valor del paso actual, de -64 a +63, y ocho LED muestran dónde está.",
+    "Steps fija la longitud, de 1 a 8 (los pasos siguientes se saltan), Start el paso al que va un reset, y Reverse recorre los pasos hacia atrás, del primero al último.",
+    "Rst funciona como el de los secuenciadores propios del G1: su flanco arma el módulo y el siguiente reloj va a Start, no al paso siguiente. Empieza armado, así que el primer reloj toca Start. Con Start 1 se mantiene a compás con un CtrlSeq con el mismo reloj y reset."
   ],
   "usage": [
     "Manda un reloj a Clk y Out al tono de un oscilador, o al cutoff de un filtro.",
-    "Ajusta cada pomo al valor que quieras para ese paso.",
-    "Conecta el mismo reloj y reset a un CtrlSeq: los dos se quedan juntos."
+    "Ajusta cada pomo al valor de su paso, y Steps a la longitud que quieras.",
+    "Conecta un reset a Rst para volver a empezar el patrón desde Start.",
+    "Conecta el mismo reloj y reset a un CtrlSeq (Steps 5, Start 1): los dos se quedan juntos."
   ],
-  "notes": "Tasa de control. Los cinco pasos son fijos; usa dos seguidos con un contador para patrones más largos.",
+  "notes": "Tasa de control. Un parche guardado con el 5-Step Seq conserva sus cinco pomos; Steps, Start y Reverse toman sus valores por defecto (8 pasos, Start 1, hacia delante), así que hay que poner Steps a 5.",
   "patch_notes": {
-    "seq5-ctrlseq.pch": "Un ClkGen marca el reloj de un 5-Step Seq y de un CtrlSeq; un LFO reinicia los dos, manteniéndolos a compás.",
-    "seq5.pch": "ClkGen marca el reloj del 5-Step Seq; sus cinco pomos fijan los pasos."
+    "seq5-ctrlseq.pch": "Un ClkGen marca el reloj de un Address Sequencer (Steps 5) y de un CtrlSeq; un LFO reinicia los dos, manteniéndolos a compás.",
+    "seq5.pch": "ClkGen marca el reloj del Address Sequencer (Steps 5); sus pomos fijan los pasos."
   }
 }

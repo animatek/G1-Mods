@@ -1,0 +1,36 @@
+	<module component-id="m122" width="255" height="30">
+		<name>Ctrl Send</name>
+		<label x="5" y="2">In</label>
+		<connector x="6" y="13" size="13" class="cCONTROL">
+			<connector component-id="c1" alt="in" />
+		</connector>
+		<label x="27" y="2">Send</label>
+		<connector x="30" y="13" size="13" class="cLOGIC">
+			<connector component-id="c2" alt="send" />
+		</connector>
+		<label x="62" y="2">Ctrl</label>
+		<textDisplay x="62" y="13" width="22" height="14">
+			<parameter component-id="p1" alt="ctrl" />
+		</textDisplay>
+		<knob x="88" y="9" size="18">
+			<parameter component-id="p1" alt="ctrl" />
+		</knob>
+		<label x="116" y="2">Value</label>
+		<textDisplay x="116" y="13" width="22" height="14">
+			<parameter component-id="p2" alt="value" />
+		</textDisplay>
+		<knob x="142" y="9" size="18">
+			<parameter component-id="p2" alt="value" />
+		</knob>
+		<label x="170" y="2">Chan</label>
+		<textDisplay x="170" y="13" width="22" height="14">
+			<parameter component-id="p3" alt="chan" />
+		</textDisplay>
+		<knob x="196" y="9" size="18">
+			<parameter component-id="p3" alt="chan" />
+		</knob>
+		<label x="224" y="2">Thru</label>
+		<connector x="236" y="13" size="13" class="cCONTROL">
+			<connector component-id="c3" alt="thru" />
+		</connector>
+	</module>

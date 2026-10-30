@@ -28,7 +28,7 @@ Version=Nord Modular patch 3.0
 1 
 1 68 2 64 1 
 2 3 1 100 
-3 123 5 0 32 64 96 127 
+3 123 11 0 32 64 96 127 64 64 64 4 0 0 
 [/ParameterDump]
 [ParameterDump]
 0 
@@ -47,7 +47,7 @@ Version=Nord Modular patch 3.0
 1 
 1 ClkGen
 2 4Output
-3 5-StepSeq
+3 AddrSeq
 4 ClkDivFix
 [/NameDump]
 [NameDump]
