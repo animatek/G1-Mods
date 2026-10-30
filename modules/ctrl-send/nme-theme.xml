@@ -1,43 +1,43 @@
-	<module component-id="m122" width="255" height="90">
+	<module component-id="m122" width="255" height="60">
 		<name>CC Out</name>
-		<label x="9" y="17">In</label>
-		<connector x="8" y="33" size="13" class="cCONTROL">
+		<label x="7" y="25">In</label>
+		<connector x="31" y="25" size="13" class="cCONTROL">
 			<connector component-id="c1" alt="in" />
 		</connector>
-		<label x="49" y="17">Ctrl</label>
-		<knob x="48" y="33" size="20">
-			<parameter component-id="p1" alt="ctrl" />
-		</knob>
-		<textDisplay x="46" y="60" width="24" height="14">
-			<parameter component-id="p1" alt="ctrl" />
-		</textDisplay>
-		<label x="91" y="17">Value</label>
-		<knob x="92" y="33" size="20">
-			<parameter component-id="p2" alt="value" />
-		</knob>
-		<textDisplay x="90" y="60" width="24" height="14">
-			<parameter component-id="p2" alt="value" />
-		</textDisplay>
-		<label x="131" y="17">Level %</label>
-		<knob x="136" y="33" size="20">
-			<parameter component-id="p4" alt="level" />
-		</knob>
-		<textDisplay x="134" y="60" width="24" height="14">
-			<parameter component-id="p4" alt="level" />
-		</textDisplay>
-		<label x="181" y="17">Chan</label>
-		<knob x="180" y="33" size="20">
-			<parameter component-id="p3" alt="chan" />
-		</knob>
-		<textDisplay x="178" y="60" width="24" height="14">
-			<parameter component-id="p3" alt="chan" />
-		</textDisplay>
-		<label x="217" y="17">Thru</label>
-		<connector x="223" y="33" size="13" class="cCONTROL">
-			<connector component-id="c3" alt="thru" />
-		</connector>
-		<label x="216" y="47">Send</label>
-		<connector x="223" y="62" size="13" class="cLOGIC">
+		<label x="225" y="31">Send</label>
+		<connector x="232" y="44" size="13" class="cLOGIC">
 			<connector component-id="c2" alt="send" />
 		</connector>
+		<label x="63" y="3">Ctrl</label>
+		<textDisplay x="63" y="42" width="24" height="14">
+			<parameter component-id="p1" alt="ctrl" />
+		</textDisplay>
+		<knob x="64" y="18" size="20">
+			<parameter component-id="p1" alt="ctrl" />
+		</knob>
+		<label x="102" y="3">Value</label>
+		<textDisplay x="104" y="42" width="24" height="14">
+			<parameter component-id="p2" alt="value" />
+		</textDisplay>
+		<knob x="105" y="17" size="20">
+			<parameter component-id="p2" alt="value" />
+		</knob>
+		<label x="187" y="4">Chan</label>
+		<textDisplay x="188" y="42" width="24" height="14">
+			<parameter component-id="p3" alt="chan" />
+		</textDisplay>
+		<knob x="189" y="18" size="20">
+			<parameter component-id="p3" alt="chan" />
+		</knob>
+		<label x="226" y="3">Thru</label>
+		<connector x="231" y="17" size="13" class="cCONTROL">
+			<connector component-id="c3" alt="thru" />
+		</connector>
+		<label x="141" y="3">Level %</label>
+		<textDisplay x="146" y="42" width="24" height="14">
+			<parameter component-id="p4" alt="level" />
+		</textDisplay>
+		<knob x="146" y="17" size="20">
+			<parameter component-id="p4" alt="level" />
+		</knob>
 	</module>
