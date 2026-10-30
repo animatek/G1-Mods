@@ -5,6 +5,7 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-30
 
+- [Module] Claude: **CCOut's panel, aligned** (Javier's third pass): his layout with the four knobs on one row, their number boxes on another and the titles centred over them, evenly spaced (43 px apart); In, Thru and Send on the right edge's grid.
 - [Module] Claude: **CCOut's panel, tighter** (Javier's second design from the web designer): 60 px, four rows; titles over the knobs, number boxes under, In on the left, Thru and Send on the right.
 - [Module] Claude: **CCOut's panel is Javier's own design**, made in the web designer and sent as its XML: Ctrl, Value, Level %, Chan in an aligned row of knobs and number boxes (90 px, six rows), In and Thru on the left and right, Send under Thru. Layer regenerated (`check_nme_data.py` OK).
 - [Module] Claude: **CCOut gets a Level control** (0-100 %, as 8Steps'): the CC that goes out is that share of the value (`mpyr` in the DSP, rounded, so 100 % is exactly the value). Javier's use: the Value knob alone sends the CC when turned, with nothing in In, so a knob assigned to one of the synth's panel knobs makes it a CC controller; that already worked (`live: Value to 100` in the test) and the docs now say it. Panel: a second row (75 px) with Level under Value. Checked in G1-Emu (`check_ctrl_send.py`, a new Level 50 % case: Value 100 goes out as 50) and the other cases. Not tried with a real panel knob assigned.
