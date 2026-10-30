@@ -13,7 +13,7 @@
   ],
   "about": [
     "An eight-step sequencer with one bipolar knob for each step, after Bogaudio's ADDR-SEQ (it was the 5-Step Seq, with the same type). Each rising edge of Clk moves one step on and the last step goes back to the first. Out is the value of the current step, from -64 to +63, and eight LEDs show where it is.",
-    "Steps sets the length, 1 to 8 (the steps after it are skipped), Start the step a reset goes to, Reverse runs the steps backwards, the first going to the last, and Level (0-100 %) scales the output. Rnd gives the eight knobs random values and Clr puts them back to zero, as NoteSeqA's do (they work in NME's editor, not in the synth).",
+    "Steps sets the last step, 1 to 8, and Start the first, so the loop runs from Start to Steps: with Start 2 and 8 Steps it plays 2 to 8 and starts over at 2. A reset goes to Start as well. Reverse runs the loop backwards, Start going to the last step, and Level (0-100 %) scales the output. Rnd gives the eight knobs random values and Clr puts them back to zero, as NoteSeqA's do (they work in NME's editor, not in the synth).",
     "Rst works as the G1's own sequencers' does: its edge arms the module and the next clock goes to Start, not to the next step. It starts armed, so the first clock plays Start. With Start 1 it stays in step with a CtrlSeq on the same clock and reset."
   ],
   "usage": [

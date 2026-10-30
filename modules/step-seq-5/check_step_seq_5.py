@@ -19,7 +19,9 @@ seq5.pch: (Steps set to 5) ClkGen (48 Hz) into Clk; Out on output 1, the clock o
 - eight steps (Steps 8, the knobs at 0, 16 ... 127): all eight in order, the eighth back to the first.
 - Reverse: the five steps in the opposite order, the first going to the last.
 - Level 50 %: every step's value halves.
-- Start 3, with the Rst of the CtrlSeq patch: every jump out of the order after a reset lands on step 3.
+- Start 3 (the loop is steps 3 and 4): the steps seen are only 3 and 4, in order, 3 after 4. And with the Rst of the
+  CtrlSeq patch, every jump out of the order after a reset lands on step 3.
+- Start 2 backwards: 4, 3, 2 and back to 4.
 Exit code 0 when all hold.
 """
 import os
@@ -140,6 +142,24 @@ def main():
         steps = [step_of(out[i]) for i in ch]
         order = sum(1 for a, b in zip(steps, steps[1:]) if a is None or b != (a - 1) % 5)
         report("reverse", len(ch) > 20 and set(steps) == set(range(5)) and order == 0,
+               f"{len(ch)} changes, steps seen {sorted(set(s for s in steps if s is not None))}, {order} out of order")
+
+        # Start 3: the loop is steps 3 and 4, with no reset at all
+        loop = base.replace(KNOBS + " 4 0 0", KNOBS + " 4 3 0")
+        (out, clk, *_), _ = record(rom, xml, loop, tmp)
+        ch = [i for i in range(SETTLE, len(out)) if out[i] != out[i - 1]]
+        steps = [step_of(out[i]) for i in ch]
+        order = sum(1 for a, b in zip(steps, steps[1:]) if a is None or b != (3 if a == 4 else 4))
+        report("Start 3 as the first step of the loop", len(ch) > 20 and set(steps) == {3, 4} and order == 0,
+               f"{len(ch)} changes, steps seen {sorted(set(s for s in steps if s is not None))}, {order} out of order")
+
+        # Start 2, backwards: 4, 3, 2, 4...
+        rloop = base.replace(KNOBS + " 4 0 0", KNOBS + " 4 2 1")
+        (out, clk, *_), _ = record(rom, xml, rloop, tmp)
+        ch = [i for i in range(SETTLE, len(out)) if out[i] != out[i - 1]]
+        steps = [step_of(out[i]) for i in ch]
+        order = sum(1 for a, b in zip(steps, steps[1:]) if a is None or b != (a - 1 if a > 2 else 4))
+        report("Start 2, reverse", len(ch) > 20 and set(steps) == {2, 3, 4} and order == 0,
                f"{len(ch)} changes, steps seen {sorted(set(s for s in steps if s is not None))}, {order} out of order")
 
         # Start 3, after each reset
