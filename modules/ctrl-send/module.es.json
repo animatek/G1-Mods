@@ -1,8 +1,8 @@
 {
   "fullname": "CC Out, un cambio de controlador al MIDI OUT",
-  "summary": "Un control change por el MIDI OUT del G1, como el CtrlSend del G2: Ctrl, Value, Chan, In y Send.",
+  "summary": "Un control change por el MIDI OUT del G1, como el CtrlSend del G2: Ctrl, Value, Chan, Level, In y Send.",
   "about": [
-    "Envía un control change (CC) MIDI por el MIDI OUT del G1, a imagen del CtrlSend del G2. El valor es In más el pomo Value, limitado a 0-127: sin nada en In, solo el pomo; con un LFO bipolar en In y Value 64, todo el rango. Sale un CC cada vez que el valor cambia, y cada vez que Send sube. Ctrl es el número de controlador, Chan el canal MIDI. In thru deja pasar In.",
+    "Envía un control change (CC) MIDI por el MIDI OUT del G1, a imagen del CtrlSend del G2. El valor es In más el pomo Value, limitado a 0-127: sin nada en In, solo el pomo; con un LFO bipolar en In y Value 64, todo el rango. Sale un CC cada vez que el valor cambia, y cada vez que Send sube. Ctrl es el número de controlador, Chan el canal MIDI. Level (0-100 %) escala el valor que sale, e In thru deja pasar In. El pomo solo envía el CC al girarlo, así que un pomo asignado a un pomo del panel convierte ese pomo en un controlador de CC.",
     "El DSP no envía MIDI por sí mismo: deja una palabra para el 68k, que la lee en el bucle principal del OS y pone el CC en la cola del MIDI OUT. Comparte ese bucle con Note Out: los dos se encadenan."
   ],
   "usage": [

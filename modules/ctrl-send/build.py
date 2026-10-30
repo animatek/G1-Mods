@@ -22,7 +22,10 @@ def build(b, new_type):
     assert poll.count(bytes.fromhex("0c28 00") + bytes([new_type]) + bytes.fromhex("000e")) == 2, \
         "ctrlsend_poll.m68k is not for this type: tools/m68kasm.sh it with --defsym TYPE=" + str(new_type)
     control_type(b, new_type, ASM,
-                 # the packed word, Send's last, the edge count, $100, 127, Value, Ctrl, Chan, $80
-                 (0, 0, 0, 0x100, 127, 0, 1, 0, 0x80),
-                 [Param("Ctrl", 127, 6), Param("Value", 127, 5), Param("Chan", 15, 7)])
+                 # the packed word, Send's last, the edge count, $100, 127, Value, Ctrl, Chan, $80, Level (100 %)
+                 (0, 0, 0, 0x100, 127, 0, 1, 0, 0x80, 0x7FFFF8),
+                 [Param("Ctrl", 127, 6), Param("Value", 127, 5), Param("Chan", 15, 7),
+                  # Level: v = 0..100 %, the fraction v * 83886 ($7FFFF8 at 100)
+                  #   move.l d2,d0 / swap d0 / clr.w d0 / move.l d2,d1 / mulu.w #18350,d1 / add.l d1,d0
+                  Param("Level", 100, 9, "2002 4840 4240 2202 c2fc 47ae d081")])
     b.chain_call(MAIN_LOOP_CALL, OS_FIRST, poll)

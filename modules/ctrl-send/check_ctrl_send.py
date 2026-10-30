@@ -11,6 +11,7 @@ something changed, played in G1-Emu's g1patchtest, which prints what came out of
   channel 1, controller 7, each value one off the last, so every step of the ramp was sent.
 - Chan 3, Ctrl 74: the same on channel 3, controller 74.
 - live: the Value knob turned from 32 to 100 at 2 s, nothing in In: one CC, the new value.
+- Level 50 %: the knob turned to 100 sends 50.
 - Send: the LFO into Send, nothing in In: a CC of the knob's value on every rising edge, all the
   same.
 - no Ctrl Send: nothing comes out.
@@ -32,7 +33,7 @@ BIN = os.environ.get("G1_PATCHTEST") or os.path.join(
     EMU, "build", "tools", "patchtest", "g1patchtest_artefacts", "Release", "g1patchtest")
 LFO_TO_IN = "0 2 0 0 1 1 1 \n"
 LFO_TO_SEND = "0 2 1 0 1 1 1 \n"
-PARAMS = "2 122 3 7 32 0 \n"
+PARAMS = "2 122 4 7 32 0 100 \n"
 
 
 def midi_out(rom, xml, patch, tmp, name, *args):
@@ -76,11 +77,16 @@ def main():
 
         report("the LFO alone (channel 1, controller 7, one step at a time)", ramp(msgs, 0xB0, 7), msgs)
 
-        msgs = midi_out(rom, xml, base.replace(PARAMS, "2 122 3 74 32 2 \n"), tmp, "chan3")
+        msgs = midi_out(rom, xml, base.replace(PARAMS, "2 122 4 74 32 2 100 \n"), tmp, "chan3")
         report("Chan 3, Ctrl 74", ramp(msgs, 0xB2, 74), msgs)
 
         msgs = midi_out(rom, xml, base.replace(LFO_TO_IN, ""), tmp, "live", "--param-at", "2:1:2:1:100")
         report("live: Value to 100 at 2 s", msgs == [(0xB0, 7, 100)], msgs)
+
+        # Level 50 %: the knob alone, Value to 100 at 2 s, goes out as 50
+        msgs = midi_out(rom, xml, base.replace(LFO_TO_IN, "").replace(PARAMS, "2 122 4 7 32 0 50 \n"), tmp, "level",
+                        "--param-at", "2:1:2:1:100")
+        report("Level 50 %: Value 100 goes out as 50", msgs == [(0xB0, 7, 50)], msgs)
 
         msgs = midi_out(rom, xml, base.replace(LFO_TO_IN, LFO_TO_SEND), tmp, "send")
         report("Send: the knob's value on each rising edge",

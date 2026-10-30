@@ -2,7 +2,7 @@
   "type": 122,
   "name": "CCOut",
   "fullname": "CC Out, a controller change to the MIDI OUT",
-  "summary": "A control change out of the G1's MIDI OUT, as the G2's CtrlSend: Ctrl, Value, Chan, In and Send.",
+  "summary": "A control change out of the G1's MIDI OUT, as the G2's CtrlSend: Ctrl, Value, Chan, Level, In and Send.",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",
@@ -12,7 +12,7 @@
     "check_ctrl_send.py"
   ],
   "about": [
-    "Sends a MIDI control change (CC) from the G1's MIDI OUT, after the G2's CtrlSend. The value is In plus the Value knob, kept to 0-127: with nothing in In the knob alone, with a bipolar LFO in In and Value 64 the whole range. A CC goes out every time the value changes, and every time Send goes high. Ctrl is the controller number, Chan the MIDI channel. In thru passes In on.",
+    "Sends a MIDI control change (CC) from the G1's MIDI OUT, after the G2's CtrlSend. The value is In plus the Value knob, kept to 0-127: with nothing in In the knob alone, with a bipolar LFO in In and Value 64 the whole range. A CC goes out every time the value changes, and every time Send goes high. Ctrl is the controller number, Chan the MIDI channel. Level (0-100 %) scales the value that goes out, and In thru passes In on. The knob alone sends the CC when it is turned, so a knob assigned to a panel knob makes the panel knob a CC controller.",
     "The DSP sends no MIDI itself: it leaves a word for the 68k, which reads it in the OS's main loop and queues the CC on the MIDI OUT. It shares that loop with Note Out: the two chain."
   ],
   "usage": [

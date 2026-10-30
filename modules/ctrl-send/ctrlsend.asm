@@ -1,15 +1,15 @@
 ; Ctrl Send (G1-Mods type 122), after the G2's CtrlSend: control rate.
 ;   inputs 0 In, 1 Send        output 0 In thru        parameters 0 Ctrl, 1 Value, 2 Chan (68k only
-;   for Ctrl and Chan)
+;   for Ctrl and Chan), 3 Level (0-100 %)
 ; The DSP sends no MIDI: it leaves one word for the 68k, which reads it from the OS's main loop
 ; and queues a controller change on the MIDI OUT (ctrlsend_poll.s). That word packs Send's rising
 ; edge count (a step of $100 an edge) and the value (0..127), so a single read tells the 68k
 ; whether anything happened: the value moved, or Send went high.
 ; The value: In in control units (one unit is $8000, 0 unplugged) added to the Value knob and
-; kept to 0..127, rounded down. A bipolar LFO (-64..+63) into In with Value 64 sweeps the whole
+; kept to 0..127, rounded down, and then times Level (the CC goes out as that share of the value). A bipolar LFO (-64..+63) into In with Value 64 sweeps the whole
 ; range.
-; X data (9 words): [0] the packed word, [1] Send as last seen (0 or $80), [2] the edge count,
-; [3] $100, [4] 127, [5] Value, [6] Ctrl, [7] Chan (written by their routines), [8] $80.
+; X data (10 words): [0] the packed word, [1] Send as last seen (0 or $80), [2] the edge count,
+; [3] $100, [4] 127, [5] Value, [6] Ctrl, [7] Chan (written by their routines), [8] $80, [9] Level, a fraction.
 ; The words are read at offsets from r3, which is moved past them at the end. Word 0 runs in the
 ; previous module's nop slot (no a or b); no branch lands on the nop or after it.
 
@@ -40,9 +40,12 @@ nosend:
     move x:(r3+$4),x0
     cmp x0,b
     tfr x0,b ifgt           ;       above 127: 127
+    move x:(r3+$9),x0       ;       x0 = Level
+    move b1,x1
+    mpyr x1,x0,b            ;       b1 = the value times Level, rounded
     move x:(r3+$2),a        ;       the count
     add b,a                 ;       + the value
     move a,x:(r3)           ;       the packed word
-    lua (r3+$9),r3          ;       r3 -> past the data
+    lua (r3+$a),r3          ;       r3 -> past the data
     nop                     ;       the next module's word 0 goes here
     move y1,x:$0            ; @out0 In thru
