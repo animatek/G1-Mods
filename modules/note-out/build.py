@@ -23,7 +23,10 @@ def build(b, new_type):
         "noteout_poll.m68k is not for this type: tools/m68kasm.sh it with --defsym TYPE=" + str(new_type)
     control_type(b, new_type, ASM,
                  # the packed word, the gate, the edge count, half a semitone, 64, $100, $80, 127,
-                 # the note (an E), Chan, Vel
-                 (0, 0, 0, 0x4000, 64, 0x100, 0x80, 127, 64, 0, 100),
-                 [Param("Chan", 15, 9), Param("Vel", 127, 10)])
+                 # the note (an E), Chan, Vel, Mute's mask ($80: not muted)
+                 (0, 0, 0, 0x4000, 64, 0x100, 0x80, 127, 64, 0, 100, 0x80),
+                 [Param("Chan", 15, 9), Param("Vel", 127, 10),
+                  # Mute: v = 0 or 1, the mask (1 - v) * $80
+                  #   move.l d2,d0 / eori.l #1,d0 / lsl.l #7,d0
+                  Param("Mute", 1, 11, "2002 0a80 0000 0001 ef88")])
     b.chain_call(MAIN_LOOP_CALL, OS_FIRST, poll)   # other modules (Ctrl Send) chain on the same call

@@ -2,7 +2,7 @@
   "type": 60,
   "name": "NoteOut",
   "fullname": "Note Out, a gate and a note to the MIDI OUT",
-  "summary": "A gate and a note out of the G1's MIDI OUT, as the G2's NoteSend: Chan, Vel, Gate thru.",
+  "summary": "A gate and a note out of the G1's MIDI OUT, as the G2's NoteSend: Chan, Vel, Mute, Gate thru.",
   "kind": "control",
   "author": "Animatek",
   "licence": "GPL-3.0-only",
@@ -12,7 +12,7 @@
     "check_note_out.py"
   ],
   "about": [
-    "Sends a MIDI note from the G1's MIDI OUT, after the G2's NoteSend. Feed it a note level and a gate: a rising edge of the gate starts the note and its fall ends it. Chan sets the MIDI channel and Vel the velocity. Gate thru passes the gate on.",
+    "Sends a MIDI note from the G1's MIDI OUT, after the G2's NoteSend. Feed it a note level and a gate: a rising edge of the gate starts the note and its fall ends it. Chan sets the MIDI channel and Vel the velocity. Mute silences the track: the gate counts as low, so a note held is turned off and no more go out. Gate thru passes the gate on.",
     "The DSP sends no MIDI itself: it leaves a word for the 68k, which reads it in the OS's main loop and queues the note on the MIDI OUT."
   ],
   "usage": [

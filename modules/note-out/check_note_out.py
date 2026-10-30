@@ -61,7 +61,7 @@ def main():
     subprocess.run([sys.executable, "-I", os.path.join(ROOT, "tools", "make_nme_data.py"),
                     os.path.join(ROOT, "..", "Nomad2026", "data"), os.path.dirname(xml)], check=True)
     base = open(os.path.join(HERE, "noteout-lfo.pch")).read()
-    assert LFO_TO_GATE in base and "2 60 2 0 100 \n" in base
+    assert LFO_TO_GATE in base and "2 60 3 0 100 0 \n" in base
     ok = True
 
     def report(name, good, msgs):
@@ -76,7 +76,7 @@ def main():
 
         const = (base.replace("2 60 2 8 \n", "2 60 2 8 \n3 43 2 12 \n")
                  .replace(LFO_TO_GATE, LFO_TO_GATE + "0 2 0 0 3 0 1 \n")
-                 .replace("2 60 2 0 100 \n", "2 60 2 2 90 \n3 43 2 76 0 \n")
+                 .replace("2 60 3 0 100 0 \n", "2 60 3 2 90 0 \n3 43 2 76 0 \n")
                  .replace("2 NoteOut\n", "2 NoteOut\n3 Constant\n"))
         msgs = midi_out(rom, xml, const, tmp, "const")
         report("a Constant (+12) into Note, Chan 3, Vel 90", pairs_ok(msgs, 2, 76, 90), msgs)
@@ -92,13 +92,25 @@ def main():
 
         after = (base.replace("2 60 2 8 \n", "2 60 2 8 \n3 24 2 12 \n")
                  .replace(LFO_TO_GATE, LFO_TO_GATE + "1 2 0 0 3 1 1 \n")
-                 .replace("2 60 2 0 100 \n", "2 60 2 0 100 \n3 24 8 40 1 0 0 0 0 64 0 \n")
+                 .replace("2 60 3 0 100 0 \n", "2 60 3 0 100 0 \n3 24 8 40 1 0 0 0 0 64 0 \n")
                  .replace("2 NoteOut\n", "2 NoteOut\n3 LFOB\n"))
         msgs = midi_out(rom, xml, after, tmp, "after")
         notes = {m[1] for m in msgs if m[0] == 0x90}
         report("an LFO after it into Note", len(notes) > 1 and all(m[0] in (0x90, 0x80) for m in msgs), msgs)
 
-        msgs = midi_out(rom, xml, base.replace("2 60 2 8 \n", "").replace("2 60 2 0 100 \n", "")
+        msgs = midi_out(rom, xml, base.replace("2 60 3 0 100 0 \n", "2 60 3 0 100 1 \n"), tmp, "muted")
+        report("Mute on from the start: nothing comes out", msgs == [], msgs)
+
+        msgs = midi_out(rom, xml, base, tmp, "mute-live", "--param-at", "2:1:2:2:1")
+        ons = sum(1 for m in msgs if m[0] == 0x90)
+        offs = sum(1 for m in msgs if m[0] == 0x80)
+        # the bench prints the first bytes only: a mute at 2 s shows as every on matched by an off
+        # and fewer messages than the unmuted run
+        full = midi_out(rom, xml, base, tmp, "mute-full")
+        report("live: Mute at 2 s (a note held is turned off, no more notes)",
+               ons == offs and 0 < len(msgs) < len(full), msgs)
+
+        msgs = midi_out(rom, xml, base.replace("2 60 2 8 \n", "").replace("2 60 3 0 100 0 \n", "")
                         .replace(LFO_TO_GATE, "").replace("2 NoteOut\n", ""), tmp, "none")
         report("no Note Out", msgs == [], msgs)
     sys.exit(0 if ok else 1)

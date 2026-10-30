@@ -1,14 +1,17 @@
 ; Note Out (G1-Mods type 60), after the G2's NoteSend: control rate.
-;   inputs  0 Note, 1 Gate        output 0 Gate thru        parameters 0 Chan, 1 Vel (68k only)
+;   inputs  0 Note, 1 Gate        output 0 Gate thru        parameters 0 Chan, 1 Vel (68k only), 2 Mute
 ; The DSP sends no MIDI: it leaves one word for the 68k, which reads it from the OS's main loop
 ; and queues the note on the MIDI OUT (noteout_poll.s). That word packs the gate's edge count
 ; (a step of $100 an edge), the gate (bit 7) and the note latched on the last rising edge
 ; (0..127), so a single read tells the 68k whether anything happened and what.
 ; The note: a semitone is one control unit ($8000), and 0 is note 64, an E (the keyboard's Note
 ; out); rounded to the nearest semitone and kept to 0..127. Gate is high above 0.
-; X data (11 words): [0] the packed word, [1] the gate as last seen (0 or $80), [2] the edge
+; Mute: the gate counts as low while it is on, so a note held is turned off (the falling edge)
+; and no note goes out; Gate thru is left as it comes.
+; X data (12 words): [0] the packed word, [1] the gate as last seen (0 or $80), [2] the edge
 ; count, [3] half a semitone ($4000), [4] 64, [5] $100, [6] $80, [7] 127, [8] the note latched,
-; [9] Chan and [10] Vel (written by their routines, read by the 68k).
+; [9] Chan and [10] Vel (written by their routines, read by the 68k), [11] Mute's mask: $80 off,
+; 0 on.
 ; The words are read at offsets from r3, which is moved past them at the end. Word 0 runs in the
 ; previous module's nop slot (no a or b); no branch lands on the nop or after it.
 
@@ -19,6 +22,8 @@
     clr a ifle              ;       a = 0 when low
     move x:(r3+$6),x1
     tfr x1,a ifgt           ;       a = $80 when high
+    move x:(r3+$b),x0
+    and x0,a                ;       muted: a = 0
     cmp a,b
     beq pack                ;       no edge
     move a,x:(r3+$1)        ;       remember it
@@ -47,7 +52,7 @@ pack:
     move x:(r3+$1),x0
     add x0,b                ;       + the gate
     move b,x:(r3)           ;       the packed word
-    lua (r3+$b),r3          ;       r3 -> past the data: r3 walks through every module's X
+    lua (r3+$c),r3          ;       r3 -> past the data: r3 walks through every module's X
                             ;       data, and the next one reads its own from here (left at
                             ;       our start, the module after this one ran on our words)
     nop                     ;       the next module's word 0 goes here

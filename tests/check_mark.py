@@ -39,7 +39,7 @@ def minor(rom, tmp):
     # the bench greets twice and the first reply can be cut short by the second greeting (where
     # depends on the boot's timing, which a bigger package moves): the first complete one counts
     at = data.find(IAM)
-    while at >= 0 and (at + 6 >= len(data) or data[at + 6] == 0xF0):
+    while at >= 0 and (at + 6 >= len(data) or 0xF0 in data[at + 5:at + 7]):
         at = data.find(IAM, at + 1)
     assert at >= 0 and data[at + 5] == 3, "no complete IAm with version 3 in the PC Port log"
     return data[at + 6]

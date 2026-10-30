@@ -1,27 +1,33 @@
 	<module component-id="m60" width="255" height="30">
 		<name>Note Out</name>
-		<label x="62" y="2">Note</label>
-		<connector x="66" y="13" size="13" class="cCONTROL">
+		<label x="42" y="2">Note</label>
+		<connector x="46" y="13" size="13" class="cCONTROL">
 			<connector component-id="c1" alt="note" />
 		</connector>
-		<label x="92" y="2">Gate</label>
-		<connector x="96" y="13" size="13" class="cLOGIC">
+		<label x="72" y="2">Gate</label>
+		<connector x="76" y="13" size="13" class="cLOGIC">
 			<connector component-id="c2" alt="gate" />
 		</connector>
-		<label x="122" y="2">Chan</label>
-		<textDisplay x="122" y="13" width="22" height="14">
+		<label x="102" y="2">Chan</label>
+		<textDisplay x="102" y="13" width="22" height="14">
 			<parameter component-id="p1" alt="chan" />
 		</textDisplay>
-		<knob x="146" y="9" size="18">
+		<knob x="126" y="9" size="18">
 			<parameter component-id="p1" alt="chan" />
 		</knob>
-		<label x="172" y="2">Vel</label>
-		<textDisplay x="172" y="13" width="22" height="14">
+		<label x="152" y="2">Vel</label>
+		<textDisplay x="152" y="13" width="22" height="14">
 			<parameter component-id="p2" alt="vel" />
 		</textDisplay>
-		<knob x="196" y="9" size="18">
+		<knob x="176" y="9" size="18">
 			<parameter component-id="p2" alt="vel" />
 		</knob>
+		
+		<button x="198" y="9" width="32" height="16" cyclic="true" landscape="false">
+			<parameter component-id="p3" alt="mute" />
+			<btn index="0">Mute</btn>
+			<btn index="1">Muted</btn>
+		</button>
 		<label x="232" y="2">Thru</label>
 		<connector x="236" y="13" size="13" class="cLOGIC">
 			<connector component-id="c3" alt="thru" />

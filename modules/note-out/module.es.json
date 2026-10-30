@@ -1,8 +1,8 @@
 {
   "fullname": "Note Out, una gate y una nota al MIDI OUT",
-  "summary": "Una gate y una nota por el MIDI OUT del G1, como el NoteSend del G2: Chan, Vel, Gate thru.",
+  "summary": "Una gate y una nota por el MIDI OUT del G1, como el NoteSend del G2: Chan, Vel, Mute, Gate thru.",
   "about": [
-    "Envía una nota MIDI por el MIDI OUT del G1, a imagen del NoteSend del G2. Dale un nivel de nota y una gate: un flanco de subida de la gate empieza la nota y su caída la termina. Chan fija el canal MIDI y Vel la velocidad. Gate thru deja pasar la gate.",
+    "Envía una nota MIDI por el MIDI OUT del G1, a imagen del NoteSend del G2. Dale un nivel de nota y una gate: un flanco de subida de la gate empieza la nota y su caída la termina. Chan fija el canal MIDI y Vel la velocidad. Mute silencia la pista: la gate cuenta como baja, así que una nota sostenida se apaga y no salen más. Gate thru deja pasar la gate.",
     "El DSP no envía MIDI por sí mismo: deja una palabra para el 68k, que la lee en el bucle principal del OS y pone la nota en la cola del MIDI OUT."
   ],
   "usage": [

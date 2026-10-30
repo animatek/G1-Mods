@@ -5,6 +5,7 @@ line here, in the same commit (see `CLAUDE.md`).
 
 ## 2026-10-30
 
+- [Module] Claude: **Note Out gets Mute** (a button between Vel and Thru, Javier's idea to mute a track simply): the gate counts as low while it is on (`and` with a mask word in the DSP), so a note held is turned off on its falling edge and no more go out; Gate thru is left as it comes. A third parameter: **patches saved with the earlier Note Out (two parameters) need to be made again**, as a stored patch is read with the module's parameter count. Tested in G1-Emu (on from the start: nothing out; on at 2 s: the note turned off, then silence). `check_mark.py` also skips a reply cut one byte earlier.
 - [Module] Claude: **CCOut's panel, aligned** (Javier's third pass): his layout with the four knobs on one row, their number boxes on another and the titles centred over them, evenly spaced (43 px apart); In, Thru and Send on the right edge's grid.
 - [Module] Claude: **CCOut's panel, tighter** (Javier's second design from the web designer): 60 px, four rows; titles over the knobs, number boxes under, In on the left, Thru and Send on the right.
 - [Module] Claude: **CCOut's panel is Javier's own design**, made in the web designer and sent as its XML: Ctrl, Value, Level %, Chan in an aligned row of knobs and number boxes (90 px, six rows), In and Thru on the left and right, Send under Thru. Layer regenerated (`check_nme_data.py` OK).
