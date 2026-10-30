@@ -1,16 +1,17 @@
 ; 8Steps (G1-Mods type 123), after Bogaudio's ADDR-SEQ: eight knobs, a length, a
 ; first step and a direction. It was the 5-Step Seq; the type is the same.
 ;   inputs 0 Clk, 1 Rst        output 0 Out
-;   parameters 0-7 the steps' values (-64..+63), 8 Steps (the last step, 0-7), 9 Start, 10 Reverse
+;   parameters 0-7 the steps' values (-64..+63), 8 Steps (the last step, 0-7), 9 Start, 10 Reverse,
+;   11 Level (the output's share of the step value, 0-100 %)
 ; Control rate. Each rising edge of Clk moves one step on, forwards or (Reverse) backwards, and
 ; the last step goes back to the first (the first, to the last, in reverse). Rst works as the G1's
 ; own sequencers' (measured on the CtrlSeq): its rising edge changes nothing at once, it arms the
 ; sequencer, and the next clock goes to Start, not to the next step. It starts armed, so the
-; first clock plays Start. Out is the current step's value. The step is kept as a plain integer
+; first clock plays Start. Out is the current step's value times Level. The step is kept as a plain integer
 ; (0-7) in X[0], which the OS reads for the step LEDs.
-; X data (15 words): [0] the step, [1] Clk's last value, [2] Rst's last value, [3] armed (not 0
+; X data (16 words): [0] the step, [1] Clk's last value, [2] Rst's last value, [3] armed (not 0
 ; after a Rst edge), [4] the last step (Steps - 1), [5] Start, [6] Reverse, [7..14] the eight
-; values (written by the parameter routines). The value's address is r3 + the step, through r2 (a
+; values and [15] Level, a fraction (all written by the parameter routines). The value's address is r3 + the step, through r2 (a
 ; scratch register Clavia's sequencers use the same way).
 ; Word 0 runs in the previous module's nop slot (no a or b); no branch lands on the nop slot or
 ; after it.
@@ -60,7 +61,9 @@ noclk:
     move r3,a
     add b,a                 ;       a1 = the address of the step's value
     move a1,r2
-    lua (r3+$8),r3          ;       r3 -> past the data
-    move x:(r2),b           ;       b = the step's value
+    move x:(r3+$8),x0       ;       x0 = Level
+    lua (r3+$9),r3          ;       r3 -> past the data
+    move x:(r2),x1          ;       x1 = the step's value
+    mpy x1,x0,b             ;       b1 = the value times Level
     nop                     ;       the next module's word 0 goes here
-    move b,x:$0             ; @out0 Out
+    move b1,x:$0            ; @out0 Out

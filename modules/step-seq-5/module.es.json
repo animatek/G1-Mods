@@ -1,9 +1,9 @@
 {
   "fullname": "8Steps, un secuenciador de ocho pasos",
-  "summary": "Ocho pomos bipolares, uno por paso, con Steps, Start, Reverse y LED de paso.",
+  "summary": "Ocho pomos bipolares, uno por paso, con Steps, Start, Reverse, Level, Rnd/Clr y LED de paso.",
   "about": [
     "Un secuenciador de ocho pasos con un pomo bipolar para cada paso, a imagen del ADDR-SEQ de Bogaudio (era el 5-Step Seq, con el mismo tipo). Cada flanco de subida de Clk avanza un paso y el último vuelve al primero. Out es el valor del paso actual, de -64 a +63, y ocho LED muestran dónde está.",
-    "Steps fija la longitud, de 1 a 8 (los pasos siguientes se saltan), Start el paso al que va un reset, y Reverse recorre los pasos hacia atrás, del primero al último.",
+    "Steps fija la longitud, de 1 a 8 (los pasos siguientes se saltan), Start el paso al que va un reset, Reverse recorre los pasos hacia atrás, del primero al último, y Level (0-100 %) escala la salida. Rnd da valores aleatorios a los ocho pomos y Clr los pone a cero, como los del NoteSeqA (funcionan en el editor de NME, no en el sinte).",
     "Rst funciona como el de los secuenciadores propios del G1: su flanco arma el módulo y el siguiente reloj va a Start, no al paso siguiente. Empieza armado, así que el primer reloj toca Start. Con Start 1 se mantiene a compás con un CtrlSeq con el mismo reloj y reset."
   ],
   "usage": [

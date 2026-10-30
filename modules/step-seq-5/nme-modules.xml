@@ -17,6 +17,7 @@
     <parameter component-id="p9" index="8" name="steps" class="parameter" maxValue="7" defaultValue="7" formatter="value+1" extension="m9" />
     <parameter component-id="p10" index="9" name="start" class="parameter" maxValue="7" defaultValue="0" formatter="value+1" extension="m10" />
     <parameter component-id="p11" index="10" name="reverse" class="parameter" maxValue="1" defaultValue="0" formatter="fmtOffOn" extension="m11" />
+    <parameter component-id="p12" index="11" name="level" class="parameter" maxValue="100" defaultValue="100" extension="m12" />
     <parameter component-id="m1" index="0" name="morph:step 1" class="morph" role="morph"  minValue="-127" maxValue="127" />
     <parameter component-id="m2" index="1" name="morph:step 2" class="morph" role="morph"  minValue="-127" maxValue="127" />
     <parameter component-id="m3" index="2" name="morph:step 3" class="morph" role="morph"  minValue="-127" maxValue="127" />
@@ -28,6 +29,7 @@
     <parameter component-id="m9" index="8" name="morph:steps" class="morph" role="morph"  minValue="-127" maxValue="127" />
     <parameter component-id="m10" index="9" name="morph:start" class="morph" role="morph"  minValue="-127" maxValue="127" />
     <parameter component-id="m11" index="10" name="morph:reverse" class="morph" role="morph"  minValue="-127" maxValue="127" />
+    <parameter component-id="m12" index="11" name="morph:level" class="morph" role="morph"  minValue="-100" maxValue="100" />
     <light component-id="ledStep1-8" type="led-array" name="Step 1-8" minValue="0" maxValue="8" />
     <!-- custom attributes -->
     <attribute name="cycles" type="double" value="0.8" />

@@ -18,6 +18,7 @@ seq5.pch: (Steps set to 5) ClkGen (48 Hz) into Clk; Out on output 1, the clock o
   each of 0 to 4.
 - eight steps (Steps 8, the knobs at 0, 16 ... 127): all eight in order, the eighth back to the first.
 - Reverse: the five steps in the opposite order, the first going to the last.
+- Level 50 %: every step's value halves.
 - Start 3, with the Rst of the CtrlSeq patch: every jump out of the order after a reset lands on step 3.
 Exit code 0 when all hold.
 """
@@ -149,6 +150,14 @@ def main():
         jumps = [b for a, b in zip(steps, steps[1:]) if a is None or b != (a + 1) % 5]
         report("Start", len(jumps) > 3 and all(j == 3 for j in jumps),
                f"{len(jumps)} jumps out of the order, to steps {sorted(set(jumps))} (3 wanted)")
+
+        # Level 50 %: every value halved
+        half_lvl = base.replace(" 4 0 0 100", " 4 0 0 50")
+        (out, clk, *_), _ = record(rom, xml, half_lvl, tmp)
+        halves = [-32, -16, 0, 16, 31.5]
+        seen = {step_of(v, halves) for v in out[SETTLE:]}
+        report("Level 50 %", seen == set(range(5)), f"steps seen at half value {sorted(s for s in seen if s is not None)}"
+               f"{' (and values off the halves)' if None in seen else ''}")
 
     print("OK" if ok else "FAILED")
     sys.exit(0 if ok else 1)
